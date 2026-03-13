@@ -3,6 +3,8 @@ const mongoose = require('mongoose'); // Importa Mongoose para conectar con Mong
 const cors = require('cors'); // Importa CORS para permitir comunicación entre frontend y backend
 require('dotenv').config(); // Carga las variables del archivo .env
 
+const usuariosRutas = require('./routes/usuarios'); // Importa las rutas de usuarios
+
 const app = express(); // Crea la aplicación Express
 
 // Middlewares — funciones que procesan las peticiones antes de que lleguen al servidor
@@ -13,6 +15,9 @@ app.use(express.json()); // Permite que el servidor entienda JSON
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ Conectado a MongoDB'))
   .catch((err) => console.log('❌ Error al conectar:', err));
+
+// Rutas — cada ruta tiene un prefijo para organizarlas
+app.use('/usuarios', usuariosRutas); // Todas las rutas de usuarios empiezan por /usuarios
 
 // Ruta de prueba para verificar que el servidor funciona
 app.get('/', (req, res) => {
