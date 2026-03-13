@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Ley del Gato — Registro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="registro.css">
+</head>
+<body>
+
+  <div class="scene"></div>
+  <div class="city-silhouette"></div>
+  <div class="fog"></div>
+  <div class="vignette"></div>
+  <div class="scanlines"></div>
+
+  <div class="main">
+
+    <div class="header">
+      <div class="logo-line">
+        <span class="logo-text">LA LEY DEL GATO</span>
+      </div>
+      <div class="tagline">SISTEMA DE AGENTES</div>
+    </div>
+
+    <div class="card">
+      <div class="card-inner">
+
+        <div class="rat-header">
+          <div class="rat-avatar">🐭</div>
+          <div class="rat-info">
+            <div class="rat-title">NUEVO AGENTE</div>
+            <div class="rat-sub">REGISTRO ENCUBIERTO</div>
+          </div>
+          <div class="badge">ACCESO LIBRE</div>
+        </div>
+
+        <div id="mErr" class="msg msg-err"></div>
+        <div id="mOk" class="msg msg-ok">▶ AGENTE REGISTRADO. BIENVENIDO A LA RESISTENCIA.</div>
+
+        <div class="field">
+          <div class="flabel">
+            <span class="flabel-num">01</span> NOMBRE DE AGENTE
+          </div>
+          <div class="irow">
+            <span class="ipre">&gt;</span>
+            <input type="text" id="u" placeholder="alias_secreto" maxlength="20" autocomplete="off" spellcheck="false"/>
+          </div>
+          <div class="hints">
+            <div class="hint" id="u1"><span class="hico">□</span>3-20 CARACTERES</div>
+            <div class="hint" id="u2"><span class="hico">□</span>SIN ESPACIOS</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="flabel">
+            <span class="flabel-num">02</span> CONTRASEÑA
+          </div>
+          <div class="irow">
+            <span class="ipre">&gt;</span>
+            <input type="password" id="p" placeholder="código de acceso" maxlength="30"/>
+            <button class="tpw" id="tp" type="button">VER</button>
+          </div>
+          <div class="sbar">
+            <div class="sseg" id="s1"></div>
+            <div class="sseg" id="s2"></div>
+            <div class="sseg" id="s3"></div>
+            <div class="sseg" id="s4"></div>
+          </div>
+          <div class="slabel" id="sl">INTRODUCE CONTRASEÑA</div>
+          <div class="hints">
+            <div class="hint" id="p1"><span class="hico">□</span>8+ CARACTERES</div>
+            <div class="hint" id="p2"><span class="hico">□</span>MAYÚSCULA</div>
+            <div class="hint" id="p3"><span class="hico">□</span>NÚMERO</div>
+            <div class="hint" id="p4"><span class="hico">□</span>ESPECIAL (!@#$)</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="flabel">
+            <span class="flabel-num">03</span> CONFIRMAR CONTRASEÑA
+          </div>
+          <div class="irow">
+            <span class="ipre">&gt;</span>
+            <input type="password" id="c" placeholder="repite el código" maxlength="30"/>
+          </div>
+          <div class="hints">
+            <div class="hint" id="c1" style="grid-column:1/-1">
+              <span class="hico">□</span>LAS CONTRASEÑAS DEBEN COINCIDIR
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-main" id="btn" disabled>UNIRSE A LA RESISTENCIA</button>
+        <button class="btn-sec" onclick="window.location.href='login.html'">
+          YA TENGO CUENTA — INICIAR SESIÓN
+        </button>
+
+      </div>
+    </div>
+
+    <div class="foot">
+      <span>LA LEY DEL GATO © 2025</span>
+      <span>CIFRADO AES-256</span>
+    </div>
+
+  </div>
+
+  <script src="registro.js"></script>
+</body>
+</html>
