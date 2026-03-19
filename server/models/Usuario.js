@@ -28,6 +28,21 @@ const usuarioEsquema = new mongoose.Schema({
   ultimo_acceso: {
     type: Date,
     default: Date.now // Se actualiza cada vez que el usuario inicia sesión
+  },
+  email: {
+    type: String,
+    required: true, // Es obligatorio para el registro
+    unique: true // No puede haber dos usuarios con el mismo email
+  },
+
+  email_verificado: {
+    type: Boolean,
+    default: false // Por defecto no está verificado al registrarse
+  },
+
+  token_verificacion: {
+    type: String,
+    default: null // Token único que se enviará por email para verificar la cuenta
   }
 
 });

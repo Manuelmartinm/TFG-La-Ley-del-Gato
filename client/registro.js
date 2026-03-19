@@ -3,6 +3,7 @@
    ========================================================= */
 
 const inputUsuario    = document.getElementById('u');
+const inputEmail      = document.getElementById('e');
 const inputContrasena = document.getElementById('p');
 const inputConfirmar  = document.getElementById('c');
 const btnRegistro     = document.getElementById('btn');
@@ -11,10 +12,9 @@ const msgError        = document.getElementById('mErr');
 const msgSuccess      = document.getElementById('mOk');
 
 const API_URL = 'http://localhost:3000';
-
+fetch
 /* ---------------------------------------------------------
-   AVATARES — emojis de personajes
-   Cada avatar tiene un emoji y un nombre de agente
+   AVATARES
 --------------------------------------------------------- */
 const avatares = [
   { nombre: 'EL JEFE',    arte: '🐭' },
@@ -27,21 +27,15 @@ const avatares = [
 
 let avatarActual = 0;
 
-/* ---------------------------------------------------------
-   FUNCIÓN: renderiza el avatar actual en pantalla
---------------------------------------------------------- */
 function renderizarAvatar() {
   const avatar = avatares[avatarActual];
-
   const display = document.getElementById('avatarDisplay');
   display.style.opacity = '0';
   setTimeout(() => {
     display.textContent = avatar.arte;
     display.style.opacity = '1';
   }, 100);
-
   document.getElementById('avatarName').textContent = avatar.nombre;
-
   const dotsContainer = document.getElementById('avatarDots');
   dotsContainer.innerHTML = '';
   avatares.forEach((_, i) => {
@@ -51,9 +45,6 @@ function renderizarAvatar() {
   });
 }
 
-/* ---------------------------------------------------------
-   NAVEGACIÓN entre avatares con las flechas
---------------------------------------------------------- */
 document.getElementById('avatarPrev').addEventListener('click', () => {
   avatarActual = (avatarActual - 1 + avatares.length) % avatares.length;
   renderizarAvatar();
@@ -67,7 +58,7 @@ document.getElementById('avatarNext').addEventListener('click', () => {
 renderizarAvatar();
 
 /* ---------------------------------------------------------
-   VALIDACIÓN de campos
+   VALIDACIÓN
 --------------------------------------------------------- */
 const coloresFuerza   = ['#8c3030', '#8c6020', '#908020', '#3a8c30'];
 const etiquetasFuerza = ['MUY DÉBIL', 'ACEPTABLE', 'BUENA', 'FUERTE'];
@@ -102,18 +93,26 @@ function actualizarFuerza(valor) {
 
 function validar() {
   const u = inputUsuario.value;
+  const e = inputEmail.value;
   const p = inputContrasena.value;
   const c = inputConfirmar.value;
 
   const ut = u.length > 0;
+  const et = e.length > 0;
   const pt = p.length > 0;
   const ct = c.length > 0;
 
+  // Validación usuario
   const uLongitud   = u.length >= 3 && u.length <= 20;
   const uCaracteres = /^[a-zA-Z0-9_]*$/.test(u) && !/\s/.test(u);
   actualizarHint('u1', uLongitud,   ut);
   actualizarHint('u2', uCaracteres, ut);
 
+  // Validación email
+  const eValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+  actualizarHint('e1', eValido, et);
+
+  // Validación contraseña
   const pLongitud  = p.length >= 8;
   const pMayuscula = /[A-Z]/.test(p);
   const pNumero    = /[0-9]/.test(p);
@@ -124,15 +123,17 @@ function validar() {
   actualizarHint('p4', pEspecial,  pt);
   actualizarFuerza(p);
 
+  // Validación confirmación
   const coinciden = c === p && c.length > 0;
   actualizarHint('c1', coinciden, ct);
 
-  const valido = uLongitud && uCaracteres && pLongitud && pMayuscula && pNumero && pEspecial && coinciden;
+  const valido = uLongitud && uCaracteres && eValido && pLongitud && pMayuscula && pNumero && pEspecial && coinciden;
   btnRegistro.disabled = !valido;
   return valido;
 }
 
 inputUsuario.addEventListener('input', validar);
+inputEmail.addEventListener('input', validar);
 inputContrasena.addEventListener('input', validar);
 inputConfirmar.addEventListener('input', validar);
 
@@ -157,11 +158,18 @@ btnRegistro.addEventListener('click', async () => {
   btnRegistro.innerHTML = 'CONECTANDO<span class="dots"></span>';
 
   try {
+    console.log('Datos enviados:', {
+  nombre_usuario: inputUsuario.value,
+  email: inputEmail.value,
+  contrasena: inputContrasena.value,
+  avatar: avatarActual
+});
     const respuesta = await fetch(`${API_URL}/usuarios/registro`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         nombre_usuario: inputUsuario.value,
+        email: inputEmail.value,
         contrasena: inputContrasena.value,
         avatar: avatarActual
       })
@@ -170,8 +178,11 @@ btnRegistro.addEventListener('click', async () => {
     const datos = await respuesta.json();
 
     if (respuesta.ok) {
+      // Muestra mensaje de éxito indicando que revise el email
+      msgSuccess.textContent   = '▶ AGENTE REGISTRADO. REVISA TU EMAIL PARA VERIFICAR TU CUENTA.';
       msgSuccess.style.display = 'block';
       inputUsuario.value    = '';
+      inputEmail.value      = '';
       inputContrasena.value = '';
       inputConfirmar.value  = '';
       validar();
