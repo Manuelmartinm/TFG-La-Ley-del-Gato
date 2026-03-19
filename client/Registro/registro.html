@@ -28,22 +28,28 @@
       <div class="card-inner">
 
         <div class="rat-header">
-          <div class="avatar-selector">
-            <button class="avatar-arrow" id="avatarPrev">◀</button>
-            <div class="rat-avatar">
-              <pre class="avatar-art" id="avatarDisplay"></pre>
-              <div class="avatar-name" id="avatarName"></div>
+          <div class="rat-avatar-wrapper">
+            <div class="rat-avatar" id="selectedAvatar">🐭</div>
+            <div class="avatar-carousel" id="avatarCarousel">
+              <button class="carousel-arrow" id="carouselPrev">◀</button>
+              <div class="carousel-track" id="carouselTrack">
+                <button type="button" class="avatar-option selected" data-avatar="🐭">🐭</button>
+                <button type="button" class="avatar-option" data-avatar="🐀">🐀</button>
+                <button type="button" class="avatar-option" data-avatar="🐹">🐹</button>
+                <button type="button" class="avatar-option" data-avatar="🐁">🐁</button>
+                <button type="button" class="avatar-option" data-avatar="🦔">🦔</button>
+                <button type="button" class="avatar-option" data-avatar="🐿️">🐿️</button>
+              </div>
+              <button class="carousel-arrow" id="carouselNext">▶</button>
             </div>
-            <button class="avatar-arrow" id="avatarNext">▶</button>
           </div>
           <div class="rat-info">
             <div class="rat-title">NUEVO AGENTE</div>
             <div class="rat-sub">REGISTRO ENCUBIERTO</div>
-            <div class="avatar-dots" id="avatarDots"></div>
           </div>
           <div class="badge">ACCESO LIBRE</div>
         </div>
-
+      </div>
         <div id="mErr" class="msg msg-err"></div>
         <div id="mOk" class="msg msg-ok">▶ AGENTE REGISTRADO. BIENVENIDO A LA RESISTENCIA.</div>
 
@@ -119,7 +125,6 @@
 
       </div>
     </div>
-
     <div class="foot">
       <span>LA LEY DEL GATO © 2025</span>
       <span>CIFRADO AES-256</span>

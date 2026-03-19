@@ -1,0 +1,390 @@
+ * { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+    :root {
+      --gold: #c8a030;
+      --gold-bright: #e8c040;
+      --gold-dim: #8a6820;
+      --gold-dark: #4a3510;
+      --bg: #080601;
+      --bg-card: rgba(10,8,3,0.92);
+      --text: #f0d060;
+    }
+ 
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'VT323', monospace;
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
+      position: relative;
+    }
+ 
+    /* --- Fondo escena --- */
+    .scene {
+      position: fixed; inset: 0;
+      background: #080601;
+      z-index: 0;
+    }
+ 
+    .bg-city {
+      position: fixed; inset: 0;
+      background-image: url('../Imagenes/FondoMain.png');
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      z-index: 1;
+    }
+
+    .bg-city::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(4,3,1,0.85) 320px,
+        rgba(4,3,1,0.3) 60%,
+        rgba(4,3,1,0.15) 100%
+      );
+    }
+ 
+    .city-silhouette { display: none; }
+    .fog { display: none; }
+ 
+    .scanlines {
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        to bottom, transparent 0, transparent 3px,
+        rgba(0,0,0,0.07) 3px, rgba(0,0,0,0.07) 4px
+      );
+      pointer-events: none; z-index: 50;
+    }
+ 
+    .vignette {
+      position: fixed; inset: 0;
+      background: radial-gradient(ellipse 90% 90% at 50% 50%, transparent 40%, rgba(0,0,0,0.85) 100%);
+      pointer-events: none; z-index: 4;
+    }
+ 
+    /* =============================================
+       LAYOUT PRINCIPAL
+    ============================================= */
+    .layout {
+      position: relative; z-index: 10;
+      width: 100%; min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+    }
+ 
+    /* Panel izquierdo — info agente */
+    .panel-left {
+      width: 320px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 2rem 1.5rem;
+      border-right: 1px solid #1e1803;
+      background: rgba(6,4,1,0.7);
+      animation: slidein-left 0.6s ease both;
+    }
+ 
+    @keyframes slidein-left {
+      from { opacity: 0; transform: translateX(-20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+ 
+    /* Logo arriba izquierda */
+    .logo-area {
+      margin-bottom: 2rem;
+    }
+ 
+    .logo-line {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 6px;
+    }
+    .logo-line::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(90deg, #c8a030, transparent);
+    }
+    .logo-text {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      color: var(--gold);
+      letter-spacing: 2px;
+      white-space: nowrap;
+      text-shadow: 0 0 20px rgba(200,160,48,0.5);
+    }
+    .logo-sub {
+      font-size: 14px;
+      color: var(--gold-dim);
+      letter-spacing: 6px;
+      margin-top: 2px;
+    }
+ 
+    /* Card agente */
+    .agent-card {
+      background: rgba(10,8,3,0.9);
+      border: 1px solid #2e2006;
+      border-top: 2px solid var(--gold);
+      padding: 1.2rem;
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    .agent-card::before, .agent-card::after {
+      content: '◆'; position: absolute;
+      color: var(--gold); font-size: 9px;
+    }
+    .agent-card::before { top: -6px; left: 8px; }
+    .agent-card::after  { top: -6px; right: 8px; }
+ 
+    .agent-header {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #1e1803;
+    }
+ 
+    .agent-avatar {
+      width: 60px; height: 60px;
+      background: #0e0b04;
+      border: 1px solid #3a2e10;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+ 
+    .agent-name {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      color: var(--gold-bright);
+      letter-spacing: 1px;
+      line-height: 2;
+    }
+    .agent-rank {
+      font-size: 14px;
+      color: var(--gold-dim);
+      letter-spacing: 3px;
+    }
+ 
+    /* Stats del agente */
+    .agent-stats { display: flex; flex-direction: column; gap: 8px; }
+ 
+    .stat-row {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 13px; letter-spacing: 1px;
+    }
+    .stat-label { color: var(--gold-dim); }
+    .stat-value { color: var(--text); }
+ 
+    .stat-bar {
+      height: 3px;
+      background: #1a1403;
+      margin-top: 3px;
+      position: relative;
+    }
+    .stat-bar-fill {
+      height: 100%;
+      background: var(--gold);
+      transition: width 1s ease;
+    }
+ 
+    /* Notificaciones / estado */
+    .status-area { margin-top: auto; }
+ 
+    .status-item {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; letter-spacing: 1px;
+      color: #6a5020;
+      padding: 4px 0;
+      border-bottom: 1px solid #0e0b04;
+    }
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .status-dot.green { background: #3a8c30; box-shadow: 0 0 6px #3a8c30; }
+    .status-dot.yellow { background: var(--gold); box-shadow: 0 0 6px var(--gold); animation: pulse 2s infinite; }
+    .status-dot.red { background: #8c3030; box-shadow: 0 0 6px #8c3030; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+ 
+    .foot-left {
+      display: flex; justify-content: space-between;
+      padding-top: 1rem;
+      border-top: 1px solid #1a1403;
+      margin-top: 1rem;
+    }
+    .foot-left span { font-size: 11px; letter-spacing: 2px; color: #3a2c10; }
+ 
+    /* =============================================
+       PANEL DERECHO — MENÚ
+    ============================================= */
+    .panel-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-end;
+      padding: 2rem 4rem 2rem 2rem;
+      animation: slidein-right 0.6s ease both 0.2s;
+    }
+ 
+    @keyframes slidein-right {
+      from { opacity: 0; transform: translateX(20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+ 
+    .menu-header {
+      text-align: right;
+      margin-bottom: 2.5rem;
+    }
+    .menu-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(8px, 1.5vw, 11px);
+      color: var(--gold);
+      letter-spacing: 4px;
+      text-shadow: 0 0 20px rgba(200,160,48,0.4);
+    }
+    .menu-sub {
+      font-size: 16px;
+      color: var(--gold-dim);
+      letter-spacing: 6px;
+      margin-top: 4px;
+    }
+ 
+    /* Botones del menú */
+    .menu-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 420px;
+    }
+ 
+    .menu-btn {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 16px;
+      background: rgba(10,8,3,0.85);
+      border: 1px solid #2e2006;
+      border-right: 3px solid var(--gold-dark);
+      padding: 1rem 1.4rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      animation: fadein-btn 0.4s ease both;
+    }
+ 
+    .menu-btn:nth-child(1) { animation-delay: 0.1s; }
+    .menu-btn:nth-child(2) { animation-delay: 0.18s; }
+    .menu-btn:nth-child(3) { animation-delay: 0.26s; }
+    .menu-btn:nth-child(4) { animation-delay: 0.34s; }
+    .menu-btn:nth-child(5) { animation-delay: 0.42s; }
+    .menu-btn:nth-child(6) { animation-delay: 0.50s; }
+ 
+    @keyframes fadein-btn {
+      from { opacity: 0; transform: translateX(20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+ 
+    /* Efecto brillo al hover */
+    .menu-btn::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(200,160,48,0.06));
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .menu-btn:hover::before { opacity: 1; }
+ 
+    .menu-btn:hover {
+      border-right-color: var(--gold);
+      border-color: #4a3510;
+      border-right-color: var(--gold);
+      transform: translateX(-4px);
+      box-shadow: 4px 0 20px rgba(200,160,48,0.15);
+    }
+ 
+    /* Botón JUGAR — especial */
+    .menu-btn.primary {
+      border-top: 2px solid var(--gold);
+      border-right: 3px solid var(--gold);
+      background: rgba(200,160,48,0.06);
+    }
+    .menu-btn.primary:hover {
+      background: rgba(200,160,48,0.12);
+      box-shadow: 4px 0 30px rgba(200,160,48,0.25);
+    }
+ 
+    .btn-text {
+      text-align: right;
+    }
+    .btn-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(6px, 1.2vw, 9px);
+      color: var(--gold-bright);
+      letter-spacing: 2px;
+      display: block;
+      line-height: 2;
+    }
+    .btn-sub {
+      font-size: 13px;
+      color: var(--gold-dim);
+      letter-spacing: 3px;
+    }
+ 
+    .btn-icon {
+      font-size: 28px;
+      width: 44px; height: 44px;
+      background: #0e0b04;
+      border: 1px solid #3a2e10;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .menu-btn:hover .btn-icon { transform: scale(1.1); }
+ 
+    .btn-arrow {
+      font-size: 18px;
+      color: var(--gold-dark);
+      transition: color 0.2s, transform 0.2s;
+      flex-shrink: 0;
+    }
+    .menu-btn:hover .btn-arrow {
+      color: var(--gold);
+      transform: translateX(4px);
+    }
+ 
+    /* Badge de notificación */
+    .btn-badge {
+      position: absolute;
+      top: 8px; left: 8px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 6px;
+      color: #060401;
+      background: var(--gold);
+      padding: 2px 5px;
+      letter-spacing: 1px;
+    }
+ 
+    /* Decoración número de opción */
+    .btn-num {
+      position: absolute;
+      bottom: 6px; left: 10px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 6px;
+      color: #2a1e08;
+      letter-spacing: 1px;
+    }
+ 
+    /* Línea decorativa entre secciones */
+    .menu-divider {
+      width: 100%; max-width: 420px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #2e2006, transparent);
+      margin: 4px 0;
+    }
+ 

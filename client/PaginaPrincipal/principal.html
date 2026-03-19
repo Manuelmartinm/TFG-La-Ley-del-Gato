@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Ley del Gato — Base de Operaciones</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="principal.css">
+  <script src="principal.js"></script>
+</head>
+
+<body>
+ 
+  <div class="scene"></div>
+  <div class="bg-city"></div>
+  <div class="city-silhouette"></div>
+  <div class="fog"></div>
+  <div class="vignette"></div>
+  <div class="scanlines"></div>
+ 
+  <div class="layout">
+ 
+    <!-- ===== PANEL IZQUIERDO ===== -->
+    <div class="panel-left">
+ 
+      <div>
+        <!-- Logo -->
+        <div class="logo-area">
+          <div class="logo-line">
+            <span class="logo-text">LA LEY DEL GATO</span>
+          </div>
+          <div class="logo-sub">BASE DE OPERACIONES</div>
+        </div>
+ 
+        <!-- Card agente -->
+        <div class="agent-card">
+          <div class="agent-header">
+            <div class="agent-avatar" id="agentAvatar">🐭</div>
+            <div>
+              <div class="agent-name" id="agentName">AGENTE_01</div>
+              <div class="agent-rank">RANGO: NOVATO</div>
+            </div>
+          </div>
+ 
+          <div class="agent-stats">
+            <div>
+              <div class="stat-row">
+                <span class="stat-label">MISIONES</span>
+                <span class="stat-value">0 / 10</span>
+              </div>
+              <div class="stat-bar"><div class="stat-bar-fill" style="width:0%"></div></div>
+            </div>
+            <div>
+              <div class="stat-row">
+                <span class="stat-label">REPUTACIÓN</span>
+                <span class="stat-value">--</span>
+              </div>
+              <div class="stat-bar"><div class="stat-bar-fill" style="width:20%"></div></div>
+            </div>
+            <div>
+              <div class="stat-row">
+                <span class="stat-label">MONEDAS</span>
+                <span class="stat-value">💰 0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+ 
+        <!-- Estado del servidor -->
+        <div class="status-area">
+          <div class="status-item">
+            <div class="status-dot green"></div>
+            SERVIDOR ACTIVO
+          </div>
+          <div class="status-item">
+            <div class="status-dot yellow"></div>
+            MISIÓN DISPONIBLE
+          </div>
+          <div class="status-item">
+            <div class="status-dot red"></div>
+            ZONA PELIGROSA ACTIVA
+          </div>
+        </div>
+      </div>
+ 
+      <div>
+        <div class="foot-left">
+          <span>v0.1.0</span>
+          <span>CIFRADO AES-256</span>
+        </div>
+      </div>
+ 
+    </div>
+ 
+    <!-- ===== PANEL DERECHO — MENÚ ===== -->
+    <div class="panel-right">
+ 
+      <div class="menu-header">
+        <div class="menu-title">SELECCIONA OPERACIÓN</div>
+        <div class="menu-sub">¿CUÁL ES TU MOVIMIENTO?</div>
+      </div>
+ 
+      <nav class="menu-nav">
+ 
+        <!-- JUGAR -->
+        <a href="jugar.html" class="menu-btn primary">
+          <span class="btn-badge">NUEVO</span>
+          <div class="btn-text">
+            <span class="btn-title">JUGAR</span>
+            <span class="btn-sub">INICIAR MISIÓN</span>
+          </div>
+          <div class="btn-icon">🎮</div>
+          <span class="btn-arrow">◀</span>
+          <span class="btn-num">01</span>
+        </a>
+ 
+        <div class="menu-divider"></div>
+ 
+        <!-- TIENDA -->
+        <a href="tienda.html" class="menu-btn">
+          <div class="btn-text">
+            <span class="btn-title">TIENDA</span>
+            <span class="btn-sub">EQUIPAMIENTO</span>
+          </div>
+          <div class="btn-icon">🏪</div>
+          <span class="btn-arrow">◀</span>
+          <span class="btn-num">02</span>
+        </a>
+ 
+        <!-- INVENTARIO -->
+        <a href="inventario.html" class="menu-btn">
+          <div class="btn-text">
+            <span class="btn-title">INVENTARIO</span>
+            <span class="btn-sub">TUS OBJETOS</span>
+          </div>
+          <div class="btn-icon">🎒</div>
+          <span class="btn-arrow">◀</span>
+          <span class="btn-num">03</span>
+        </a>
+ 
+        <div class="menu-divider"></div>
+ 
+        <!-- CLASIFICACIÓN -->
+        <a href="clasificacion.html" class="menu-btn">
+          <div class="btn-text">
+            <span class="btn-title">CLASIFICACIÓN</span>
+            <span class="btn-sub">TOP AGENTES</span>
+          </div>
+          <div class="btn-icon">🏆</div>
+          <span class="btn-arrow">◀</span>
+          <span class="btn-num">04</span>
+        </a>
+ 
+        <!-- PERFIL -->
+        <a href="perfil.html" class="menu-btn">
+          <div class="btn-text">
+            <span class="btn-title">PERFIL</span>
+            <span class="btn-sub">FICHA DE AGENTE</span>
+          </div>
+          <div class="btn-icon">🪪</div>
+          <span class="btn-arrow">◀</span>
+          <span class="btn-num">05</span>
+        </a>
+ 
+        <!-- AJUSTES -->
+        <a href="ajustes.html" class="menu-btn">
+          <div class="btn-text">
+            <span class="btn-title">AJUSTES</span>
+            <span class="btn-sub">CONFIGURACIÓN</span>
+          </div>
+          <div class="btn-icon">⚙️</div>
+          <span class="btn-arrow">◀</span>
+          <span class="btn-num">06</span>
+        </a>
+ 
+      </nav>
+ 
+    </div>
+ 
+  </div>
+</body>
+</html>
