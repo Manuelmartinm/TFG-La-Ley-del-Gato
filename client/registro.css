@@ -2,10 +2,8 @@
    LA LEY DEL GATO — registro.css
    ========================================================= */
 
-/* --- Reset --- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* --- Body --- */
 body {
   min-height: 100vh;
   background: #07060300;
@@ -18,7 +16,6 @@ body {
   overflow: hidden;
 }
 
-/* --- Fondo con gradiente ambiental dorado --- */
 .scene {
   position: fixed; inset: 0;
   background:
@@ -28,7 +25,6 @@ body {
   z-index: 0;
 }
 
-/* --- Silueta de ciudad en el fondo --- */
 .city-silhouette {
   position: fixed; bottom: 0; left: 0; right: 0; height: 220px;
   background: linear-gradient(transparent 0%, transparent 30%, #0d0a04 30%, #0d0a04 100%);
@@ -36,7 +32,6 @@ body {
   overflow: hidden;
 }
 
-/* Edificios pixelados */
 .city-silhouette::before {
   content: '';
   position: absolute; bottom: 0; left: 0; right: 0; top: 0;
@@ -55,7 +50,6 @@ body {
     linear-gradient(#0d0a04,#0d0a04) 940px 65px / 85px 155px no-repeat;
 }
 
-/* Ventanas parpadeantes */
 .city-silhouette::after {
   content: '';
   position: absolute; bottom: 0; left: 0; right: 0; top: 0;
@@ -63,21 +57,12 @@ body {
     radial-gradient(circle 2px at 20px 120px, rgba(255,220,100,0.6) 0%, transparent 100%),
     radial-gradient(circle 2px at 35px 100px, rgba(255,220,100,0.4) 0%, transparent 100%),
     radial-gradient(circle 2px at 90px 110px, rgba(255,220,100,0.5) 0%, transparent 100%),
-    radial-gradient(circle 2px at 115px 90px, rgba(255,220,100,0.3) 0%, transparent 100%),
     radial-gradient(circle 2px at 175px 80px, rgba(255,220,100,0.6) 0%, transparent 100%),
-    radial-gradient(circle 2px at 195px 60px, rgba(255,220,100,0.4) 0%, transparent 100%),
-    radial-gradient(circle 2px at 240px 95px, rgba(255,220,100,0.5) 0%, transparent 100%),
     radial-gradient(circle 2px at 320px 70px, rgba(255,220,100,0.6) 0%, transparent 100%),
-    radial-gradient(circle 2px at 350px 90px, rgba(255,220,100,0.3) 0%, transparent 100%),
     radial-gradient(circle 2px at 480px 50px, rgba(255,220,100,0.5) 0%, transparent 100%),
-    radial-gradient(circle 2px at 510px 75px, rgba(255,220,100,0.4) 0%, transparent 100%),
-    radial-gradient(circle 2px at 590px 105px, rgba(255,220,100,0.6) 0%, transparent 100%),
     radial-gradient(circle 2px at 670px 65px, rgba(255,220,100,0.5) 0%, transparent 100%),
-    radial-gradient(circle 2px at 700px 85px, rgba(255,220,100,0.3) 0%, transparent 100%),
     radial-gradient(circle 2px at 760px 95px, rgba(255,220,100,0.6) 0%, transparent 100%),
-    radial-gradient(circle 2px at 790px 115px, rgba(255,220,100,0.4) 0%, transparent 100%),
-    radial-gradient(circle 2px at 870px 75px, rgba(255,220,100,0.5) 0%, transparent 100%),
-    radial-gradient(circle 2px at 960px 100px, rgba(255,220,100,0.6) 0%, transparent 100%);
+    radial-gradient(circle 2px at 870px 75px, rgba(255,220,100,0.5) 0%, transparent 100%);
   animation: winblink 3s step-end infinite;
 }
 
@@ -87,14 +72,12 @@ body {
   66%      { opacity: 0.9; }
 }
 
-/* --- Niebla sobre los edificios --- */
 .fog {
   position: fixed; bottom: 100px; left: 0; right: 0; height: 120px;
   background: linear-gradient(transparent, rgba(8,6,1,0.7));
   z-index: 2; pointer-events: none;
 }
 
-/* --- Efecto scanlines de pantalla antigua --- */
 .scanlines {
   position: fixed; inset: 0;
   background: repeating-linear-gradient(
@@ -105,14 +88,12 @@ body {
   pointer-events: none; z-index: 50;
 }
 
-/* --- Viñeta oscura en los bordes --- */
 .vignette {
   position: fixed; inset: 0;
   background: radial-gradient(ellipse 90% 90% at 50% 50%, transparent 50%, rgba(0,0,0,0.7) 100%);
   pointer-events: none; z-index: 3;
 }
 
-/* --- Contenedor principal --- */
 .main {
   position: relative; z-index: 10;
   width: 100%; max-width: 480px;
@@ -120,7 +101,6 @@ body {
   align-items: center;
 }
 
-/* --- Cabecera con logo --- */
 .header {
   text-align: center;
   margin-bottom: 2rem;
@@ -132,7 +112,6 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Líneas decorativas a los lados del logo */
 .logo-line {
   display: flex; align-items: center; justify-content: center; gap: 12px;
   margin-bottom: 8px;
@@ -168,7 +147,6 @@ body {
   margin-top: 4px;
 }
 
-/* --- Card principal --- */
 .card {
   width: 100%;
   background: rgba(10,8,3,0.92);
@@ -184,7 +162,6 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Diamantes decorativos en las esquinas superiores */
 .card::before, .card::after {
   content: '◆';
   position: absolute;
@@ -195,14 +172,13 @@ body {
 .card::before { top: -7px; left: 10px; }
 .card::after  { top: -7px; right: 10px; }
 
-/* Borde interior decorativo */
 .card-inner {
   padding: 2rem 2.2rem 1.8rem;
   border: 1px solid #1a1403;
   margin: 8px;
 }
 
-/* --- Cabecera de la card con el ratón --- */
+/* --- Cabecera con selector de avatar --- */
 .rat-header {
   display: flex;
   align-items: center;
@@ -212,20 +188,63 @@ body {
   border-bottom: 1px solid #1e1803;
 }
 
-.rat-avatar {
-  width: 64px; height: 64px;
-  background: #0e0b04;
-  border: 1px solid #3a2e10;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 36px;
+/* Selector completo: flecha + avatar + flecha */
+.avatar-selector {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   flex-shrink: 0;
-  position: relative;
 }
 
-.rat-avatar::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(200,160,48,0.05), transparent);
+/* Flechas de navegación del avatar */
+.avatar-arrow {
+  background: none;
+  border: 1px solid #2e2006;
+  color: #6a5020;
+  font-size: 10px;
+  cursor: pointer;
+  padding: 4px 5px;
+  transition: color 0.2s, border-color 0.2s;
+  font-family: 'VT323', monospace;
+  line-height: 1;
+}
+.avatar-arrow:hover {
+  color: #c8a030;
+  border-color: #c8a030;
+}
+
+/* Caja del avatar */
+.rat-avatar {
+  width: 72px; height: 72px;
+  background: #0e0b04;
+  border: 1px solid #3a2e10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Arte ASCII del avatar */
+.avatar-art {
+  font-size: 38px;
+  line-height: 1;
+  text-align: center;
+  transition: opacity 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Nombre del avatar debajo del arte */
+.avatar-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 5px;
+  color: #6a5020;
+  letter-spacing: 1px;
+  margin-top: 2px;
+  text-align: center;
 }
 
 .rat-info { flex: 1; }
@@ -245,6 +264,23 @@ body {
   margin-top: 2px;
 }
 
+/* Puntos indicadores de avatar seleccionado */
+.avatar-dots {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.avatar-dot {
+  width: 5px; height: 5px;
+  background: #2e2006;
+  transition: background 0.2s;
+}
+
+.avatar-dot.active {
+  background: #c8a030;
+}
+
 .badge {
   font-size: 11px;
   color: #a07830;
@@ -252,9 +288,10 @@ body {
   background: #0e0b04;
   border: 1px solid #4a3510;
   padding: 2px 8px;
+  align-self: flex-start;
 }
 
-/* --- Mensajes de error y éxito --- */
+/* --- Mensajes --- */
 .msg {
   padding: 8px 12px;
   margin-bottom: 1rem;
@@ -266,18 +303,17 @@ body {
 .msg-err { border-left: 2px solid #a03030; color: #c84040; background: rgba(160,48,48,0.08); }
 .msg-ok  { border-left: 2px solid #3a8c30; color: #40c840; background: rgba(58,140,48,0.08); }
 
-/* --- Campos del formulario --- */
+/* --- Campos --- */
 .field { margin-bottom: 1.2rem; }
 
 .flabel {
   font-size: clamp(12px, 2vw, 15px);
-  color: #c8a030; /* dorado brillante para las etiquetas */
+  color: #c8a030;
   letter-spacing: 4px;
   margin-bottom: 4px;
   display: flex; align-items: center; gap: 6px;
 }
 
-/* Número del campo estilo ficha de agente */
 .flabel-num {
   font-family: 'Press Start 2P', monospace;
   font-size: 7px;
@@ -287,7 +323,6 @@ body {
   padding: 2px 5px;
 }
 
-/* Fila de input — fondo más claro para que contraste */
 .irow {
   display: flex;
   background: #110e05;
@@ -299,7 +334,6 @@ body {
   box-shadow: 0 0 0 3px rgba(200,160,48,0.12);
 }
 
-/* Prefijo > del input */
 .ipre {
   width: 36px;
   display: flex; align-items: center; justify-content: center;
@@ -309,10 +343,9 @@ body {
   flex-shrink: 0;
 }
 
-/* Inputs de texto y contraseña */
 input {
   flex: 1; background: transparent; border: none; outline: none;
-  color: #f0d060; /* amarillo claro brillante para el texto escrito */
+  color: #f0d060;
   font-family: 'VT323', monospace;
   font-size: clamp(17px, 3vw, 22px);
   padding: 0.6rem 0.8rem;
@@ -321,7 +354,6 @@ input {
 }
 input::placeholder { color: #4a3810; letter-spacing: 1px; }
 
-/* Botón mostrar/ocultar contraseña */
 .tpw {
   background: none; border: none;
   color: #8a6820;
@@ -332,7 +364,6 @@ input::placeholder { color: #4a3810; letter-spacing: 1px; }
 }
 .tpw:hover { color: #e8c040; }
 
-/* --- Barra de fuerza de contraseña --- */
 .sbar { display: flex; gap: 3px; height: 3px; margin-top: 5px; }
 .sseg { flex: 1; background: #2a1e08; transition: background 0.3s; }
 
@@ -342,22 +373,21 @@ input::placeholder { color: #4a3810; letter-spacing: 1px; }
   transition: color 0.3s;
 }
 
-/* --- Indicadores de requisitos en tiempo real --- */
 .hints {
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 1px 10px; margin-top: 4px;
 }
 .hint {
   font-size: clamp(10px, 1.8vw, 13px);
-  letter-spacing: 1px; color: #aa8033; /* gris dorado visible */
+  letter-spacing: 1px; color: #aa8033;
   display: flex; align-items: center; gap: 4px;
   transition: color 0.2s;
 }
-.hint.ok { color: #50c840; } /* Verde brillante — cumplido */
-.hint.er { color: #c84040; } /* Rojo brillante — fallido */
+.hint.ok { color: #50c840; }
+.hint.er { color: #c84040; }
 .hico { font-size: 10px; }
 
-/* --- Botón principal de registro --- */
+/* --- Botones --- */
 .btn-main {
   width: 100%; margin-top: 1.2rem;
   background: #c8a030;
@@ -367,20 +397,15 @@ input::placeholder { color: #4a3810; letter-spacing: 1px; }
   color: #060401;
   padding: 1rem; letter-spacing: 2px;
   cursor: pointer;
-  position: relative;
   transition: background 0.2s, transform 0.1s;
-  /* Esquina cortada estilo mafioso */
   clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
 }
 .btn-main::before { content: '▶'; margin-right: 8px; font-size: 8px; }
 .btn-main:hover:not(:disabled)  { background: #ddb838; }
 .btn-main:active:not(:disabled) { transform: scale(0.99); }
-.btn-main:disabled {
-  background: #1e1808; color: #7e6128; cursor: not-allowed;
-}
+.btn-main:disabled { background: #1e1808; color: #7e6128; cursor: not-allowed; }
 .btn-main:disabled::before { content: '▷'; }
 
-/* --- Botón secundario (ya tengo cuenta) --- */
 .btn-sec {
   width: 100%; margin-top: 0.6rem;
   background: transparent;
@@ -393,18 +418,15 @@ input::placeholder { color: #4a3810; letter-spacing: 1px; }
 }
 .btn-sec:hover { color: #c8a030; border-color: #5a4418; }
 
-/* --- Pie de página --- */
 .foot {
   width: 100%;
   display: flex; justify-content: space-between;
   padding: 6px 12px;
-  background: #06040100;
   border: 1px solid #1a1403; border-top: none;
   animation: fadein 0.6s ease both 0.4s;
 }
 .foot span { font-size: 11px; letter-spacing: 2px; color: #6a5020; }
 
-/* --- Animación de puntos de carga --- */
 .dots::after {
   content: '';
   animation: dt 1.2s steps(4) infinite;
@@ -416,9 +438,9 @@ input::placeholder { color: #4a3810; letter-spacing: 1px; }
   75% { content: '...'; }
 }
 
-/* --- Responsive móvil --- */
 @media (max-width: 480px) {
   .card-inner { padding: 1.4rem 1rem 1.2rem; }
   .hints { grid-template-columns: 1fr; }
-  .rat-avatar { width: 48px; height: 48px; font-size: 26px; }
+  .rat-avatar { width: 60px; height: 60px; }
+  .badge { display: none; }
 }
