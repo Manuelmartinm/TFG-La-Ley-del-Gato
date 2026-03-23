@@ -27,11 +27,12 @@
     <div class="card">
       <div class="card-inner">
 
+        <!-- Cabecera con avatar y selector -->
         <div class="rat-header">
           <div class="rat-avatar-wrapper">
-            <div class="rat-avatar" id="selectedAvatar">🐭</div>
+            <div class="rat-avatar" id="selectedAvatar" title="Haz clic para cambiar">🐭</div>
             <div class="avatar-carousel" id="avatarCarousel">
-              <button class="carousel-arrow" id="carouselPrev">◀</button>
+              <button class="carousel-arrow" id="carouselPrev" type="button">◀</button>
               <div class="carousel-track" id="carouselTrack">
                 <button type="button" class="avatar-option selected" data-avatar="🐭">🐭</button>
                 <button type="button" class="avatar-option" data-avatar="🐀">🐀</button>
@@ -40,7 +41,7 @@
                 <button type="button" class="avatar-option" data-avatar="🦔">🦔</button>
                 <button type="button" class="avatar-option" data-avatar="🐿️">🐿️</button>
               </div>
-              <button class="carousel-arrow" id="carouselNext">▶</button>
+              <button class="carousel-arrow" id="carouselNext" type="button">▶</button>
             </div>
           </div>
           <div class="rat-info">
@@ -49,10 +50,12 @@
           </div>
           <div class="badge">ACCESO LIBRE</div>
         </div>
-      </div>
-        <div id="mErr" class="msg msg-err"></div>
-        <div id="mOk" class="msg msg-ok">▶ AGENTE REGISTRADO. BIENVENIDO A LA RESISTENCIA.</div>
 
+        <!-- Mensajes de error y éxito -->
+        <div id="mErr" class="msg msg-err"></div>
+        <div id="mOk"  class="msg msg-ok">▶ AGENTE REGISTRADO. REVISA TU EMAIL PARA VERIFICAR TU CUENTA.</div>
+
+        <!-- Campo 01: Nombre de agente -->
         <div class="field">
           <div class="flabel">
             <span class="flabel-num">01</span> NOMBRE DE AGENTE
@@ -66,19 +69,22 @@
             <div class="hint" id="u2"><span class="hico">□</span>SIN ESPACIOS</div>
           </div>
         </div>
-        <div class="field">
-  <div class="flabel">
-    <span class="flabel-num">02</span> CORREO ELECTRÓNICO
-  </div>
-  <div class="irow">
-    <span class="ipre">&gt;</span>
-    <input type="email" id="e" placeholder="agente@correo.com" maxlength="100" autocomplete="off" spellcheck="false"/>
-  </div>
-  <div class="hints">
-    <div class="hint" id="e1"><span class="hico">□</span>EMAIL VÁLIDO</div>
-  </div>
-</div>
 
+        <!-- Campo 02: Correo electrónico -->
+        <div class="field">
+          <div class="flabel">
+            <span class="flabel-num">02</span> CORREO ELECTRÓNICO
+          </div>
+          <div class="irow">
+            <span class="ipre">&gt;</span>
+            <input type="email" id="e" placeholder="agente@correo.com" maxlength="100" autocomplete="off" spellcheck="false"/>
+          </div>
+          <div class="hints">
+            <div class="hint" id="e1"><span class="hico">□</span>EMAIL VÁLIDO</div>
+          </div>
+        </div>
+
+        <!-- Campo 03: Contraseña -->
         <div class="field">
           <div class="flabel">
             <span class="flabel-num">03</span> CONTRASEÑA
@@ -103,6 +109,7 @@
           </div>
         </div>
 
+        <!-- Campo 04: Confirmar contraseña -->
         <div class="field">
           <div class="flabel">
             <span class="flabel-num">04</span> CONFIRMAR CONTRASEÑA
@@ -125,6 +132,7 @@
 
       </div>
     </div>
+
     <div class="foot">
       <span>LA LEY DEL GATO © 2025</span>
       <span>CIFRADO AES-256</span>

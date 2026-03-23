@@ -2,13 +2,20 @@
    LA LEY DEL GATO — registro.css
    ========================================================= */
 
-/* --- Reset --- */
+:root {
+  --gold: #c8a030;
+  --gold-bright: #e8c040;
+  --gold-dim: #8a6820;
+  --gold-dark: #4a3510;
+  --bg: #080601;
+  --text: #f0d060;
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* --- Body --- */
 body {
   min-height: 100vh;
-  background: #07060300;
+  background: var(--bg);
   font-family: 'VT323', monospace;
   display: flex;
   align-items: center;
@@ -18,7 +25,7 @@ body {
   overflow: hidden;
 }
 
-/* --- Fondo con gradiente ambiental dorado --- */
+/* --- Fondo --- */
 .scene {
   position: fixed; inset: 0;
   background:
@@ -28,15 +35,12 @@ body {
   z-index: 0;
 }
 
-/* --- Silueta de ciudad en el fondo --- */
+/* --- Silueta ciudad --- */
 .city-silhouette {
   position: fixed; bottom: 0; left: 0; right: 0; height: 220px;
   background: linear-gradient(transparent 0%, transparent 30%, #0d0a04 30%, #0d0a04 100%);
-  z-index: 1;
-  overflow: hidden;
+  z-index: 1; overflow: hidden;
 }
-
-/* Edificios pixelados */
 .city-silhouette::before {
   content: '';
   position: absolute; bottom: 0; left: 0; right: 0; top: 0;
@@ -54,58 +58,39 @@ body {
     linear-gradient(#0d0a04,#0d0a04) 860px 35px / 70px 185px no-repeat,
     linear-gradient(#0d0a04,#0d0a04) 940px 65px / 85px 155px no-repeat;
 }
-
-/* Ventanas parpadeantes */
 .city-silhouette::after {
   content: '';
   position: absolute; bottom: 0; left: 0; right: 0; top: 0;
   background:
     radial-gradient(circle 2px at 20px 120px, rgba(255,220,100,0.6) 0%, transparent 100%),
-    radial-gradient(circle 2px at 35px 100px, rgba(255,220,100,0.4) 0%, transparent 100%),
     radial-gradient(circle 2px at 90px 110px, rgba(255,220,100,0.5) 0%, transparent 100%),
-    radial-gradient(circle 2px at 115px 90px, rgba(255,220,100,0.3) 0%, transparent 100%),
     radial-gradient(circle 2px at 175px 80px, rgba(255,220,100,0.6) 0%, transparent 100%),
-    radial-gradient(circle 2px at 195px 60px, rgba(255,220,100,0.4) 0%, transparent 100%),
-    radial-gradient(circle 2px at 240px 95px, rgba(255,220,100,0.5) 0%, transparent 100%),
     radial-gradient(circle 2px at 320px 70px, rgba(255,220,100,0.6) 0%, transparent 100%),
-    radial-gradient(circle 2px at 350px 90px, rgba(255,220,100,0.3) 0%, transparent 100%),
     radial-gradient(circle 2px at 480px 50px, rgba(255,220,100,0.5) 0%, transparent 100%),
-    radial-gradient(circle 2px at 510px 75px, rgba(255,220,100,0.4) 0%, transparent 100%),
-    radial-gradient(circle 2px at 590px 105px, rgba(255,220,100,0.6) 0%, transparent 100%),
     radial-gradient(circle 2px at 670px 65px, rgba(255,220,100,0.5) 0%, transparent 100%),
-    radial-gradient(circle 2px at 700px 85px, rgba(255,220,100,0.3) 0%, transparent 100%),
     radial-gradient(circle 2px at 760px 95px, rgba(255,220,100,0.6) 0%, transparent 100%),
-    radial-gradient(circle 2px at 790px 115px, rgba(255,220,100,0.4) 0%, transparent 100%),
-    radial-gradient(circle 2px at 870px 75px, rgba(255,220,100,0.5) 0%, transparent 100%),
-    radial-gradient(circle 2px at 960px 100px, rgba(255,220,100,0.6) 0%, transparent 100%);
+    radial-gradient(circle 2px at 870px 75px, rgba(255,220,100,0.5) 0%, transparent 100%);
   animation: winblink 3s step-end infinite;
 }
-
 @keyframes winblink {
-  0%,100% { opacity: 1; }
-  33%      { opacity: 0.7; }
-  66%      { opacity: 0.9; }
+  0%,100% { opacity: 1; } 33% { opacity: 0.7; } 66% { opacity: 0.9; }
 }
 
-/* --- Niebla sobre los edificios --- */
 .fog {
   position: fixed; bottom: 100px; left: 0; right: 0; height: 120px;
   background: linear-gradient(transparent, rgba(8,6,1,0.7));
   z-index: 2; pointer-events: none;
 }
 
-/* --- Efecto scanlines de pantalla antigua --- */
 .scanlines {
   position: fixed; inset: 0;
   background: repeating-linear-gradient(
-    to bottom,
-    transparent 0, transparent 3px,
+    to bottom, transparent 0, transparent 3px,
     rgba(0,0,0,0.07) 3px, rgba(0,0,0,0.07) 4px
   );
   pointer-events: none; z-index: 50;
 }
 
-/* --- Viñeta oscura en los bordes --- */
 .vignette {
   position: fixed; inset: 0;
   background: radial-gradient(ellipse 90% 90% at 50% 50%, transparent 50%, rgba(0,0,0,0.7) 100%);
@@ -120,7 +105,7 @@ body {
   align-items: center;
 }
 
-/* --- Cabecera con logo --- */
+/* --- Header con logo --- */
 .header {
   text-align: center;
   margin-bottom: 2rem;
@@ -132,24 +117,23 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Líneas decorativas a los lados del logo */
 .logo-line {
   display: flex; align-items: center; justify-content: center; gap: 12px;
   margin-bottom: 8px;
 }
 .logo-line::before {
   content: ''; flex: 1; height: 1px;
-  background: linear-gradient(90deg, transparent, #c8a030);
+  background: linear-gradient(90deg, transparent, var(--gold));
 }
 .logo-line::after {
   content: ''; flex: 1; height: 1px;
-  background: linear-gradient(90deg, #c8a030, transparent);
+  background: linear-gradient(90deg, var(--gold), transparent);
 }
 
 .logo-text {
   font-family: 'Press Start 2P', monospace;
   font-size: clamp(8px, 2vw, 12px);
-  color: #c8a030;
+  color: var(--gold);
   letter-spacing: 3px;
   white-space: nowrap;
   text-shadow: 0 0 30px rgba(200,160,48,0.6);
@@ -163,17 +147,17 @@ body {
 
 .tagline {
   font-size: clamp(13px, 2.5vw, 17px);
-  color: #8a6820;
+  color: var(--gold-dim);
   letter-spacing: 8px;
   margin-top: 4px;
 }
 
-/* --- Card principal --- */
+/* --- Card --- */
 .card {
   width: 100%;
   background: rgba(10,8,3,0.92);
   border: 1px solid #2e2006;
-  border-top: 2px solid #c8a030;
+  border-top: 2px solid var(--gold);
   backdrop-filter: blur(4px);
   position: relative;
   animation: slidein 0.6s ease both 0.2s;
@@ -184,24 +168,23 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Diamantes decorativos en las esquinas superiores */
 .card::before, .card::after {
   content: '◆';
   position: absolute;
-  color: #c8a030;
+  color: var(--gold);
   font-size: 10px;
   line-height: 1;
 }
 .card::before { top: -7px; left: 10px; }
 .card::after  { top: -7px; right: 10px; }
 
-/* Borde interior decorativo */
 .card-inner {
   padding: 2rem 2.2rem 1.8rem;
   border: 1px solid #1a1403;
+  margin: 8px;
 }
 
-/* --- Cabecera de la card con el ratón --- */
+/* --- Cabecera con avatar --- */
 .rat-header {
   display: flex;
   align-items: center;
@@ -211,20 +194,77 @@ body {
   border-bottom: 1px solid #1e1803;
 }
 
+/* Wrapper del avatar con carrusel */
+.rat-avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
 .rat-avatar {
   width: 64px; height: 64px;
   background: #0e0b04;
   border: 1px solid #3a2e10;
   display: flex; align-items: center; justify-content: center;
   font-size: 36px;
-  flex-shrink: 0;
-  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.rat-avatar:hover {
+  transform: scale(1.05);
+  border-color: var(--gold);
 }
 
-.rat-avatar::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(200,160,48,0.05), transparent);
+/* Carrusel desplegable */
+.avatar-carousel {
+  display: none;
+  position: absolute;
+  top: 70px; left: 0;
+  background: #0e0b04;
+  border: 1px solid var(--gold);
+  padding: 8px;
+  z-index: 100;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+  white-space: nowrap;
+}
+.avatar-carousel.open { display: flex; }
+
+.carousel-arrow {
+  background: none;
+  border: 1px solid var(--gold-dark);
+  color: var(--gold);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.carousel-arrow:hover { background: rgba(200,160,48,0.15); }
+
+.carousel-track {
+  display: flex;
+  gap: 6px;
+  overflow: hidden;
+  width: 116px;
+}
+
+.avatar-option {
+  flex-shrink: 0;
+  width: 50px; height: 50px;
+  font-size: 26px;
+  background: rgba(0,0,0,0.5);
+  border: 2px solid rgba(200,160,48,0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.avatar-option:hover { border-color: rgba(200,160,48,0.6); transform: scale(1.1); }
+.avatar-option.selected {
+  border-color: var(--gold);
+  background: rgba(200,160,48,0.15);
+  box-shadow: 0 0 10px rgba(200,160,48,0.3);
 }
 
 .rat-info { flex: 1; }
@@ -232,7 +272,7 @@ body {
 .rat-title {
   font-family: 'Press Start 2P', monospace;
   font-size: clamp(7px, 1.5vw, 9px);
-  color: #e8c040;
+  color: var(--gold-bright);
   letter-spacing: 1px;
   line-height: 1.8;
 }
@@ -249,11 +289,12 @@ body {
   color: #a07830;
   letter-spacing: 2px;
   background: #0e0b04;
-  border: 1px solid #4a3510;
+  border: 1px solid var(--gold-dark);
   padding: 2px 8px;
+  align-self: flex-start;
 }
 
-/* --- Mensajes de error y éxito --- */
+/* --- Mensajes --- */
 .msg {
   padding: 8px 12px;
   margin-bottom: 1rem;
@@ -265,73 +306,68 @@ body {
 .msg-err { border-left: 2px solid #a03030; color: #c84040; background: rgba(160,48,48,0.08); }
 .msg-ok  { border-left: 2px solid #3a8c30; color: #40c840; background: rgba(58,140,48,0.08); }
 
-/* --- Campos del formulario --- */
+/* --- Campos --- */
 .field { margin-bottom: 1.2rem; }
 
 .flabel {
   font-size: clamp(12px, 2vw, 15px);
-  color: #c8a030; /* dorado brillante para las etiquetas */
+  color: var(--gold);
   letter-spacing: 4px;
   margin-bottom: 4px;
   display: flex; align-items: center; gap: 6px;
 }
 
-/* Número del campo estilo ficha de agente */
 .flabel-num {
   font-family: 'Press Start 2P', monospace;
   font-size: 7px;
-  color: #c8a030;
+  color: var(--gold);
   background: #1a1205;
-  border: 1px solid #4a3510;
+  border: 1px solid var(--gold-dark);
   padding: 2px 5px;
 }
 
-/* Fila de input — fondo más claro para que contraste */
 .irow {
   display: flex;
   background: #110e05;
-  border: 1px solid #4a3510;
+  border: 1px solid var(--gold-dark);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .irow:focus-within {
-  border-color: #e8c040;
+  border-color: var(--gold-bright);
   box-shadow: 0 0 0 3px rgba(200,160,48,0.12);
 }
 
-/* Prefijo > del input */
 .ipre {
   width: 36px;
   display: flex; align-items: center; justify-content: center;
-  color: #e8c040;
+  color: var(--gold-bright);
   font-size: 18px;
   border-right: 1px solid #3a2c10;
   flex-shrink: 0;
 }
 
-/* Inputs de texto y contraseña */
 input {
   flex: 1; background: transparent; border: none; outline: none;
-  color: #f0d060; /* amarillo claro brillante para el texto escrito */
+  color: var(--text);
   font-family: 'VT323', monospace;
   font-size: clamp(17px, 3vw, 22px);
   padding: 0.6rem 0.8rem;
   letter-spacing: 2px;
-  caret-color: #e8c040;
+  caret-color: var(--gold-bright);
 }
 input::placeholder { color: #4a3810; letter-spacing: 1px; }
 
-/* Botón mostrar/ocultar contraseña */
 .tpw {
   background: none; border: none;
-  color: #8a6820;
+  color: var(--gold-dim);
   font-family: 'VT323', monospace;
   font-size: 13px; letter-spacing: 1px;
   cursor: pointer; padding: 0 10px;
   transition: color 0.2s;
 }
-.tpw:hover { color: #e8c040; }
+.tpw:hover { color: var(--gold-bright); }
 
-/* --- Barra de fuerza de contraseña --- */
+/* --- Barra fuerza contraseña --- */
 .sbar { display: flex; gap: 3px; height: 3px; margin-top: 5px; }
 .sseg { flex: 1; background: #2a1e08; transition: background 0.3s; }
 
@@ -341,45 +377,41 @@ input::placeholder { color: #4a3810; letter-spacing: 1px; }
   transition: color 0.3s;
 }
 
-/* --- Indicadores de requisitos en tiempo real --- */
+/* --- Hints de validación --- */
 .hints {
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 1px 10px; margin-top: 4px;
 }
 .hint {
   font-size: clamp(10px, 1.8vw, 13px);
-  letter-spacing: 1px; color: #aa8033; /* gris dorado visible */
+  letter-spacing: 1px; color: #aa8033;
   display: flex; align-items: center; gap: 4px;
   transition: color 0.2s;
 }
-.hint.ok { color: #50c840; } /* Verde brillante — cumplido */
-.hint.er { color: #c84040; } /* Rojo brillante — fallido */
+.hint.ok { color: #50c840; }
+.hint.er { color: #c84040; }
 .hico { font-size: 10px; }
 
-/* --- Botón principal de registro --- */
+/* --- Botón principal --- */
 .btn-main {
   width: 100%; margin-top: 1.2rem;
-  background: #c8a030;
+  background: var(--gold);
   border: none;
   font-family: 'Press Start 2P', monospace;
   font-size: clamp(6px, 1.5vw, 9px);
   color: #060401;
   padding: 1rem; letter-spacing: 2px;
   cursor: pointer;
-  position: relative;
   transition: background 0.2s, transform 0.1s;
-  /* Esquina cortada estilo mafioso */
   clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
 }
 .btn-main::before { content: '▶'; margin-right: 8px; font-size: 8px; }
-.btn-main:hover:not(:disabled)  { background: #ddb838; }
+.btn-main:hover:not(:disabled) { background: #ddb838; }
 .btn-main:active:not(:disabled) { transform: scale(0.99); }
-.btn-main:disabled {
-  background: #1e1808; color: #7e6128; cursor: not-allowed;
-}
+.btn-main:disabled { background: #1e1808; color: #7e6128; cursor: not-allowed; }
 .btn-main:disabled::before { content: '▷'; }
 
-/* --- Botón secundario (ya tengo cuenta) --- */
+/* --- Botón secundario --- */
 .btn-sec {
   width: 100%; margin-top: 0.6rem;
   background: transparent;
@@ -390,91 +422,31 @@ input::placeholder { color: #4a3810; letter-spacing: 1px; }
   letter-spacing: 3px; cursor: pointer;
   transition: all 0.2s;
 }
-.btn-sec:hover { color: #c8a030; border-color: #5a4418; }
+.btn-sec:hover { color: var(--gold); border-color: #5a4418; }
 
-/* --- Pie de página --- */
+/* --- Pie --- */
 .foot {
   width: 100%;
   display: flex; justify-content: space-between;
   padding: 6px 12px;
-  background: #06040100;
   border: 1px solid #1a1403; border-top: none;
   animation: fadein 0.6s ease both 0.4s;
 }
 .foot span { font-size: 11px; letter-spacing: 2px; color: #6a5020; }
 
-/* --- Animación de puntos de carga --- */
+/* --- Animación carga --- */
 .dots::after {
   content: '';
   animation: dt 1.2s steps(4) infinite;
 }
 @keyframes dt {
-  0%  { content: ''; }
-  25% { content: '.'; }
-  50% { content: '..'; }
-  75% { content: '...'; }
+  0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; }
 }
 
-/* --- Responsive móvil --- */
+/* --- Responsive --- */
 @media (max-width: 480px) {
   .card-inner { padding: 1.4rem 1rem 1.2rem; }
   .hints { grid-template-columns: 1fr; }
-  .rat-avatar { width: 48px; height: 48px; font-size: 26px; }
-}
-
-/*-Selector raton-*/
-.rat-avatar-wrapper {
-  position: relative;
-  flex-shrink: 0;
-}
-
-.rat-avatar {
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-.rat-avatar:hover { transform: scale(1.1); }
-
-.avatar-carousel {
-  display: none;
-  position: absolute;
-  top: 70px;
-  left: 0;
-  background: #0e0b04;
-  border: 1px solid #c8a030;
-  padding: 8px;
-  z-index: 100;
-  flex-direction: row;
-  align-items: center;
-  gap: 6px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.8);
-}
-
-.avatar-carousel.open { display: flex; }
-
-.carousel-arrow {
-  background: none;
-  border: 1px solid #4a3510;
-  color: #c8a030;
-  font-size: 14px;
-  cursor: pointer;
-  padding: 4px 8px;
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
-.carousel-arrow:hover { background: rgba(200,160,48,0.15); }
-
-.carousel-track {
-  display: flex;
-  flex-direction: row;
-  gap: 6px;
-  overflow: hidden;
-  width: 116px;
-}
-
-.carousel-track .avatar-option {
-  flex-shrink: 0;
-  width: 50px;
-  height: 50px;
-  font-size: 26px;
-  transition: transform 0.2s;
+  .rat-avatar { width: 52px; height: 52px; font-size: 28px; }
+  .badge { display: none; }
 }

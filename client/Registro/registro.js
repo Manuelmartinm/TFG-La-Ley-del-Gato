@@ -1,64 +1,61 @@
 /* =========================================================
    LA LEY DEL GATO — registro.js
-   Lógica de validación y envío del formulario de registro
    ========================================================= */
 
-// --- Referencias a los elementos del DOM ---
-const inputUsuario = document.getElementById('u');
+const inputUsuario    = document.getElementById('u');
+const inputEmail      = document.getElementById('e');
 const inputContrasena = document.getElementById('p');
-const inputConfirmar = document.getElementById('c');
-const btnRegistro = document.getElementById('btn');
-const togglePass = document.getElementById('tp');
-const msgError = document.getElementById('mErr');
-const msgSuccess = document.getElementById('mOk');
+const inputConfirmar  = document.getElementById('c');
+const btnRegistro     = document.getElementById('btn');
+const togglePass      = document.getElementById('tp');
+const msgError        = document.getElementById('mErr');
+const msgSuccess      = document.getElementById('mOk');
 
-// URL del backend — cambiar a la URL de producción cuando se despliegue
 const API_URL = 'http://localhost:3000';
 
-// Colores y etiquetas para la barra de fuerza de contraseña
-const coloresFuerza = ['#8c3030', '#8c6020', '#908020', '#3a8c30'];
-const etiquetasFuerza = ['MUY DÉBIL', 'ACEPTABLE', 'BUENA', 'FUERTE'];
+/* ---------------------------------------------------------
+   CARRUSEL DE AVATARES
+--------------------------------------------------------- */
+const avatarOptions          = document.querySelectorAll('.avatar-option');
+const selectedAvatarDisplay  = document.getElementById('selectedAvatar');
+const avatarCarousel         = document.getElementById('avatarCarousel');
+const carouselTrack          = document.getElementById('carouselTrack');
 
-// --- Selector de avatar (carrusel) ---
-const avatarOptions = document.querySelectorAll('.avatar-option');
-const selectedAvatarDisplay = document.getElementById('selectedAvatar');
-const avatarCarousel = document.getElementById('avatarCarousel');
-const carouselTrack = document.getElementById('carouselTrack');
-let selectedAvatar = '🐭';
-let carouselIndex = 0;
-const visibles = 2; // avatares visibles a la vez
+let selectedAvatar = '🐭'; // Avatar seleccionado por defecto
+let carouselIndex  = 0;
+const visibles     = 2; // Número de avatares visibles a la vez en el carrusel
 
-// Abrir/cerrar carrusel al hacer click en el avatar
+// Abrir/cerrar carrusel al hacer clic en el avatar
 selectedAvatarDisplay.addEventListener('click', () => {
   avatarCarousel.classList.toggle('open');
 });
 
-// Cerrar si se hace click fuera
+// Cerrar carrusel si se hace clic fuera de él
 document.addEventListener('click', (e) => {
   if (!avatarCarousel.contains(e.target) && e.target !== selectedAvatarDisplay) {
     avatarCarousel.classList.remove('open');
   }
 });
 
-// Mover carrusel
+// Mover el carrusel hacia la izquierda o derecha
 function moverCarrusel(dir) {
   const total = avatarOptions.length;
   carouselIndex = Math.max(0, Math.min(carouselIndex + dir, total - visibles));
-  const itemWidth = 56;
   carouselTrack.style.transition = 'transform 0.2s ease';
-  carouselTrack.style.transform = `translateX(-${carouselIndex * itemWidth}px)`;
+  carouselTrack.style.transform  = `translateX(-${carouselIndex * 56}px)`;
 }
 
 document.getElementById('carouselPrev').addEventListener('click', (e) => {
   e.stopPropagation();
   moverCarrusel(-1);
 });
+
 document.getElementById('carouselNext').addEventListener('click', (e) => {
   e.stopPropagation();
   moverCarrusel(1);
 });
 
-// Seleccionar avatar
+// Seleccionar un avatar del carrusel
 avatarOptions.forEach(option => {
   option.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -66,8 +63,7 @@ avatarOptions.forEach(option => {
     option.classList.add('selected');
     selectedAvatar = option.dataset.avatar;
     selectedAvatarDisplay.textContent = selectedAvatar;
-
-    // Efecto y cierre
+    // Efecto de rebote al seleccionar
     selectedAvatarDisplay.style.transform = 'scale(1.2)';
     setTimeout(() => { selectedAvatarDisplay.style.transform = 'scale(1)'; }, 200);
     avatarCarousel.classList.remove('open');
@@ -75,11 +71,12 @@ avatarOptions.forEach(option => {
 });
 
 /* ---------------------------------------------------------
-   FUNCIÓN: actualiza el estado visual de un indicador de requisito
-   - id: id del elemento hint
-   - ok: true = cumplido, false = pendiente/fallido
-   - typed: true = el usuario ya ha escrito algo
+   VALIDACIÓN EN TIEMPO REAL
 --------------------------------------------------------- */
+const coloresFuerza   = ['#8c3030', '#8c6020', '#908020', '#3a8c30'];
+const etiquetasFuerza = ['MUY DÉBIL', 'ACEPTABLE', 'BUENA', 'FUERTE'];
+
+// Actualiza el icono y color de un indicador de requisito
 function actualizarHint(id, ok, typed) {
   const el = document.getElementById(id);
   el.classList.toggle('ok', ok);
@@ -87,24 +84,19 @@ function actualizarHint(id, ok, typed) {
   el.querySelector('.hico').textContent = ok ? '■' : (typed && !ok ? '✕' : '□');
 }
 
-/* ---------------------------------------------------------
-   FUNCIÓN: actualiza la barra de fuerza de la contraseña
-   según los criterios cumplidos
---------------------------------------------------------- */
+// Actualiza la barra de fuerza de contraseña
 function actualizarFuerza(valor) {
   let puntos = 0;
-  if (valor.length >= 8) puntos++;
-  if (/[A-Z]/.test(valor)) puntos++;
-  if (/[0-9]/.test(valor)) puntos++;
+  if (valor.length >= 8)            puntos++;
+  if (/[A-Z]/.test(valor))          puntos++;
+  if (/[0-9]/.test(valor))          puntos++;
   if (/[!@#$%^&*_\-]/.test(valor)) puntos++;
 
-  // Actualiza el color de cada segmento de la barra
   [1, 2, 3, 4].forEach(i => {
     document.getElementById('s' + i).style.background =
       i <= puntos ? coloresFuerza[puntos - 1] : '#1a1403';
   });
 
-  // Actualiza la etiqueta de fuerza
   const etiqueta = document.getElementById('sl');
   etiqueta.textContent = valor
     ? (etiquetasFuerza[puntos - 1] || 'MUY DÉBIL')
@@ -114,47 +106,50 @@ function actualizarFuerza(valor) {
     : '#2a1e08';
 }
 
-/* ---------------------------------------------------------
-   FUNCIÓN: valida todos los campos y activa/desactiva el botón
---------------------------------------------------------- */
+// Valida todos los campos y activa/desactiva el botón
 function validar() {
   const u = inputUsuario.value;
+  const e = inputEmail.value;
   const p = inputContrasena.value;
   const c = inputConfirmar.value;
 
-  const utipado = u.length > 0;
-  const ptipado = p.length > 0;
-  const ctipado = c.length > 0;
+  const ut = u.length > 0;
+  const et = e.length > 0;
+  const pt = p.length > 0;
+  const ct = c.length > 0;
 
-  // Validación del nombre de usuario
-  const uLongitud = u.length >= 3 && u.length <= 20;
+  // Nombre de usuario
+  const uLongitud   = u.length >= 3 && u.length <= 20;
   const uCaracteres = /^[a-zA-Z0-9_]*$/.test(u) && !/\s/.test(u);
-  actualizarHint('u1', uLongitud, utipado);
-  actualizarHint('u2', uCaracteres, utipado);
+  actualizarHint('u1', uLongitud,   ut);
+  actualizarHint('u2', uCaracteres, ut);
 
-  // Validación de la contraseña
-  const pLongitud = p.length >= 8;
+  // Email
+  const eValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+  actualizarHint('e1', eValido, et);
+
+  // Contraseña
+  const pLongitud  = p.length >= 8;
   const pMayuscula = /[A-Z]/.test(p);
-  const pNumero = /[0-9]/.test(p);
-  const pEspecial = /[!@#$%^&*_\-]/.test(p);
-  actualizarHint('p1', pLongitud, ptipado);
-  actualizarHint('p2', pMayuscula, ptipado);
-  actualizarHint('p3', pNumero, ptipado);
-  actualizarHint('p4', pEspecial, ptipado);
+  const pNumero    = /[0-9]/.test(p);
+  const pEspecial  = /[!@#$%^&*_\-]/.test(p);
+  actualizarHint('p1', pLongitud,  pt);
+  actualizarHint('p2', pMayuscula, pt);
+  actualizarHint('p3', pNumero,    pt);
+  actualizarHint('p4', pEspecial,  pt);
   actualizarFuerza(p);
 
-  // Validación de la confirmación
+  // Confirmación
   const coinciden = c === p && c.length > 0;
-  actualizarHint('c1', coinciden, ctipado);
+  actualizarHint('c1', coinciden, ct);
 
-  // Activa el botón solo si todo es válido
-  const formularioValido = uLongitud && uCaracteres && pLongitud && pMayuscula && pNumero && pEspecial && coinciden;
-  btnRegistro.disabled = !formularioValido;
-  return formularioValido;
+  const valido = uLongitud && uCaracteres && eValido && pLongitud && pMayuscula && pNumero && pEspecial && coinciden;
+  btnRegistro.disabled = !valido;
+  return valido;
 }
 
-// --- Escuchadores de eventos ---
 inputUsuario.addEventListener('input', validar);
+inputEmail.addEventListener('input', validar);
 inputContrasena.addEventListener('input', validar);
 inputConfirmar.addEventListener('input', validar);
 
@@ -164,18 +159,18 @@ inputConfirmar.addEventListener('input', validar);
 togglePass.addEventListener('click', () => {
   const mostrar = inputContrasena.type === 'password';
   inputContrasena.type = mostrar ? 'text' : 'password';
-  inputConfirmar.type = mostrar ? 'text' : 'password';
+  inputConfirmar.type  = mostrar ? 'text' : 'password';
   togglePass.textContent = mostrar ? 'OOO' : 'VER';
 });
 
 /* ---------------------------------------------------------
-   BOTÓN: enviar el formulario al backend
+   BOTÓN: enviar formulario al backend
 --------------------------------------------------------- */
 btnRegistro.addEventListener('click', async () => {
-  msgError.style.display = 'none';
+  msgError.style.display   = 'none';
   msgSuccess.style.display = 'none';
 
-  btnRegistro.disabled = true;
+  btnRegistro.disabled  = true;
   btnRegistro.innerHTML = 'CONECTANDO<span class="dots"></span>';
 
   try {
@@ -184,6 +179,7 @@ btnRegistro.addEventListener('click', async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         nombre_usuario: inputUsuario.value,
+        email: inputEmail.value,
         contrasena: inputContrasena.value,
         avatar: selectedAvatar
       })
@@ -192,21 +188,22 @@ btnRegistro.addEventListener('click', async () => {
     const datos = await respuesta.json();
 
     if (respuesta.ok) {
-      // Registro exitoso
+      // Guarda el nombre y avatar en localStorage para usarlos en otras páginas
+      localStorage.setItem('nombre_usuario', inputUsuario.value);
+      localStorage.setItem('avatar', selectedAvatar);
       msgSuccess.style.display = 'block';
-      inputUsuario.value = '';
+      inputUsuario.value    = '';
+      inputEmail.value      = '';
       inputContrasena.value = '';
-      inputConfirmar.value = '';
+      inputConfirmar.value  = '';
       validar();
     } else {
-      // Error devuelto por el servidor
-      msgError.textContent = '> ' + (datos.error || 'ERROR EN EL REGISTRO').toUpperCase();
+      msgError.textContent   = '> ' + (datos.error || 'ERROR EN EL REGISTRO').toUpperCase();
       msgError.style.display = 'block';
     }
 
   } catch (error) {
-    // Error de conexión
-    msgError.textContent = '> ERROR: SERVIDOR NO DISPONIBLE';
+    msgError.textContent   = '> ERROR: SERVIDOR NO DISPONIBLE';
     msgError.style.display = 'block';
   }
 
