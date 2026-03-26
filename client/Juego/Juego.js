@@ -198,14 +198,13 @@ const enemigos = [
         // Waypoints que recorren toda la sala en círculo
         patrol: [
             //DAmos muchos puntos diferentas para evitar que se choque mucho
-            {x: 80,  y: 80},    // esquina superior izquierda
-            {x: 240, y: 80},    // medio superior izquierda
-            {x: 480, y: 80},    // esquina superior derecha
-            {x: 480, y: 200},   // medio derecha arriba
-            {x: 480, y: 360},   // esquina inferior derecha
-            {x: 320, y: 360},   // medio inferior
-            {x: 80,  y: 360},   // esquina inferior izquierda
-            {x: 80,  y: 200},   // medio izquierda
+            {x: 80,  y: 80},   
+            {x: 320, y: 80},   
+            {x: 480, y: 80},   
+            {x: 480, y: 360},  
+            {x: 320, y: 360},  
+            {x: 80,  y: 360},  
+            {x: 80,  y: 80},
         ],
         pi: 0,        // índice del punto actual de patrulla (0 o 1)
         tipo: 'patrulla',  // ← este patrulla
@@ -228,6 +227,8 @@ const enemigos = [
 
 //Actualizamos posicion del enemigo
 function actualizarEnemigo(en) {
+    //Para combrobar donde se choca el malito
+    console.log('pos:', Math.floor(en.x/celda), Math.floor(en.y/celda));
     if (en.tipo === "patrulla") {
         //Sacamos punto destino actual de la patrulla
         const destino = en.patrol[en.pi];
