@@ -21,7 +21,7 @@ const mapa = [
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
   [1,0,0,1,1,0,0,0,0,0,1,1,0,0,0,1],
   [1,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1],
-  [1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
+  [1,0,3,0,0,0,1,0,0,1,0,0,0,0,0,1],
   [1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
   [1,0,0,1,1,0,0,0,0,0,0,1,1,0,0,1],
@@ -75,6 +75,17 @@ let nivel = 1;
 let estadoJuego = "jugando";// jugando o nivelCompletado o gameOver
 let invencible = false; //Esto lo hacemos para que pierda 1 vida por cada toque
 let timerInvencible = 0;
+let puertaDesbloqueada = false;
+
+// Array con los 3 personajes
+const personajes = [
+    { nombre: 'Raton A', w: 26, h: 26, speed: 3,  color: '#e8c040' },
+    { nombre: 'Raton B', w: 18, h: 18, speed: 4,  color: '#c8a030' },
+    { nombre: 'Raton C', w: 34, h: 34, speed: 2,  color: '#e8f080' }
+];
+
+// Índice del personaje activo
+let personajeActivo = 0;
 
 //Comprobamos si el enemigo toca al jugador (AABB como hacemos con la colision)
 function seToca(ax, ay, aw, ah, bx, by, bw, bh) {
@@ -96,7 +107,17 @@ function comprobarPuerta() {
     }
     return false;   
 }
+// Comprobamos si el jugador pisa el botón
+function comprobarBoton() {
+    // Posición del botón en el mapa — fila 5, columna 2
+    const botonX = 2 * celda;
+    const botonY = 5 * celda;
 
+    if (seToca(jugador.x, jugador.y, jugador.w, jugador.h,botonX, botonY, celda, celda)) {
+        return true;
+    }
+    return false;
+}
 //Dibujamos pantalla de nivel completado
 function dibujarNivelCompletado() {
     // Fondo oscuro
@@ -229,6 +250,7 @@ const enemigos = [
 function actualizarEnemigo(en) {
     //Para combrobar donde se choca el malito
     console.log('pos:', Math.floor(en.x/celda), Math.floor(en.y/celda));
+
     if (en.tipo === "patrulla") {
         //Sacamos punto destino actual de la patrulla
         const destino = en.patrol[en.pi];
@@ -265,8 +287,10 @@ function actualizarEnemigo(en) {
             // Jugador dentro del rango — perseguir
             const nx = dx / distancia;
             const ny = dy / distancia;
+            //Multiplicamos la dirección por la velocidad. El cazador se mueve exactamente `speed` píxeles hacia el jugador cada frame, sin importar lo lejos que esté.
             const nuevaX = en.x + nx * en.speed;
             const nuevaY = en.y + ny * en.speed;
+            //Comprobamos que no haya una pared
             if (!hayColision(nuevaX, en.y, en.w, en.h)) en.x = nuevaX;
             if (!hayColision(en.x, nuevaY, en.w, en.h)) en.y = nuevaY;
         } else {
@@ -292,6 +316,7 @@ const teclas = {}
 
 document.addEventListener('keydown', function (e) {
     teclas[e.key] = true;//Cuando pulsas una tecla se pone true
+    
     // Si estamos en game over y pulsan R reiniciamos
     if (e.key === 'r' || e.key === 'R') {
         if (estadoJuego === 'gameOver') {
@@ -304,6 +329,23 @@ document.addEventListener('keydown', function (e) {
             estadoJuego = 'jugando';
         }
     }
+
+    // Si pulsan Tab cambiamos de personaje
+    if (e.key === 'Tab') {
+        e.preventDefault(); // evita que el Tab cambie el foco del navegador
+        
+        // Pasamos al siguiente personaje, si es el último volvemos al primero
+        personajeActivo = (personajeActivo + 1) % personajes.length;
+        
+        // Actualizamos las propiedades del jugador con el nuevo personaje
+        const p = personajes[personajeActivo];
+        jugador.w = p.w;
+        jugador.h = p.h;
+        jugador.speed = p.speed;
+        
+        // Actualizamos el HUD con el nombre del personaje
+        document.getElementById('hud-char-name').textContent = p.nombre;
+    }
 })
 document.addEventListener('keyup', function(e) {
     teclas[e.key] = false; // cuando la sueltas se pone false
@@ -314,6 +356,8 @@ document.addEventListener('keyup', function(e) {
         jugador.x = 80;
         jugador.y = 80;
         estadoJuego = 'jugando';
+        puertaDesbloqueada = false;
+        mapa[5][2] = 3;
     }
 });
 
@@ -326,7 +370,7 @@ function esSolido(tx,ty) {
     return mapa[ty][tx] === 1;
 }
 
-//Comprovamos si un rectangulo choca con alguna pared
+//Comprobamos si un rectangulo choca con alguna pared
 function hayColision(x,y,w,h) {
     const esquinas = [
         [x, y],
@@ -334,7 +378,7 @@ function hayColision(x,y,w,h) {
         [x, y+h-1],
         [x+w-1, y+h-1]
     ]
-    
+     
     //Cada vuelta roma valores de una esquina
     for (const esquina of esquinas) {
         const cx = esquina[0];
@@ -419,16 +463,39 @@ function loop() {
                 ctx.textAlign = 'center';
                 ctx.fillText('►', x + celda/2, y + celda/2 + 6);
                 ctx.textAlign = 'left';
-            } else {
+            } else if (mapa[i][z] === 3) {
+                // Botón — color rojo apagado
+                ctx.fillStyle = '#3d0f0f';
+                ctx.fillRect(x, y, celda, celda);
+
+                // Borde
+                ctx.strokeStyle = '#8c3030';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x + 2, y + 2, celda - 4, celda - 4);
+
+                // Símbolo del botón
+                ctx.fillStyle = '#8c3030';
+                ctx.font = '18px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText('!', x + celda/2, y + celda/2 + 6);
+                ctx.textAlign = 'left';
+            }else  {
                 // Suelo
                 ctx.fillStyle = (i + z) % 2 === 0 ? '#0a0800' : '#080601';
                 ctx.fillRect(x, y, celda, celda);
             }
         }
     }
-    //Dibujamos jugador 
-    ctx.fillStyle = '#e8c040';
+    // Dibujamos al jugador con el color del personaje activo
+    const p = personajes[personajeActivo];
+    ctx.fillStyle = p.color;
     ctx.fillRect(jugador.x, jugador.y, jugador.w, jugador.h);
+
+    // Borde pa que se vea bien
+    ctx.strokeStyle = '#4a3510';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(jugador.x, jugador.y, jugador.w, jugador.h);
+
     //Dibujamos enemigo
     enemigos.forEach(function(en) {
         ctx.fillStyle = en.color;
@@ -466,13 +533,27 @@ function loop() {
     }
 
     //Comprobamos si el jugador ha ganado
-    if (comprobarPuerta()) {
+    // Comprobamos si el jugador pisa el botón
+    if (comprobarBoton()) {
+        puertaDesbloqueada = true;
+
+        // Cambiamos el 3 por 0 en el mapa para que desaparezca el botón
+        mapa[5][2] = 0;
+    }
+    // La puerta solo funciona si está desbloqueada
+    if (puertaDesbloqueada && comprobarPuerta()) {
         estadoJuego = 'nivelCompletado';
     }
     //Pantalla de nivel completado
     if (estadoJuego === 'nivelCompletado') {
         dibujarNivelCompletado();
     }
+
+
+
+
+
+
 
 
 
