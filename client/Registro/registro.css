@@ -35,6 +35,25 @@ body {
   z-index: 0;
 }
 
+/* --- Lluvia --- */
+.rain {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+.raindrop {
+  position: absolute;
+  top: -20px;
+  width: 1px;
+  background: linear-gradient(transparent, rgba(200,160,48,0.25));
+  animation: fall linear infinite;
+  border-radius: 0 0 1px 1px;
+}
+@keyframes fall {
+  to { transform: translateY(110vh); }
+}
+
 /* --- Silueta ciudad --- */
 .city-silhouette {
   position: fixed; bottom: 0; left: 0; right: 0; height: 220px;
@@ -112,6 +131,20 @@ body {
   animation: fadein 0.8s ease both;
 }
 
+/* --- Gato SVG --- */
+.cat-svg {
+  width: 90px;
+  height: 76px;
+  display: block;
+  margin: 0 auto 10px;
+  filter: drop-shadow(0 0 6px rgba(200,160,48,0.35));
+  animation: catglow 3s ease-in-out infinite;
+}
+@keyframes catglow {
+  0%,100% { filter: drop-shadow(0 0 6px rgba(200,160,48,0.35)); }
+  50%     { filter: drop-shadow(0 0 14px rgba(200,160,48,0.7)) drop-shadow(0 0 28px rgba(200,160,48,0.25)); }
+}
+
 @keyframes fadein {
   from { opacity: 0; transform: translateY(-10px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -157,10 +190,13 @@ body {
   width: 100%;
   background: rgba(10,8,3,0.92);
   border: 1px solid #2e2006;
-  border-top: 2px solid var(--gold);
   backdrop-filter: blur(4px);
   position: relative;
   animation: slidein 0.6s ease both 0.2s;
+  box-shadow:
+    0 0 0 1px #1a1203,
+    0 20px 60px rgba(0,0,0,0.8),
+    0 0 40px rgba(200,160,48,0.04) inset;
 }
 
 @keyframes slidein {
@@ -168,15 +204,29 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.card::before, .card::after {
-  content: '◆';
-  position: absolute;
-  color: var(--gold);
-  font-size: 10px;
-  line-height: 1;
+/* Esquinas decorativas */
+.card::before {
+  content: '';
+  position: absolute; inset: -1px;
+  background:
+    linear-gradient(var(--gold), var(--gold)) top left    / 20px 2px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) top left    / 2px 20px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) top right   / 20px 2px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) top right   / 2px 20px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) bottom left / 20px 2px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) bottom left / 2px 20px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) bottom right/ 20px 2px no-repeat,
+    linear-gradient(var(--gold), var(--gold)) bottom right/ 2px 20px no-repeat;
+  pointer-events: none;
+  z-index: 1;
+  animation: cornerglow 4s ease-in-out infinite;
 }
-.card::before { top: -7px; left: 10px; }
-.card::after  { top: -7px; right: 10px; }
+@keyframes cornerglow {
+  0%,100% { opacity: 0.7; filter: drop-shadow(0 0 2px rgba(200,160,48,0.3)); }
+  50%     { opacity: 1.0; filter: drop-shadow(0 0 6px rgba(200,160,48,0.6)); }
+}
+
+.card::after { display: none; }
 
 .card-inner {
   padding: 2rem 2.2rem 1.8rem;
@@ -208,6 +258,7 @@ body {
   font-size: 36px;
   cursor: pointer;
   transition: transform 0.2s, border-color 0.2s;
+  user-select: none;
 }
 .rat-avatar:hover {
   transform: scale(1.05);
@@ -240,14 +291,26 @@ body {
   padding: 4px 8px;
   transition: all 0.2s;
   flex-shrink: 0;
+  font-family: 'VT323', monospace;
+  line-height: 1;
 }
 .carousel-arrow:hover { background: rgba(200,160,48,0.15); }
+
+/* El track tiene un viewport fijo que muestra exactamente 2 items:
+   cada item es 50px + 6px de gap = 56px por item, 2 items = 112px */
+.carousel-viewport {
+  width: 112px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
 
 .carousel-track {
   display: flex;
   gap: 6px;
-  overflow: hidden;
-  width: 116px;
+  /* El ancho total = número de items × (50px + 6px gap) - 6px último gap */
+  /* Se controla por JS con translateX */
+  transition: transform 0.2s ease;
+  will-change: transform;
 }
 
 .avatar-option {
@@ -259,6 +322,8 @@ body {
   cursor: pointer;
   transition: all 0.2s;
   display: flex; align-items: center; justify-content: center;
+  font-family: 'VT323', monospace;
+  line-height: 1;
 }
 .avatar-option:hover { border-color: rgba(200,160,48,0.6); transform: scale(1.1); }
 .avatar-option.selected {

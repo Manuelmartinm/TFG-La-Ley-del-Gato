@@ -14,6 +14,26 @@ const msgSuccess      = document.getElementById('mOk');
 const API_URL = 'http://localhost:3000';
 
 /* ---------------------------------------------------------
+   LLUVIA GENERATIVA
+--------------------------------------------------------- */
+(function crearLluvia() {
+  const container = document.getElementById('rain');
+  if (!container) return;
+  for (let i = 0; i < 60; i++) {
+    const drop = document.createElement('div');
+    drop.className = 'raindrop';
+    drop.style.cssText = `
+      left: ${Math.random() * 100}%;
+      height: ${10 + Math.random() * 30}px;
+      opacity: ${0.1 + Math.random() * 0.3};
+      animation-duration: ${0.8 + Math.random() * 1.4}s;
+      animation-delay: ${Math.random() * 2}s;
+    `;
+    container.appendChild(drop);
+  }
+})();
+
+/* ---------------------------------------------------------
    CARRUSEL DE AVATARES
 --------------------------------------------------------- */
 const avatarOptions          = document.querySelectorAll('.avatar-option');
@@ -21,9 +41,29 @@ const selectedAvatarDisplay  = document.getElementById('selectedAvatar');
 const avatarCarousel         = document.getElementById('avatarCarousel');
 const carouselTrack          = document.getElementById('carouselTrack');
 
-let selectedAvatar = '🐭'; // Avatar seleccionado por defecto
-let carouselIndex  = 0;
-const visibles     = 2; // Número de avatares visibles a la vez en el carrusel
+// Medidas: cada item es 50px de ancho + 6px de gap
+const ITEM_WIDTH  = 50;
+const ITEM_GAP    = 6;
+const ITEM_STEP   = ITEM_WIDTH + ITEM_GAP; // 56px por posición
+const VISIBLES    = 2;                     // items visibles a la vez
+const TOTAL       = avatarOptions.length;  // 6 avatares
+
+let selectedAvatar = '🐭';
+let carouselIndex  = 0;      // índice del primer item visible (0-based)
+
+// Aplica el desplazamiento del track sin sobrepasar los límites
+function actualizarCarrusel() {
+  const maxIndex = Math.max(0, TOTAL - VISIBLES); // 4
+  carouselIndex  = Math.max(0, Math.min(carouselIndex, maxIndex));
+  carouselTrack.style.transform = `translateX(-${carouselIndex * ITEM_STEP}px)`;
+
+  // Deshabilitar flechas en los extremos para dar feedback visual
+  document.getElementById('carouselPrev').style.opacity = carouselIndex === 0        ? '0.3' : '1';
+  document.getElementById('carouselNext').style.opacity = carouselIndex >= maxIndex  ? '0.3' : '1';
+}
+
+// Inicializar estado de flechas
+actualizarCarrusel();
 
 // Abrir/cerrar carrusel al hacer clic en el avatar
 selectedAvatarDisplay.addEventListener('click', () => {
@@ -37,22 +77,16 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// Mover el carrusel hacia la izquierda o derecha
-function moverCarrusel(dir) {
-  const total = avatarOptions.length;
-  carouselIndex = Math.max(0, Math.min(carouselIndex + dir, total - visibles));
-  carouselTrack.style.transition = 'transform 0.2s ease';
-  carouselTrack.style.transform  = `translateX(-${carouselIndex * 56}px)`;
-}
-
 document.getElementById('carouselPrev').addEventListener('click', (e) => {
   e.stopPropagation();
-  moverCarrusel(-1);
+  carouselIndex--;
+  actualizarCarrusel();
 });
 
 document.getElementById('carouselNext').addEventListener('click', (e) => {
   e.stopPropagation();
-  moverCarrusel(1);
+  carouselIndex++;
+  actualizarCarrusel();
 });
 
 // Seleccionar un avatar del carrusel
@@ -63,9 +97,12 @@ avatarOptions.forEach(option => {
     option.classList.add('selected');
     selectedAvatar = option.dataset.avatar;
     selectedAvatarDisplay.textContent = selectedAvatar;
+
     // Efecto de rebote al seleccionar
-    selectedAvatarDisplay.style.transform = 'scale(1.2)';
+    selectedAvatarDisplay.style.transition = 'transform 0.1s ease';
+    selectedAvatarDisplay.style.transform  = 'scale(1.2)';
     setTimeout(() => { selectedAvatarDisplay.style.transform = 'scale(1)'; }, 200);
+
     avatarCarousel.classList.remove('open');
   });
 });
@@ -188,7 +225,6 @@ btnRegistro.addEventListener('click', async () => {
     const datos = await respuesta.json();
 
     if (respuesta.ok) {
-      // Guarda el nombre y avatar en localStorage para usarlos en otras páginas
       localStorage.setItem('nombre_usuario', inputUsuario.value);
       localStorage.setItem('avatar', selectedAvatar);
       msgSuccess.style.display = 'block';
