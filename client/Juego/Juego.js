@@ -75,6 +75,7 @@ let nivel = 1;
 let estadoJuego = "jugando";// jugando o nivelCompletado o gameOver
 let invencible = false; //Esto lo hacemos para que pierda 1 vida por cada toque
 let timerInvencible = 0;
+let flash = 0;
 let puertaDesbloqueada = false;
 
 // Array con los 3 personajes
@@ -205,6 +206,15 @@ function dibujarGameOver() {
     ctx.fillText('PULSA R PARA REINICIAR', w/2, 275);
 
     ctx.textAlign = 'left';
+}
+// Dibujamos flash rojo encima de todo cuando recibimos daño
+function dibujarFlash() {
+    if (flash > 0) {
+        // Cuanto más alto el flash más opaco es el rojo
+        ctx.fillStyle = `rgba(180, 0, 0, ${flash / 10 * 0.4})`;
+        ctx.fillRect(0, 0, w, h);
+        flash--; // bajamos el flash cada frame
+    }
 }
 //Creamos enemigo
 const enemigos = [
@@ -505,7 +515,8 @@ function loop() {
         ctx.lineWidth = 1;
         ctx.strokeRect(en.x, en.y, en.w, en.h);
     });
-
+    // Dibujamos flash rojo si hemos recibido daño
+    dibujarFlash();
     //Comprobamos si algun enemigo toca al jugador
     if (!invencible) {
         enemigos.forEach(function (en) {
@@ -513,10 +524,9 @@ function loop() {
                 vidas--;
                 //Actualizamos las vidas en el hud
                 document.getElementById('hud-lives-val').textContent = vidas;
-
                 invencible = true;
                 timerInvencible = 120 // lo mide por segundos ahora mismo 2 segundos
-
+                flash = 10; //Duracion del flash en frames
                 // Si no quedan vidas pasamos a game over
                 if (vidas <= 0) {
                     estadoJuego = 'gameOver';
