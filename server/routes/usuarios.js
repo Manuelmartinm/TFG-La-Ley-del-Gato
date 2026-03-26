@@ -1,8 +1,8 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const crypto = require('crypto'); // Módulo nativo de Node para generar tokens únicos
+const crypto = require('crypto');
 const Usuario = require('../models/Usuario');
-const { enviarEmailVerificacion } = require('../utils/email'); // Importa la función de email
+const { enviarEmailVerificacion } = require('../utils/email');
 
 const router = express.Router();
 
@@ -56,7 +56,6 @@ router.post('/registro', async (req, res) => {
 // GET /usuarios/verificar/:token — verifica el email del usuario
 router.get('/verificar/:token', async (req, res) => {
   try {
-    // Busca el usuario con ese token
     const usuario = await Usuario.findOne({ token_verificacion: req.params.token });
 
     if (!usuario) {
@@ -68,7 +67,6 @@ router.get('/verificar/:token', async (req, res) => {
     usuario.token_verificacion = null;
     await usuario.save();
 
-    // Redirige a una página de éxito
     res.send(`
       <html>
       <head><meta charset="UTF-8"></head>
@@ -77,7 +75,7 @@ router.get('/verificar/:token', async (req, res) => {
           <div style="font-size:64px">🐭</div>
           <h1 style="letter-spacing:4px;font-size:18px">¡CUENTA VERIFICADA!</h1>
           <p style="color:#a07830;letter-spacing:2px">Ya puedes acceder a todas las funciones del sistema</p>
-          <a href="/login.html" style="color:#c8a030;letter-spacing:2px">▶ INICIAR SESIÓN</a>
+          <a href="/login/login.html" style="color:#c8a030;letter-spacing:2px">▶ INICIAR SESIÓN</a>
         </div>
       </body>
       </html>
@@ -89,14 +87,26 @@ router.get('/verificar/:token', async (req, res) => {
 });
 
 // ─── LOGIN ────────────────────────────────────────────────────────────────────
-// POST /usuarios/login — inicia sesión con un usuario existente
+// POST /usuarios/login — inicia sesión con usuario o email
 router.post('/login', async (req, res) => {
   try {
-    const { nombre_usuario, contrasena } = req.body;
+    const { identificador, contrasena } = req.body;
 
-    const usuario = await Usuario.findOne({ nombre_usuario });
+    // Busca por nombre_usuario O por email
+    const usuario = await Usuario.findOne({
+      $or: [
+        { nombre_usuario: identificador },
+        { email: identificador }
+      ]
+    });
+
     if (!usuario) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Comprueba si el email está verificado
+    if (!usuario.email_verificado) {
+      return res.status(401).json({ error: 'Debes verificar tu email antes de iniciar sesión' });
     }
 
     const contrasenaCorrecta = await bcrypt.compare(contrasena, usuario.hash_contrasena);
@@ -107,9 +117,42 @@ router.post('/login', async (req, res) => {
     usuario.ultimo_acceso = Date.now();
     await usuario.save();
 
-    res.status(200).json({ mensaje: 'Login correcto', usuario });
+    res.status(200).json({
+      mensaje: 'Login correcto',
+      nombre_usuario: usuario.nombre_usuario,
+      avatar: usuario.avatar,
+      token: usuario._id
+    });
+
   } catch (error) {
     res.status(500).json({ error: 'Error al iniciar sesión' });
+  }
+});
+
+// ─── RECUPERAR CONTRASEÑA ─────────────────────────────────────────────────────
+// POST /usuarios/recuperar — envía email de recuperación
+router.post('/recuperar', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const usuario = await Usuario.findOne({ email });
+    if (!usuario) {
+      // No revelamos si el email existe o no por seguridad
+      return res.status(200).json({ mensaje: 'Si el email existe recibirás un código' });
+    }
+
+    const token_recuperacion = crypto.randomBytes(32).toString('hex');
+    usuario.token_verificacion = token_recuperacion;
+    await usuario.save();
+
+    const { enviarEmailRecuperacion } = require('../utils/email');
+    await enviarEmailRecuperacion(email, usuario.nombre_usuario, token_recuperacion);
+
+    res.status(200).json({ mensaje: 'Si el email existe recibirás un código' });
+
+  } catch (error) {
+    console.log('ERROR DETALLADO:', error.message);
+    res.status(500).json({ error: 'Error al procesar la solicitud' });
   }
 });
 

@@ -197,7 +197,7 @@ btnLogin.addEventListener('click', async () => {
 
       // Redirigir después de un momento
       setTimeout(() => {
-        window.location.href = '../../index.html';
+        window.location.href = '../PaginaPrincipal/principal.html';
       }, 1200);
 
     } else {

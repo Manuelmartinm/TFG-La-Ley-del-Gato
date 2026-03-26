@@ -233,6 +233,9 @@ btnRegistro.addEventListener('click', async () => {
       inputContrasena.value = '';
       inputConfirmar.value  = '';
       validar();
+      setTimeout(() => {
+        window.location.href = '../login/login.html';
+      }, 2000);
     } else {
       msgError.textContent   = '> ' + (datos.error || 'ERROR EN EL REGISTRO').toUpperCase();
       msgError.style.display = 'block';

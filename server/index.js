@@ -1,31 +1,36 @@
-const express = require('express'); // Importa Express para crear el servidor
-const mongoose = require('mongoose'); // Importa Mongoose para conectar con MongoDB
-const cors = require('cors'); // Importa CORS para permitir comunicación entre frontend y backend
-require('dotenv').config(); // Carga las variables del archivo .env
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const path = require('path');
+require('dotenv').config();
 
-const usuariosRutas = require('./routes/usuarios'); // Importa las rutas de usuarios
+const usuariosRutas = require('./routes/usuarios');
 
-const app = express(); // Crea la aplicación Express
+const app = express();
 
-// Middlewares — funciones que procesan las peticiones antes de que lleguen al servidor
-app.use(cors()); // Permite que el juego se comunique con el servidor
-app.use(express.json()); // Permite que el servidor entienda JSON
+// Middlewares
+app.use(cors());
+app.use(express.json());
 
-// Conexión a MongoDB usando la URL guardada en el .env
+// Sirve los archivos estáticos del cliente
+// Así /client/login/login.html es accesible desde el navegador
+app.use(express.static(path.join(__dirname, '../client')));
+
+// Conexión a MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ Conectado a MongoDB'))
   .catch((err) => console.log('❌ Error al conectar:', err));
 
-// Rutas — cada ruta tiene un prefijo para organizarlas
-app.use('/usuarios', usuariosRutas); // Todas las rutas de usuarios empiezan por /usuarios
+// Rutas de la API
+app.use('/usuarios', usuariosRutas);
 
-// Ruta de prueba para verificar que el servidor funciona
+// Ruta raíz — redirige al login
 app.get('/', (req, res) => {
-  res.send('Servidor de La Ley del Gato funcionando 🐱');
+  res.redirect('/login/login.html');
 });
 
-// Arranca el servidor en el puerto definido en .env o en el 3000 por defecto
+// Arranca el servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log('🚀 Servidor corriendo en el puerto ${PORT}');
+  console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
 });
