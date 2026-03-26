@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Ley del Gato</title>
+    <link rel="stylesheet" href="juego.css">
+    <script src="juego.js" defer></script>
+</head>
+<body>
+    <!--Info Juego-->
+    <div id="hud">
+        <span>Personaje: <strong id="hud-char-name">Raton A</strong></span>
+        <span>Vidas: <strong id="hud-lives-val">3</strong></span>
+        <span>Puntos: <strong id="hud-score-val">0</strong></span>
+        <span>Nivel: <strong id="hud-level-val">1</strong></span>
+    </div>
+
+    <!-- Pizarra juego -->
+    <canvas id="canvasJuego" width="640" height="480"></canvas>
+
+    <!-- Controles visibles para el usuario -->
+    <p id="controles">WASD / Flechas — mover &nbsp;|&nbsp; Tab — cambiar personaje &nbsp;|&nbsp; R — reiniciar</p>
+
+</body>
+</html>
