@@ -184,6 +184,14 @@ btnLogin.addEventListener('click', async () => {
       if (datos.token) {
         localStorage.setItem('token', datos.token);
       }
+      if (datos.email) {
+  localStorage.setItem('email', datos.email);
+}
+localStorage.setItem('email_verificado', datos.email_verificado ? 'true' : 'false');
+if (datos.fecha_creacion) {
+  const fecha = new Date(datos.fecha_creacion);
+  localStorage.setItem('fecha_registro', `${fecha.getDate().toString().padStart(2,'0')}/${(fecha.getMonth()+1).toString().padStart(2,'0')}/${fecha.getFullYear()}`);
+}
 
       // Recordar usuario si está marcado
       if (rememberCb.checked) {

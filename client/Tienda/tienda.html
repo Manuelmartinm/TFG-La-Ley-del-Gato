@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Ley del Gato — Tienda</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tienda.css">
+</head>
+<body>
+  <div class="scene"></div>
+  <div class="vignette"></div>
+  <div class="scanlines"></div>
+
+  <div class="main">
+
+    <div class="page-header">
+      <a href="../PaginaPrincipal/principal.html" class="back-btn">◀ VOLVER</a>
+      <div class="logo-area">
+        <div class="logo-text">LA LEY DEL GATO</div>
+        <div class="logo-sub">MERCADO NEGRO</div>
+      </div>
+    </div>
+
+    <!-- Barra de monedas -->
+    <div class="coins-bar">
+      <div class="coins-bar-left">
+        <span class="coins-icon">💰</span>
+        <div>
+          <div class="coins-label">SALDO DISPONIBLE</div>
+          <div class="coins-amount" id="coinsAmount">0</div>
+        </div>
+      </div>
+      <div class="coins-bar-right">
+        <button class="btn-premium" id="btnPremium">⭐ HACERSE PREMIUM</button>
+      </div>
+    </div>
+
+    <!-- Tabs tienda normal / premium -->
+    <div class="shop-tabs">
+      <button class="shop-tab active" data-tab="normal">🏪 TIENDA NORMAL</button>
+      <button class="shop-tab" data-tab="premium">⭐ TIENDA PREMIUM</button>
+    </div>
+
+    <!-- Filtros -->
+    <div class="cat-filters">
+      <button class="cat-btn active" data-cat="todo">TODO</button>
+      <button class="cat-btn" data-cat="SKIN">👗 SKINS</button>
+      <button class="cat-btn" data-cat="UTIL">🔧 ÚTILES</button>
+      <button class="cat-btn" data-cat="COSMETICO">✨ COSMÉTICOS</button>
+    </div>
+
+    <div class="shop-layout">
+
+      <!-- Grid de items de la tienda -->
+      <div class="shop-grid" id="shopGrid">
+        <!-- Se rellena por JS -->
+      </div>
+
+      <!-- Panel de compra -->
+      <div class="buy-panel" id="buyPanel">
+        <div class="buy-empty" id="buyEmpty">
+          <div class="buy-empty-icon">🏪</div>
+          <div class="buy-empty-text">SELECCIONA UN OBJETO<br>PARA COMPRARLO</div>
+        </div>
+        <div class="buy-content" id="buyContent" style="display:none">
+          <div class="buy-item-icon" id="buyIcon"></div>
+          <div class="buy-item-name" id="buyName"></div>
+          <div class="buy-item-cat"  id="buyCat"></div>
+          <div class="buy-item-rar"  id="buyRar"></div>
+          <div class="buy-divider"></div>
+          <div class="buy-item-desc" id="buyDesc"></div>
+          <div class="buy-item-effect" id="buyEffect" style="display:none">
+            <div class="buy-effect-title">⚡ EFECTO ESPECIAL</div>
+            <div id="buyEffectDesc"></div>
+          </div>
+          <div class="buy-divider"></div>
+          <div class="buy-price-block">
+            <div class="buy-price-coins" id="buyPriceCoins" style="display:none">
+              <span class="price-icon">💰</span>
+              <span class="price-val" id="priceCoins">0</span>
+              <span class="price-label">MONEDAS</span>
+            </div>
+            <div class="buy-price-real" id="buyPriceReal" style="display:none">
+              <span class="price-icon">💶</span>
+              <span class="price-val" id="priceReal">0.00</span>
+              <span class="price-label">€ REAL</span>
+            </div>
+          </div>
+          <div id="msgCompra" class="msg" style="display:none"></div>
+          <button class="btn-buy" id="btnBuy">▶ COMPRAR</button>
+          <button class="btn-buy-real" id="btnBuyReal" style="display:none">💶 COMPRAR CON DINERO REAL</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="foot">
+      <span>LA LEY DEL GATO © 2025</span>
+      <span id="shopCount">0 ARTÍCULOS</span>
+    </div>
+
+  </div>
+
+  <!-- Modal premium -->
+  <div class="modal-overlay" id="premiumModal">
+    <div class="modal premium-modal">
+      <div class="premium-icon">⭐</div>
+      <div class="modal-title">ACCESO PREMIUM</div>
+      <div class="modal-desc">Desbloquea la tienda premium, recompensas exclusivas y ventajas únicas en el juego.</div>
+      <div class="premium-price">9,99€ — PAGO ÚNICO</div>
+      <div class="modal-btns">
+        <button class="btn-modal-cancel" id="premiumClose">CANCELAR</button>
+        <button class="btn-modal-confirm" id="premiumBuy">⭐ COMPRAR PREMIUM</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="tienda.js"></script>
+</body>
+</html>

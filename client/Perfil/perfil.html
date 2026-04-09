@@ -6,7 +6,6 @@
   <title>La Ley del Gato — Ficha de Agente</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="perfil.css">
-  <script src="perfil.js"></script>
 </head>
 <body>
 
@@ -19,7 +18,7 @@
 
     <!-- Header -->
     <div class="page-header">
-      <a href="menu.html" class="back-btn">◀ VOLVER</a>
+      <a href="../PaginaPrincipal/principal.html" class="back-btn">◀ VOLVER</a>
       <div class="logo-area">
         <div class="logo-text">LA LEY DEL GATO</div>
         <div class="logo-sub">FICHA DE AGENTE</div>
@@ -41,8 +40,9 @@
             <div class="avatar-big-wrap">
               <div class="avatar-big" id="avatarDisplay" title="Haz clic para cambiar">🐭</div>
               <div class="avatar-big-hint">▲ CLIC PARA CAMBIAR</div>
+              <!-- Carrusel de avatares -->
               <div class="avatar-carousel" id="avatarCarousel">
-                <button class="carousel-arrow" id="carouselPrev">◀</button>
+                <button class="carousel-arrow" id="carouselPrev" type="button">◀</button>
                 <div class="carousel-track" id="carouselTrack">
                   <button type="button" class="avatar-option selected" data-avatar="🐭">🐭</button>
                   <button type="button" class="avatar-option" data-avatar="🐀">🐀</button>
@@ -51,9 +51,13 @@
                   <button type="button" class="avatar-option" data-avatar="🦔">🦔</button>
                   <button type="button" class="avatar-option" data-avatar="🐿️">🐿️</button>
                 </div>
-                <button class="carousel-arrow" id="carouselNext">▶</button>
+                <button class="carousel-arrow" id="carouselNext" type="button">▶</button>
               </div>
             </div>
+
+            <!-- Nombre del agente -->
+            <div class="agent-name-display" id="agentNameDisplay">AGENTE</div>
+            <div class="agent-role-display" id="agentRoleDisplay">NOVATO</div>
 
           </div>
         </div>
@@ -83,6 +87,12 @@
             <div class="stat-row">
               <span class="stat-label">REGISTRO</span>
               <span class="stat-value" id="statFecha">--/--/----</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">EMAIL</span>
+              <span class="stat-value" id="statEmail">
+                <span class="badge-unverified" id="emailBadge">NO VERIFICADO</span>
+              </span>
             </div>
 
           </div>
@@ -130,12 +140,12 @@
           </div>
         </div>
 
-        <!-- Sección contraseña (colapsable) -->
+        <!-- Sección contraseña colapsable -->
         <div class="section-toggle" id="passToggle">
           <div class="section-toggle-title">
             <span class="card-title-num">03</span> CAMBIAR CONTRASEÑA
           </div>
-          <span class="section-toggle-arrow">▶</span>
+          <span class="section-toggle-arrow" id="passArrow">▶</span>
         </div>
         <div class="section-body" id="passBody">
 
@@ -177,7 +187,9 @@
               <input type="password" id="inputPassConfirm" placeholder="repite la nueva" maxlength="30"/>
             </div>
             <div class="hints">
-              <div class="hint" id="c1" style="grid-column:1/-1"><span class="hico">□</span>LAS CONTRASEÑAS DEBEN COINCIDIR</div>
+              <div class="hint" id="c1" style="grid-column:1/-1">
+                <span class="hico">□</span>LAS CONTRASEÑAS DEBEN COINCIDIR
+              </div>
             </div>
           </div>
 
@@ -196,8 +208,7 @@
 
   </div>
 
-
-
-
+  <!-- Script al final del body para que el HTML ya esté cargado -->
+  <script src="perfil.js"></script>
 </body>
 </html>

@@ -121,7 +121,10 @@ router.post('/login', async (req, res) => {
       mensaje: 'Login correcto',
       nombre_usuario: usuario.nombre_usuario,
       avatar: usuario.avatar,
-      token: usuario._id
+      token: usuario._id,
+      email: usuario.email,
+      email_verificado: usuario.email_verificado,
+      fecha_creacion: usuario.fecha_creacion
     });
 
   } catch (error) {
@@ -169,5 +172,31 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ error: 'Error al obtener el usuario' });
   }
 });
+// ─── ACTUALIZAR PERFIL ────────────────────────────────────────────────────────
+// PUT /usuarios/perfil — actualiza nombre, avatar, email y/o contraseña
+router.put('/perfil', async (req, res) => {
+  try {
+    const { nombre_usuario, avatar, email, contrasena_actual, contrasena_nueva } = req.body;
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'No autorizado' });
 
+    const usuario = await Usuario.findById(token);
+    if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+    if (nombre_usuario) usuario.nombre_usuario = nombre_usuario;
+    if (avatar !== undefined) usuario.avatar = avatar;
+    if (email) usuario.email = email;
+
+    if (contrasena_nueva) {
+      const ok = await bcrypt.compare(contrasena_actual, usuario.hash_contrasena);
+      if (!ok) return res.status(401).json({ error: 'Contraseña actual incorrecta' });
+      usuario.hash_contrasena = await bcrypt.hash(contrasena_nueva, 10);
+    }
+
+    await usuario.save();
+    res.status(200).json({ mensaje: 'Perfil actualizado', usuario });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al actualizar el perfil' });
+  }
+});
 module.exports = router;

@@ -1,0 +1,215 @@
+/* =========================================================
+   LA LEY DEL GATO — clasificacion.css
+   ========================================================= */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --gold: #c8a030; --gold-bright: #e8c040;
+  --gold-dim: #8a6820; --gold-dark: #4a3510;
+  --bg: #080601; --text: #f0d060;
+}
+
+body {
+  min-height: 100vh; background: var(--bg);
+  font-family: 'VT323', monospace;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 2rem 1rem; position: relative; overflow-x: hidden;
+}
+
+.scene {
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 100% 60% at 50% 0%, rgba(200,160,48,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 80% at 50% 100%, rgba(160,110,20,0.12) 0%, transparent 55%),
+    #080601;
+  z-index: 0;
+}
+.scanlines {
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(to bottom, transparent 0, transparent 3px, rgba(0,0,0,0.07) 3px, rgba(0,0,0,0.07) 4px);
+  pointer-events: none; z-index: 50;
+}
+.vignette {
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse 90% 90% at 50% 50%, transparent 50%, rgba(0,0,0,0.75) 100%);
+  pointer-events: none; z-index: 3;
+}
+
+.main {
+  position: relative; z-index: 10;
+  width: 100%; max-width: 720px;
+  display: flex; flex-direction: column; gap: 16px;
+  animation: fadein 0.6s ease both;
+}
+@keyframes fadein { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.back-btn {
+  display: flex; align-items: center; gap: 8px;
+  background: none; border: 1px solid #2e2006;
+  color: var(--gold-dim); font-family: 'VT323', monospace;
+  font-size: 16px; letter-spacing: 2px;
+  padding: 6px 14px; cursor: pointer; transition: all 0.2s; text-decoration: none;
+}
+.back-btn:hover { color: var(--gold); border-color: var(--gold-dark); }
+.logo-area { text-align: right; }
+.logo-text {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px; color: var(--gold); letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(200,160,48,0.4);
+}
+.logo-sub { font-size: 13px; color: var(--gold-dim); letter-spacing: 5px; }
+
+/* Mi posición */
+.my-rank-card {
+  display: flex; align-items: center; gap: 16px;
+  background: rgba(200,160,48,0.06);
+  border: 1px solid var(--gold); border-left: 4px solid var(--gold);
+  padding: 1rem 1.2rem;
+  animation: fadein 0.4s ease both 0.1s;
+}
+.my-rank-pos {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 16px; color: var(--gold); letter-spacing: 1px;
+  min-width: 50px; text-align: center;
+}
+.my-rank-avatar { font-size: 36px; }
+.my-rank-info { flex: 1; }
+.my-rank-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px; color: var(--gold-bright); letter-spacing: 1px; line-height: 2;
+}
+.my-rank-sub { font-size: 13px; color: var(--gold-dim); letter-spacing: 2px; }
+.my-rank-score {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px; color: var(--gold); letter-spacing: 1px;
+}
+
+/* Filtros */
+.filters {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.filter-btn {
+  background: rgba(10,8,3,0.9); border: 1px solid #2e2006;
+  color: var(--gold-dim); font-family: 'VT323', monospace;
+  font-size: 16px; letter-spacing: 2px; padding: 6px 16px;
+  cursor: pointer; transition: all 0.2s;
+}
+.filter-btn:hover { color: var(--gold); border-color: var(--gold-dark); }
+.filter-btn.active {
+  color: var(--gold); border-color: var(--gold);
+  background: rgba(200,160,48,0.08);
+}
+
+/* Podio */
+.podio {
+  display: flex; align-items: flex-end; justify-content: center;
+  gap: 8px; padding: 1rem 0;
+}
+.podio-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 4px; flex: 1; max-width: 160px;
+  animation: fadein 0.5s ease both;
+}
+.podio-item.gold { animation-delay: 0.05s; }
+.podio-item.silver { animation-delay: 0.1s; }
+.podio-item.bronze { animation-delay: 0.15s; }
+
+.podio-avatar { font-size: 40px; }
+.podio-crown { font-size: 24px; }
+.podio-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px; color: var(--gold-bright);
+  letter-spacing: 1px; text-align: center;
+  line-height: 1.6; max-width: 120px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.podio-score { font-size: 14px; color: var(--gold-dim); letter-spacing: 2px; }
+
+.podio-base {
+  width: 100%; padding: 10px 0;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 20px; letter-spacing: 2px; text-align: center;
+  margin-top: 4px;
+}
+.gold-base   { background: rgba(200,160,48,0.2); border: 1px solid var(--gold); color: var(--gold); height: 80px; display:flex; align-items:center; justify-content:center; }
+.silver-base { background: rgba(150,150,150,0.1); border: 1px solid #6a6a6a; color: #aaa; height: 60px; display:flex; align-items:center; justify-content:center; }
+.bronze-base { background: rgba(180,100,40,0.1); border: 1px solid #7a4a20; color: #c07030; height: 44px; display:flex; align-items:center; justify-content:center; }
+
+/* Card ranking */
+.card {
+  background: rgba(10,8,3,0.93);
+  border: 1px solid #2e2006; border-top: 2px solid var(--gold);
+  position: relative;
+}
+.card::before, .card::after { content: '◆'; position: absolute; color: var(--gold); font-size: 9px; }
+.card::before { top: -6px; left: 8px; }
+.card::after  { top: -6px; right: 8px; }
+.card-inner { padding: 1.2rem; border: 1px solid #1a1403; margin: 7px; }
+.card-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px; color: var(--gold); letter-spacing: 2px;
+  padding-bottom: 0.8rem; margin-bottom: 0.8rem;
+  border-bottom: 1px solid #1e1803;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-title-num {
+  background: #1a1205; border: 1px solid #4a3510;
+  padding: 2px 5px; font-size: 6px; color: var(--gold);
+}
+.rank-loading {
+  margin-left: auto; font-size: 7px; color: var(--gold-dim);
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* Tabla */
+.rank-table { display: flex; flex-direction: column; gap: 4px; }
+
+.rank-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 10px;
+  border: 1px solid #1a1403;
+  transition: background 0.2s;
+  animation: fadein 0.3s ease both;
+}
+.rank-row:hover { background: rgba(200,160,48,0.04); }
+.rank-row.me { border-color: var(--gold); background: rgba(200,160,48,0.06); }
+.rank-row.top1 { border-color: var(--gold); }
+.rank-row.top2 { border-color: #6a6a6a; }
+.rank-row.top3 { border-color: #7a4a20; }
+
+.rank-pos {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px; color: var(--gold-dim);
+  min-width: 32px; text-align: center;
+}
+.rank-pos.p1 { color: var(--gold); }
+.rank-pos.p2 { color: #aaa; }
+.rank-pos.p3 { color: #c07030; }
+
+.rank-avatar { font-size: 24px; width: 32px; text-align: center; }
+.rank-name { flex: 1; font-size: 18px; color: var(--text); letter-spacing: 2px; }
+.rank-name.me-name { color: var(--gold-bright); }
+.rank-score {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px; color: var(--gold-dim); letter-spacing: 1px;
+}
+.rank-badge {
+  font-size: 11px; letter-spacing: 1px;
+  background: rgba(200,160,48,0.15); border: 1px solid #4a3510;
+  color: var(--gold); padding: 1px 6px;
+}
+
+.rank-empty {
+  text-align: center; padding: 2rem;
+  font-size: 16px; color: var(--gold-dim); letter-spacing: 2px;
+}
+
+.foot {
+  display: flex; justify-content: space-between;
+  padding: 6px 12px; border: 1px solid #1a1403; border-top: none;
+}
+.foot span { font-size: 11px; letter-spacing: 2px; color: #6a5020; }

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Ley del Gato — Clasificación</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="clasificacion.css">
+</head>
+<body>
+  <div class="scene"></div>
+  <div class="vignette"></div>
+  <div class="scanlines"></div>
+
+  <div class="main">
+
+    <div class="page-header">
+      <a href="../PaginaPrincipal/principal.html" class="back-btn">◀ VOLVER</a>
+      <div class="logo-area">
+        <div class="logo-text">LA LEY DEL GATO</div>
+        <div class="logo-sub">TOP AGENTES</div>
+      </div>
+    </div>
+
+    <!-- Mi posición -->
+    <div class="my-rank-card" id="myRankCard">
+      <div class="my-rank-pos" id="myPos">#—</div>
+      <div class="my-rank-avatar" id="myAvatar">🐭</div>
+      <div class="my-rank-info">
+        <div class="my-rank-name" id="myName">—</div>
+        <div class="my-rank-sub">TU POSICIÓN ACTUAL</div>
+      </div>
+      <div class="my-rank-score" id="myScore">0 PTS</div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters">
+      <button class="filter-btn active" data-filter="global">🌍 GLOBAL</button>
+      <button class="filter-btn" data-filter="semanal">📅 SEMANAL</button>
+      <button class="filter-btn" data-filter="amigos">👥 AMIGOS</button>
+    </div>
+
+    <!-- Podio top 3 -->
+    <div class="podio">
+      <div class="podio-item silver" id="pos2">
+        <div class="podio-avatar">🐀</div>
+        <div class="podio-crown">🥈</div>
+        <div class="podio-name">—</div>
+        <div class="podio-score">—</div>
+        <div class="podio-base silver-base">2</div>
+      </div>
+      <div class="podio-item gold" id="pos1">
+        <div class="podio-avatar">🐭</div>
+        <div class="podio-crown">👑</div>
+        <div class="podio-name">—</div>
+        <div class="podio-score">—</div>
+        <div class="podio-base gold-base">1</div>
+      </div>
+      <div class="podio-item bronze" id="pos3">
+        <div class="podio-avatar">🐹</div>
+        <div class="podio-crown">🥉</div>
+        <div class="podio-name">—</div>
+        <div class="podio-score">—</div>
+        <div class="podio-base bronze-base">3</div>
+      </div>
+    </div>
+
+    <!-- Tabla ranking -->
+    <div class="card">
+      <div class="card-inner">
+        <div class="card-title">
+          <span class="card-title-num">RK</span> CLASIFICACIÓN COMPLETA
+          <span class="rank-loading" id="rankLoading">CARGANDO...</span>
+        </div>
+
+        <div class="rank-table" id="rankTable">
+          <!-- Se rellena por JS -->
+        </div>
+
+      </div>
+    </div>
+
+    <div class="foot">
+      <span>LA LEY DEL GATO © 2025</span>
+      <span>ACTUALIZADO EN TIEMPO REAL</span>
+    </div>
+
+  </div>
+
+  <script src="clasificacion.js"></script>
+</body>
+</html>
