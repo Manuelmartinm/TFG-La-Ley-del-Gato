@@ -2,7 +2,7 @@
    LA LEY DEL GATO — ajustes.js
    ========================================================= */
 
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://tfg-la-ley-del-gato.onrender.com';
 
 // --- Cargar nombre de sesión ---
 const nombre = localStorage.getItem('nombre_usuario') || '—';

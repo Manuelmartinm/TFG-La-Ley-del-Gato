@@ -22,10 +22,10 @@
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
-    "dotenv": "^17.3.1",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongoose": "^9.3.0",
-    "nodemailer": "^8.0.3",
+    "nodemailer": "^8.0.7",
     "resend": "^6.9.4"
   }
 }

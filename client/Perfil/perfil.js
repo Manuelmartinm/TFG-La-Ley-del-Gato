@@ -2,7 +2,7 @@
    LA LEY DEL GATO — perfil.js
    ========================================================= */
 
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://tfg-la-ley-del-gato.onrender.com';
 
 /* ---------------------------------------------------------
    CARGAR DATOS DEL USUARIO DESDE localStorage

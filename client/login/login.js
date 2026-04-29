@@ -20,7 +20,7 @@ const recEmail        = document.getElementById('recEmail');
 const btnRec          = document.getElementById('btnRec');
 const mRec            = document.getElementById('mRec');
 
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://tfg-la-ley-del-gato.onrender.com';
 
 /* ---------------------------------------------------------
    LLUVIA GENERATIVA

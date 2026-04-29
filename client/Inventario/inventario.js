@@ -2,7 +2,7 @@
    LA LEY DEL GATO — inventario.js
    ========================================================= */
 
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://tfg-la-ley-del-gato.onrender.com';
 
 // Datos del agente
 document.getElementById('barName').textContent   = (localStorage.getItem('nombre_usuario') || 'AGENTE').toUpperCase();

@@ -5,3 +5,5 @@
         document.getElementById('agentName').textContent = nombre.toUpperCase();
         document.getElementById('agentAvatar').textContent = avatar;
     }
+
+    

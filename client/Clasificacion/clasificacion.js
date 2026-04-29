@@ -2,7 +2,7 @@
    LA LEY DEL GATO — clasificacion.js
    ========================================================= */
 
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://tfg-la-ley-del-gato.onrender.com';
 const miNombre = localStorage.getItem('nombre_usuario') || '';
 const miAvatar = localStorage.getItem('avatar') || '🐭';
 
