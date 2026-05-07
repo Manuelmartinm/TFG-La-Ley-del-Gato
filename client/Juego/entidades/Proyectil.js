@@ -1,7 +1,13 @@
+// ─────────────────────────────────────────────────────────────
+// Proyectil.js — gestiona los proyectiles del centinela y el mortero
+// Dos clases separadas porque su comportamiento es muy distinto:
+//   ProyectilRecto   → viaja en línea recta, muere al tocar pared
+//   ProyectilMortero → vuela en arco sobre paredes, cae en el destino
+// ─────────────────────────────────────────────────────────────
 
 import { hayColision, seToca } from '../utilidades/colisiones.js';
 
-//PROYECTIL RECTO (centinela)
+// ── PROYECTIL RECTO (centinela) ───────────────────────────────────────────────
 export class ProyectilRecto {
     constructor(x, y, dx, dy, speed = 5) {
         this.x = x; this.y = y;
@@ -14,7 +20,7 @@ export class ProyectilRecto {
     actualizar(mapa) {
         this.x += this.dx * this.speed;
         this.y += this.dy * this.speed;
-        // Desaparece al chocar con una pared
+        // Muere al chocar con una pared
         if (hayColision(mapa, this.x - this.w/2, this.y - this.h/2, this.w, this.h)) {
             this.activo = false;
         }
@@ -23,23 +29,25 @@ export class ProyectilRecto {
     // Comprueba si toca al jugador. Devuelve true y se desactiva si hay impacto.
     tocaJugador(jugador) {
         if (seToca(jugador.x, jugador.y, jugador.w, jugador.h,
-                   this.x - this.w/2, this.y - this.h/2, this.w, this.h)) {
+            this.x - this.w/2, this.y - this.h/2, this.w, this.h)) {
             this.activo = false;
             return true;
         }
         return false;
     }
 
-    dibujar(ctx) {
+    dibujar(ctx, camX, camY) {
+        const px = this.x - camX;
+        const py = this.y - camY;
         ctx.fillStyle   = '#40ff80';
-        ctx.fillRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h);
+        ctx.fillRect(px - this.w/2, py - this.h/2, this.w, this.h);
         ctx.strokeStyle = '#206040';
         ctx.lineWidth   = 1;
-        ctx.strokeRect(this.x - this.w/2 - 1, this.y - this.h/2 - 1, this.w + 2, this.h + 2);
+        ctx.strokeRect(px - this.w/2 - 1, py - this.h/2 - 1, this.w + 2, this.h + 2);
     }
 }
 
-//PROYECTIL MORTERO
+// ── PROYECTIL MORTERO (parabólico) ────────────────────────────────────────────
 export class ProyectilMortero {
     constructor(origenX, origenY, destinoX, destinoY, duracion = 90) {
         this.origenX  = origenX;  this.origenY  = origenY;
@@ -56,6 +64,7 @@ export class ProyectilMortero {
         if (this.frameActual >= this.duracion) this.activo = false;
     }
 
+    // El mortero daña cuando está en el último 10% del vuelo y el jugador está cerca
     tocaJugador(jugador) {
         if (this.progreso < 0.90) return false;
         const radio = 20;
@@ -69,24 +78,23 @@ export class ProyectilMortero {
         return false;
     }
 
-    dibujar(ctx) {
+    dibujar(ctx, camX, camY) {
         const p  = this.progreso;
         const px = this.origenX + (this.destinoX - this.origenX) * p;
         const py = this.origenY + (this.destinoY - this.origenY) * p;
-        // Arco parabólico: Math.sin(p*π) sube hasta 1 en el punto medio y baja a 0
         const arco = Math.sin(p * Math.PI) * -80;
 
-        // Sombra en el suelo
+        // Sombra en el suelo (en coordenadas de pantalla)
         const tamSombra = 4 + p * 10;
         ctx.fillStyle = 'rgba(100,0,150,0.35)';
         ctx.beginPath();
-        ctx.arc(this.destinoX, this.destinoY, tamSombra, 0, Math.PI * 2);
+        ctx.arc(this.destinoX - camX, this.destinoY - camY, tamSombra, 0, Math.PI * 2);
         ctx.fill();
 
         // Bola en el aire
         ctx.fillStyle = '#c060ff';
         ctx.beginPath();
-        ctx.arc(px, py + arco, 8, 0, Math.PI * 2);
+        ctx.arc(px - camX, py - camY + arco, 8, 0, Math.PI * 2);
         ctx.fill();
         ctx.strokeStyle = '#602080';
         ctx.lineWidth = 1.5;

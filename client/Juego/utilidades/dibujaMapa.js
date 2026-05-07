@@ -1,12 +1,21 @@
 
-import { CELDA, FILAS, COLUMNAS, BLOQUE } from './constantes.js';
+import { CELDA, FILAS_MUNDO, COLUMNAS_MUNDO, ANCHO, ALTO, BLOQUE } from './constantes.js';
 
-export function dibujaMapa(ctx, mapa) {
-    for (let fila = 0; fila < FILAS; fila++) {
-        for (let col = 0; col < COLUMNAS; col++) {
-            const x = col * CELDA;
-            const y = fila * CELDA;
-            const tipo = mapa[fila][col];
+// camX, camY = esquina superior izquierda del mundo que se ve ahora mismo
+// Solo dibujamos las celdas visibles en pantalla para no desperdiciar recursos
+export function dibujaMapa(ctx, mapa, camX, camY) {
+    // Calculamos qué celdas son visibles — una celda extra en cada lado para evitar bordes
+    const colInicio = Math.max(0, Math.floor(camX / CELDA));
+    const colFin    = Math.min(COLUMNAS_MUNDO, Math.ceil((camX + ANCHO) / CELDA) + 1);
+    const filaInicio = Math.max(0, Math.floor(camY / CELDA));
+    const filaFin    = Math.min(FILAS_MUNDO, Math.ceil((camY + ALTO) / CELDA) + 1);
+
+    for (let fila = filaInicio; fila < filaFin; fila++) {
+        for (let col = colInicio; col < colFin; col++) {
+            // Posición en pantalla = posición en el mundo - posición de la cámara
+            const x = col * CELDA - camX;
+            const y = fila * CELDA - camY;
+            const tipo = mapa[fila] ? mapa[fila][col] : BLOQUE.PARED;
 
             if (tipo === BLOQUE.PARED) {
                 ctx.fillStyle = '#0e0b04';

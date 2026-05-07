@@ -10,6 +10,7 @@ export class Enemigo {
         this.pi = this.pi ?? 0; // índice del waypoint actual (para patrulla)
     }
 
+
     actualizar(jugador, mapa, proyectiles, proyMortero) {
         switch (this.tipo) {
 
@@ -19,7 +20,6 @@ export class Enemigo {
 
             case TIPO_ENEMIGO.CAZADOR:
             case TIPO_ENEMIGO.RAPIDO:
-                // Ambos usan la misma lógica menos en speed y rango del objeto
                 this._moverCazador(jugador, mapa);
                 break;
 
@@ -41,7 +41,7 @@ export class Enemigo {
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < 3) {
-            // Llegó al waypoint avanza al siguiente
+            // Llegó al waypoint, avanza al siguiente
             this.pi = (this.pi + 1) % this.patrol.length;
         } else {
             const nx = dx / dist;
@@ -55,7 +55,6 @@ export class Enemigo {
 
     // Comportamiento CAZADOR / RAPIDO
     // Persigue al jugador si está en rango y no está escondido.
-    // Si el jugador sale del rango o se esconde, vuelve al origen.
     _moverCazador(jugador, mapa) {
         const dx = (jugador.x + jugador.w / 2) - (this.x + this.w / 2);
         const dy = (jugador.y + jugador.h / 2) - (this.y + this.h / 2);
@@ -85,6 +84,7 @@ export class Enemigo {
     }
 
     // Comportamiento CENTINELA
+    // Usa snapping cardinal: solo dispara horizontal o vertical, nunca diagonal.
     _dispararCentinela(jugador, proyectiles) {
         this.timerDisparo--;
         if (this.timerDisparo > 0) return;
@@ -98,6 +98,7 @@ export class Enemigo {
         const dy = (jugador.y + jugador.h / 2) - cy;
         if (Math.abs(dx) <= 1 && Math.abs(dy) <= 1) return;
 
+        // Snapping: disparamos en la dirección cardinal más dominante
         let dirX = 0, dirY = 0;
         if (Math.abs(dx) >= Math.abs(dy)) {
             dirX = dx > 0 ? 1 : -1;
@@ -108,6 +109,8 @@ export class Enemigo {
         proyectiles.push(new ProyectilRecto(cx, cy, dirX, dirY, 5));
     }
 
+    // Comportamiento MORTERO
+    // Fijo. Cada cadencia frames lanza un proyectil parabólico donde está el jugador.
     _dispararMortero(jugador, proyMortero) {
         this.timerDisparo--;
         if (this.timerDisparo > 0) return;
@@ -125,15 +128,18 @@ export class Enemigo {
     }
 
     // Dibuja el enemigo y su círculo de rango
-    dibujar(ctx, jugador) {
-        // ── Rango de detección ────────────────────────────────────────────────
+    dibujar(ctx, jugador, camX, camY) {
+        const px = this.x - camX;
+        const py = this.y - camY;
+
+        // Rango
         if (this.rango) {
             const dx = (jugador.x + jugador.w / 2) - (this.x + this.w / 2);
             const dy = (jugador.y + jugador.h / 2) - (this.y + this.h / 2);
             const dentro = Math.sqrt(dx * dx + dy * dy) < this.rango && !jugador.escondido;
 
             ctx.beginPath();
-            ctx.arc(this.x + this.w / 2, this.y + this.h / 2, this.rango, 0, Math.PI * 2);
+            ctx.arc(px + this.w / 2, py + this.h / 2, this.rango, 0, Math.PI * 2);
             ctx.fillStyle   = dentro ? 'rgba(200,40,40,0.10)' : 'rgba(200,40,40,0.04)';
             ctx.fill();
             ctx.setLineDash([4, 6]);
@@ -143,11 +149,11 @@ export class Enemigo {
             ctx.setLineDash([]);
         }
 
-        //Cuerpo del enemigo
+        // Cuerpo del enemigo
         ctx.fillStyle   = this.color;
-        ctx.fillRect(this.x, this.y, this.w, this.h);
+        ctx.fillRect(px, py, this.w, this.h);
         ctx.strokeStyle = '#000000';
         ctx.lineWidth   = 1;
-        ctx.strokeRect(this.x, this.y, this.w, this.h);
+        ctx.strokeRect(px, py, this.w, this.h);
     }
 }
