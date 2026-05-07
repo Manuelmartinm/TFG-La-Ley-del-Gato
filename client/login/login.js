@@ -19,6 +19,8 @@ const modalClose      = document.getElementById('modalClose');
 const recEmail        = document.getElementById('recEmail');
 const btnRec          = document.getElementById('btnRec');
 const mRec            = document.getElementById('mRec');
+// NUEVO: Referencia al botón de anónimo
+const btnAnonimo      = document.getElementById('btnAnonimo'); 
 
 const API_URL = 'https://tfg-la-ley-del-gato.onrender.com';
 
@@ -150,7 +152,7 @@ togglePass.addEventListener('click', () => {
 });
 
 /* ---------------------------------------------------------
-   ENVÍO DEL FORMULARIO
+   ENVÍO DEL FORMULARIO (LOGIN NORMAL)
 --------------------------------------------------------- */
 btnLogin.addEventListener('click', async () => {
   if (!validarCampos()) return;
@@ -175,23 +177,17 @@ btnLogin.addEventListener('click', async () => {
 
     if (respuesta.ok) {
       // Guardar datos de sesión
-      if (datos.nombre_usuario) {
-        localStorage.setItem('nombre_usuario', datos.nombre_usuario);
+      if (datos.nombre_usuario) localStorage.setItem('nombre_usuario', datos.nombre_usuario);
+      if (datos.avatar) localStorage.setItem('avatar', datos.avatar);
+      if (datos.token) localStorage.setItem('token', datos.token);
+      if (datos.email) localStorage.setItem('email', datos.email);
+      
+      localStorage.setItem('email_verificado', datos.email_verificado ? 'true' : 'false');
+      
+      if (datos.fecha_creacion) {
+        const fecha = new Date(datos.fecha_creacion);
+        localStorage.setItem('fecha_registro', `${fecha.getDate().toString().padStart(2,'0')}/${(fecha.getMonth()+1).toString().padStart(2,'0')}/${fecha.getFullYear()}`);
       }
-      if (datos.avatar) {
-        localStorage.setItem('avatar', datos.avatar);
-      }
-      if (datos.token) {
-        localStorage.setItem('token', datos.token);
-      }
-      if (datos.email) {
-  localStorage.setItem('email', datos.email);
-}
-localStorage.setItem('email_verificado', datos.email_verificado ? 'true' : 'false');
-if (datos.fecha_creacion) {
-  const fecha = new Date(datos.fecha_creacion);
-  localStorage.setItem('fecha_registro', `${fecha.getDate().toString().padStart(2,'0')}/${(fecha.getMonth()+1).toString().padStart(2,'0')}/${fecha.getFullYear()}`);
-}
 
       // Recordar usuario si está marcado
       if (rememberCb.checked) {
@@ -244,6 +240,34 @@ if (datos.fecha_creacion) {
     if (e.key === 'Enter' && !btnLogin.disabled) btnLogin.click();
   });
 });
+
+/* ---------------------------------------------------------
+   MODO ANÓNIMO (NUEVO)
+--------------------------------------------------------- */
+if (btnAnonimo) {
+  btnAnonimo.addEventListener('click', () => {
+    // Generar un sufijo aleatorio para el nombre
+    const idTemp = Math.random().toString(36).substring(2, 6).toUpperCase();
+    
+    // Rellenamos el localStorage con datos falsos pero con la misma estructura que pide tu web
+    localStorage.setItem('nombre_usuario', `AGENTE_${idTemp}`);
+    localStorage.setItem('avatar', '0'); // Le ponemos el primer avatar (el ratón)
+    localStorage.setItem('token', 'token_temporal_anonimo');
+    localStorage.setItem('email', 'anonimo@ley-del-gato.com');
+    localStorage.setItem('email_verificado', 'true'); // Para que le deje entrar sin pedir validación
+    
+    // Generamos la fecha de hoy
+    const fecha = new Date();
+    localStorage.setItem('fecha_registro', `${fecha.getDate().toString().padStart(2,'0')}/${(fecha.getMonth()+1).toString().padStart(2,'0')}/${fecha.getFullYear()}`);
+
+    // Feedback visual opcional antes de redirigir
+    btnLogin.innerHTML = '▶ ACCESO ANÓNIMO...';
+    
+    setTimeout(() => {
+        window.location.href = '../PaginaPrincipal/principal.html';
+    }, 500);
+  });
+}
 
 /* ---------------------------------------------------------
    MODAL: OLVIDÉ CONTRASEÑA

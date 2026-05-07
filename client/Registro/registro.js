@@ -1,5 +1,5 @@
 /* =========================================================
-   LA LEY DEL GATO — registro.js (MODIFICADO)
+   LA LEY DEL GATO — registro.js 
    ========================================================= */
 
 const inputUsuario    = document.getElementById('u');
@@ -13,9 +13,12 @@ const msgSuccess      = document.getElementById('mOk');
 
 const API_URL = 'https://tfg-la-ley-del-gato.onrender.com';
 
-// Array de referencia para convertir emoji a número
+// Array de referencia para convertir emoji a número (Importante para el backend)
 const emojisAvatares = ['🐭', '🐀', '🐹', '🐁', '🦔', '🐿️'];
 
+/* ---------------------------------------------------------
+   LLUVIA GENERATIVA
+--------------------------------------------------------- */
 (function crearLluvia() {
   const container = document.getElementById('rain');
   if (!container) return;
@@ -33,6 +36,9 @@ const emojisAvatares = ['🐭', '🐀', '🐹', '🐁', '🦔', '🐿️'];
   }
 })();
 
+/* ---------------------------------------------------------
+   CARRUSEL DE AVATARES
+--------------------------------------------------------- */
 const avatarOptions          = document.querySelectorAll('.avatar-option');
 const selectedAvatarDisplay  = document.getElementById('selectedAvatar');
 const avatarCarousel         = document.getElementById('avatarCarousel');
@@ -93,6 +99,9 @@ avatarOptions.forEach(option => {
   });
 });
 
+/* ---------------------------------------------------------
+   VALIDACIÓN Y FUERZA DE CONTRASEÑA
+--------------------------------------------------------- */
 const coloresFuerza   = ['#8c3030', '#8c6020', '#908020', '#3a8c30'];
 const etiquetasFuerza = ['MUY DÉBIL', 'ACEPTABLE', 'BUENA', 'FUERTE'];
 
@@ -121,10 +130,11 @@ function actualizarFuerza(valor) {
 }
 
 function validar() {
-  const u = inputUsuario.value;
-  const e = inputEmail.value;
+  const u = inputUsuario.value.trim();
+  const e = inputEmail.value.trim();
   const p = inputContrasena.value;
   const c = inputConfirmar.value;
+  
   const ut = u.length > 0;
   const et = e.length > 0;
   const pt = p.length > 0;
@@ -161,6 +171,9 @@ inputEmail.addEventListener('input', validar);
 inputContrasena.addEventListener('input', validar);
 inputConfirmar.addEventListener('input', validar);
 
+/* ---------------------------------------------------------
+   VER/OCULTAR CONTRASEÑA
+--------------------------------------------------------- */
 togglePass.addEventListener('click', () => {
   const mostrar = inputContrasena.type === 'password';
   inputContrasena.type = mostrar ? 'text' : 'password';
@@ -168,6 +181,9 @@ togglePass.addEventListener('click', () => {
   togglePass.textContent = mostrar ? 'OOO' : 'VER';
 });
 
+/* ---------------------------------------------------------
+   ENVÍO DEL REGISTRO
+--------------------------------------------------------- */
 btnRegistro.addEventListener('click', async () => {
   msgError.style.display   = 'none';
   msgSuccess.style.display = 'none';
@@ -175,38 +191,46 @@ btnRegistro.addEventListener('click', async () => {
   btnRegistro.innerHTML = 'CONECTANDO<span class="dots"></span>';
 
   try {
-    // CORRECCIÓN: Convertir emoji a índice numérico para el backend
-    const avatarIndex = emojisAvatares.indexOf(selectedAvatar);
+    // Convertir emoji a índice numérico para el backend. Si no lo encuentra, usa 0 (el ratón base).
+    let avatarIndex = emojisAvatares.indexOf(selectedAvatar);
+    if (avatarIndex === -1) avatarIndex = 0; 
 
     const respuesta = await fetch(`${API_URL}/usuarios/registro`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        nombre_usuario: inputUsuario.value,
-        email: inputEmail.value,
+        nombre_usuario: inputUsuario.value.trim(),
+        email: inputEmail.value.trim(),
         contrasena: inputContrasena.value,
-        avatar: avatarIndex // Enviamos el número (0-5)
+        avatar: avatarIndex 
       })
     });
 
     const datos = await respuesta.json();
 
     if (respuesta.ok) {
-      localStorage.setItem('nombre_usuario', inputUsuario.value);
-      localStorage.setItem('avatar', selectedAvatar);
+      // Guardamos algunos datos para que el login sepa quién acaba de registrarse
+      localStorage.setItem('login_usuario', inputUsuario.value.trim()); 
+      localStorage.setItem('avatar', avatarIndex);
+      
       msgSuccess.style.display = 'block';
+      msgSuccess.innerHTML = '▶ REGISTRO EXITOSO. REVISA TU EMAIL PARA VERIFICAR LA CUENTA.';
+      
+      // Limpiar formulario
       inputUsuario.value    = '';
       inputEmail.value      = '';
       inputContrasena.value = '';
       inputConfirmar.value  = '';
       validar();
-      setTimeout(() => { window.location.href = '../login/login.html'; }, 2000);
+      
+      // Redirigir al login
+      setTimeout(() => { window.location.href = '../login/login.html'; }, 3000);
     } else {
       msgError.textContent   = '> ' + (datos.error || 'ERROR EN EL REGISTRO').toUpperCase();
       msgError.style.display = 'block';
     }
   } catch (error) {
-    msgError.textContent   = '> ERROR: SERVIDOR NO DISPONIBLE';
+    msgError.textContent   = '> ERROR: SERVIDOR NO DISPONIBLE O TIEMPO DE ESPERA AGOTADO.';
     msgError.style.display = 'block';
   }
 
