@@ -1,51 +1,45 @@
-const mongoose = require('mongoose'); // Importa Mongoose para crear el modelo
+const mongoose = require('mongoose');
 
-// Definimos el esquema — la estructura que tendrá cada usuario en la base de datos
 const usuarioEsquema = new mongoose.Schema({
-
   nombre_usuario: {
-    type: String, // Es un texto
-    required: true, // Es obligatorio
-    unique: true // No puede haber dos usuarios con el mismo nombre
+    type: String, 
+    required: true, 
+    unique: true 
   },
-
   hash_contrasena: {
-    type: String, // Es un texto (guardamos la contraseña cifrada, nunca en texto plano)
-    required: true // Es obligatorio
+    type: String, 
+    required: true 
   },
-
   rol: {
     type: String,
-    enum: ['ANONIMO', 'REGISTRADO', 'PREMIUM'], // Solo puede ser uno de estos tres valores
-    default: 'ANONIMO' // Si no se especifica, por defecto es ANONIMO
+    enum: ['ANONIMO', 'REGISTRADO', 'PREMIUM'], 
+    default: 'REGISTRADO' // Cambiado a REGISTRADO por defecto para el TFG
   },
-
   fecha_creacion: {
     type: Date,
-    default: Date.now // Se rellena automáticamente con la fecha actual al crear el usuario
+    default: Date.now 
   },
-
   ultimo_acceso: {
     type: Date,
-    default: Date.now // Se actualiza cada vez que el usuario inicia sesión
+    default: Date.now 
   },
   email: {
     type: String,
-    required: true, // Es obligatorio para el registro
-    unique: true // No puede haber dos usuarios con el mismo email
+    required: true, 
+    unique: true 
   },
-
   email_verificado: {
     type: Boolean,
-    default: false // Por defecto no está verificado al registrarse
+    default: true // <-- CAMBIADO: Ahora nacen verificados
   },
-
   token_verificacion: {
     type: String,
-    default: null // Token único que se enviará por email para verificar la cuenta
+    default: null 
+  },
+  avatar: { // Añadido para asegurar que se guarde el índice
+    type: Number,
+    default: 0
   }
-
 });
 
-// Exportamos el modelo para poder usarlo en otros archivos
 module.exports = mongoose.model('Usuario', usuarioEsquema);
