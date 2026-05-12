@@ -214,7 +214,7 @@ btnRegistro.addEventListener('click', async () => {
       localStorage.setItem('avatar', avatarIndex);
       
       msgSuccess.style.display = 'block';
-      msgSuccess.innerHTML = '▶ REGISTRO EXITOSO. REVISA TU EMAIL PARA VERIFICAR LA CUENTA.';
+      msgSuccess.innerHTML = '▶ REGISTRO EXITOSO.';
       
       // Limpiar formulario
       inputUsuario.value    = '';
