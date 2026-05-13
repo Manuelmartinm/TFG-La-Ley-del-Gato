@@ -23,32 +23,32 @@
 
     <div class="levels-container">
 
-        <!-- NIVEL 1 -->
+        <!-- TUTORIAL — siempre disponible -->
         <div class="level-card available" onclick="irAlNivel('../Juego/index.html')">
             <div class="card-name">Tutorial</div>
             <div class="card-play">JUGAR ▶</div>
         </div>
 
-        <!-- NIVEL 2 -->
-        <div class="level-card locked">
+        <!-- NIVEL 2 — se desbloquea al completar el tutorial -->
+        <div class="level-card locked" id="card-nivel2">
             <div class="card-name">NIVEL 2</div>
             <div class="card-play locked-text">🔒</div>
         </div>
 
-        <!-- MINIJUEGO 1 -->
-        <div class="level-card locked mini">
+        <!-- MINIJUEGO 1 — se desbloquea al completar nivel 2 -->
+        <div class="level-card locked mini" id="card-minijuego1">
             <div class="card-name">MINIJUEGO 1</div>
             <div class="card-play locked-text">🔒</div>
         </div>
 
-        <!-- NIVEL 3 -->
-        <div class="level-card locked">
+        <!-- NIVEL 3 — se desbloquea al completar nivel 2 -->
+        <div class="level-card locked" id="card-nivel3">
             <div class="card-name">NIVEL 3</div>
             <div class="card-play locked-text">🔒</div>
         </div>
 
-        <!-- MINIJUEGO 2 -->
-        <div class="level-card locked mini">
+        <!-- MINIJUEGO 2 — se desbloquea al completar nivel 3 -->
+        <div class="level-card locked mini" id="card-minijuego2">
             <div class="card-name">MINIJUEGO 2</div>
             <div class="card-play locked-text">🔒</div>
         </div>
