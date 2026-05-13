@@ -1,14 +1,13 @@
 /* =========================================================
-   LA LEY DEL GATO — inventario.js
+   LA LEY DEL GATO — inventario.js (Sincronización Inteligente)
    ========================================================= */
 
 const API_URL = 'https://tfg-la-ley-del-gato.onrender.com';
 
-// Datos del agente
-document.getElementById('barName').textContent   = (localStorage.getItem('nombre_usuario') || 'AGENTE').toUpperCase();
+const usuarioLogueado = localStorage.getItem('login_usuario');
+document.getElementById('barName').textContent   = (usuarioLogueado || 'AGENTE').toUpperCase();
 document.getElementById('barAvatar').textContent = localStorage.getItem('avatar') || '🐭';
 
-// Items de demo mientras no hay backend real
 const itemsDemo = [
   { id:'1', nombre:'GABARDINA GRIS',   categoria:'SKIN',      rareza:'rare',      emoji:'🧥', cantidad:1, equipado:true,  tiene_efecto:false, descripcion:'Una gabardina desgastada perfecta para desaparecer en la noche.', descripcion_efecto:'' },
   { id:'2', nombre:'SOMBRERO FEDORA',  categoria:'COSMETICO', rareza:'epic',      emoji:'🎩', cantidad:1, equipado:false, tiene_efecto:false, descripcion:'El clásico sombrero de todo buen agente encubierto.' },
@@ -29,24 +28,62 @@ let itemSeleccionado = null;
 let filtroActivo = 'todo';
 
 /* ---------------------------------------------------------
-   CARGAR INVENTARIO DEL BACKEND
+   SISTEMA DE GUARDADO: LOCAL vs NUBE
 --------------------------------------------------------- */
 async function cargarInventario() {
-  try {
-    const res = await fetch(`${API_URL}/inventario`, {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-    });
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    if (data.items && data.items.length > 0) {
-      itemsActuales = data.items;
+  if (!usuarioLogueado) {
+    // 1. MODO ANÓNIMO: Intentamos cargar de LocalStorage
+    const invLocal = localStorage.getItem('inventario_local');
+    if (invLocal) {
+      itemsActuales = JSON.parse(invLocal);
     }
-  } catch {
-    // Usa items de demo si falla
-  } finally {
-    renderizarInventario();
-    actualizarInfo();
+    finalizarCarga();
+    return;
   }
+
+  // 2. MODO REGISTRADO: Cargamos de la Base de Datos
+  try {
+    const res = await fetch(`${API_URL}/usuarios/inventario/${usuarioLogueado}`);
+    const data = await res.json();
+    
+    if (data.inventario && data.inventario !== null) {
+      itemsActuales = data.inventario;
+    } else {
+      // Si el array es null (es su primer login), le guardamos el Demo en Mongo
+      sincronizarInventario();
+    }
+  } catch (err) {
+    console.error("Error conectando con la base de datos.");
+  } finally {
+    finalizarCarga();
+  }
+}
+
+async function sincronizarInventario() {
+  if (!usuarioLogueado) {
+    // MODO ANÓNIMO: Guardamos en LocalStorage
+    localStorage.setItem('inventario_local', JSON.stringify(itemsActuales));
+    return;
+  }
+
+  // MODO REGISTRADO: Guardamos en Mongo
+  try {
+    await fetch(`${API_URL}/usuarios/inventario/guardar`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre_usuario: usuarioLogueado,
+        items: itemsActuales
+      })
+    });
+  } catch (error) {
+    console.error("Error sincronizando con el servidor");
+  }
+}
+
+function finalizarCarga() {
+  renderizarInventario();
+  actualizarInfo();
 }
 
 /* ---------------------------------------------------------
@@ -93,7 +130,7 @@ function renderizarInventario() {
 }
 
 /* ---------------------------------------------------------
-   SELECCIONAR ITEM — muestra detalle
+   SELECCIONAR ITEM
 --------------------------------------------------------- */
 function seleccionarItem(item) {
   itemSeleccionado = item;
@@ -137,67 +174,50 @@ function seleccionarItem(item) {
 /* ---------------------------------------------------------
    BOTÓN EQUIPAR
 --------------------------------------------------------- */
-document.getElementById('btnEquip').addEventListener('click', async () => {
+document.getElementById('btnEquip').addEventListener('click', () => {
   if (!itemSeleccionado) return;
-
   const yaEquipado = itemSeleccionado.equipado;
 
-  // Desequipa todos los de la misma categoría
   itemsActuales.forEach(i => {
     if (i.categoria === itemSeleccionado.categoria) i.equipado = false;
   });
 
-  if (!yaEquipado) {
-    itemSeleccionado.equipado = true;
-  }
+  if (!yaEquipado) itemSeleccionado.equipado = true;
 
   renderizarInventario();
   seleccionarItem(itemSeleccionado);
-
-  try {
-    await fetch(`${API_URL}/inventario/equipar`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({ item_id: itemSeleccionado.id, equipar: !yaEquipado })
-    });
-  } catch {}
+  
+  // Guardamos los cambios inmediatamente
+  sincronizarInventario();
 });
 
 /* ---------------------------------------------------------
    BOTÓN DESECHAR
 --------------------------------------------------------- */
-document.getElementById('btnDrop').addEventListener('click', async () => {
+document.getElementById('btnDrop').addEventListener('click', () => {
   if (!itemSeleccionado) return;
-  if (!confirm('¿Seguro que quieres desechar este objeto?')) return;
+  if (!confirm('¿Seguro que quieres desechar este objeto para siempre?')) return;
 
+  // 1. Lo borramos de la lista local
   itemsActuales = itemsActuales.filter(i => i.id !== itemSeleccionado.id);
+  
+  // 2. Limpiamos la vista de detalles
   itemSeleccionado = null;
-
   document.getElementById('detailEmpty').style.display   = 'flex';
   document.getElementById('detailContent').style.display = 'none';
 
   renderizarInventario();
   actualizarInfo();
 
-  try {
-    await fetch(`${API_URL}/inventario/${itemSeleccionado?.id}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-    });
-  } catch {}
+  // 3. Sincronizamos la mochila entera con el Servidor / LocalStorage
+  sincronizarInventario();
 });
 
-/* ---------------------------------------------------------
-   ACTUALIZAR INFO GENERAL
---------------------------------------------------------- */
 function actualizarInfo() {
   const total = itemsActuales.length;
   document.getElementById('capacidad').textContent = `${total}/50`;
   document.getElementById('itemCount').textContent = `${total} OBJETOS`;
 }
 
-// Carga inicial
+// Inicializar
 cargarInventario();

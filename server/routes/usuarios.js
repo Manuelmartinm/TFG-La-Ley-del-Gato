@@ -103,5 +103,32 @@ router.put('/actualizar', async (req, res) => {
     res.status(500).json({ error: 'Error en el servidor al actualizar' });
   }
 });
+// ─── RUTA: OBTENER INVENTARIO ────────────────────────────────────────────────
+router.get('/inventario/:nombre_usuario', async (req, res) => {
+  try {
+    const usuario = await Usuario.findOne({ nombre_usuario: req.params.nombre_usuario });
+    if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado' });
+    
+    res.status(200).json({ inventario: usuario.inventario });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al cargar inventario' });
+  }
+});
 
+// ─── RUTA: GUARDAR INVENTARIO ────────────────────────────────────────────────
+router.put('/inventario/guardar', async (req, res) => {
+  try {
+    const { nombre_usuario, items } = req.body;
+    const usuario = await Usuario.findOne({ nombre_usuario });
+    if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+    // Sobrescribimos el inventario viejo con el nuevo array
+    usuario.inventario = items;
+    await usuario.save();
+
+    res.status(200).json({ mensaje: 'Inventario sincronizado con éxito' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al guardar inventario' });
+  }
+});
 module.exports = router;

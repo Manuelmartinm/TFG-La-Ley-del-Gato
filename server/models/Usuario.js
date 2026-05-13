@@ -39,7 +39,8 @@ const usuarioEsquema = new mongoose.Schema({
   avatar: { // Añadido para asegurar que se guarde el índice
     type: Number,
     default: 0
-  }
+  },
+  inventario: { type: Array, default: null }
 });
 
 module.exports = mongoose.model('Usuario', usuarioEsquema);
