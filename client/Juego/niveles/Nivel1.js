@@ -14,13 +14,17 @@
 //
 //  El jugador empieza en el extremo izquierdo del pasillo.
 //  La puerta está en el extremo derecho del pasillo.
-//  Sin condición — solo llegar.
+//
+//  PUNTUACIÓN MÍNIMA: 100 pts
+//  Quesos pequeños: 10 × 10 = 100 pts — suficiente con todos los pequeños
+//  Queso dorado:     1 × 50 = 50 pts  — bonus si lo coges a tiempo
+//  Total posible:   150 pts
 //
 //  ZONA SUPERIOR (cols 1-38, de izq a der):
 //   cols  1- 9  → habitación HIELO + BARRO
 //   cols 10-18  → habitación TRAMPA + ESCONDITE
-//   cols 19-27  → habitación OBJETOS (queso pequeño, queso dorado, escudo, llave)
-//   cols 28-38  → vacía / libre
+//   cols 19-27  → habitación OBJETOS (quesos, escudo, llave)
+//   cols 28-38  → vacía / libre con más quesos
 //
 //  ZONA INFERIOR (cols 1-38, de izq a der):
 //   cols  1- 9  → habitación PATRULLA
@@ -34,14 +38,38 @@ import { TIPO_ENEMIGO } from '../utilidades/constantes.js';
 // Jugador empieza en el pasillo central, extremo izquierdo
 export const INICIO_JUGADOR = { x: 2 * 40, y: 14 * 40 };
 
-// Puerta al final del pasillo
+// Puerta al final del pasillo — al cumplir requisitos se abre y redirige al mapa
 export const PUERTA = { fila: 14, col: 37 };
 
-// Objetos en la zona superior — habitación de objetos (cols 19-27)
-export const LLAVE          = { x: 20 * 40, y:  5 * 40 };
-export const QUESOS_PEQUENOS = [{ x: 22 * 40, y:  5 * 40 },{x:23*40, y: 7*50}];
-export const QUESOS_DORADOS  = [{ x: 24 * 40, y:  5 * 40, duracion: 5000 }];
-export const ESCUDOS         = [{ x: 26 * 40, y:  5 * 40 }];
+// ── Objetos ───────────────────────────────────────────────────
+// Llave — en la habitación de objetos, requiere explorar la zona superior
+export const LLAVE = { x: 26 * 40, y: 5 * 40 };
+
+// 10 quesos pequeños × 10 pts = 100 pts — distribuidos por todo el nivel
+// El jugador necesita recogerlos TODOS para llegar a 100 pts
+export const QUESOS_PEQUENOS = [
+    // Habitación hielo (cols 2-7)
+    { x:  3 * 40, y:  3 * 40 },
+    { x:  6 * 40, y:  6 * 40 },
+    // Habitación trampa/escondite (cols 10-17) — en zonas seguras
+    { x:  9 * 40, y:  3 * 40 },
+    { x: 17 * 40, y:  9 * 40 },
+    // Habitación objetos (cols 20-26)
+    { x: 21 * 40, y:  4 * 40 },
+    { x: 24 * 40, y:  8 * 40 },
+    // Zona libre superior derecha (cols 29-37)
+    { x: 30 * 40, y:  3 * 40 },
+    { x: 34 * 40, y:  7 * 40 },
+    // Pasillo central — recompensa explorar
+    { x: 10 * 40, y: 14 * 40 },
+    { x: 28 * 40, y: 14 * 40 },
+];
+
+// 1 queso dorado × 50 pts — bonus, aparece en zona de objetos
+export const QUESOS_DORADOS = [{ x: 23 * 40, y: 5 * 40, duracion: 8000 }];
+
+// Escudo — en la habitación de objetos
+export const ESCUDOS = [{ x: 20 * 40, y: 5 * 40 }];
 
 // ── Leyenda ───────────────────────────────────────────────────
 // 0 suelo   1 pared   2 puerta

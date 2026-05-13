@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Ley del Gato — Nivel 2</title>
+    <!-- base.css primero — define variables que usan los demás -->
+    <link rel="stylesheet" href="recursos/base.css">
+    <link rel="stylesheet" href="recursos/hud.css">
+    <link rel="stylesheet" href="recursos/juego.css">
+    <script type="module" src="main2.js" defer></script>
+</head>
+<body>
+<div id="hud">
+    <span>Personaje: <strong id="hud-char-name">Raton A</strong></span>
+    <span>Vidas: <strong id="hud-lives-val">3</strong></span>
+    <span>Puntos: <strong id="hud-score-val">0</strong></span>
+    <span>Nivel: <strong id="hud-level-val">2</strong></span>
+</div>
+<canvas id="canvasJuego" width="960" height="640"></canvas>
+<p id="controles">WASD / Flechas — mover &nbsp;|&nbsp; Tab — cambiar personaje &nbsp;|&nbsp; Espacio — habilidad &nbsp;|&nbsp; R — reiniciar</p>
+</body>
+</html>

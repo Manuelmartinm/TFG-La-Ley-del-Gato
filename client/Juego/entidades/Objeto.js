@@ -8,6 +8,12 @@
 
 import { seToca } from '../utilidades/colisiones.js';
 
+// ─────────────────────────────────────────────────────────────
+// SPRITES — cargados una sola vez para todos los objetos
+// ─────────────────────────────────────────────────────────────
+const IMG_QUESO = new Image(); IMG_QUESO.src = 'assets/sprites/Cheese_t.png';
+const IMG_LLAVE = new Image(); IMG_LLAVE.src = 'assets/sprites/Llave_t.png';
+
 // ── Clase base ────────────────────────────────────────────────
 class Objeto {
     constructor(x, y, w, h) {
@@ -45,47 +51,39 @@ class Objeto {
         this._flotacion();
     }
 
+    // Helper: dibuja sprite centrado en la celda del objeto con flotación
+    _drawSprite(ctx, img, camX, camY, drawW, drawH) {
+        if (!img || !img.complete || img.naturalWidth === 0) return false;
+        const px = this.x - camX + (this.w - drawW) / 2;
+        const py = this.y - camY + (this.h - drawH) / 2 + (this._offsetY || 0);
+        ctx.drawImage(img, px, py, drawW, drawH);
+        return true;
+    }
+
     dibujar(ctx, camX, camY) {}
 }
 
 // ── QUESO PEQUEÑO ─────────────────────────────────────────────
 // Da 10 puntos al recogerlo.
-// Colocado en zonas del mapa que requieren cierto esfuerzo llegar.
 export class QuesoPequeno extends Objeto {
     constructor(x, y) {
-        super(x, y, 20, 16);
+        super(x, y, 28, 22);
         this._fase = Math.random() * Math.PI * 2;
         this.puntosAlRecoger = 10;
     }
 
     dibujar(ctx, camX, camY) {
         if (!this.activo) return;
-
-        const px = this.x - camX;
-        const py = this.y - camY + (this._offsetY || 0); // aplicamos la flotación
-
-        // Cuerpo del queso — triángulo amarillo
-        ctx.fillStyle = '#e8c040';
-        ctx.beginPath();
-        ctx.moveTo(px,           py + this.h);      // esquina inferior izquierda
-        ctx.lineTo(px + this.w,  py + this.h);      // esquina inferior derecha
-        ctx.lineTo(px + this.w / 2, py);            // punta superior
-        ctx.closePath();
-        ctx.fill();
-
-        // Borde más oscuro
-        ctx.strokeStyle = '#a07010';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-
-        // Agujeros del queso — dos círculos pequeños
-        ctx.fillStyle = '#a07010';
-        ctx.beginPath();
-        ctx.arc(px + 7,  py + this.h - 6, 2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(px + 13, py + this.h - 4, 2, 0, Math.PI * 2);
-        ctx.fill();
+        // Intentamos sprite; si no está listo, fallback geométrico
+        if (!this._drawSprite(ctx, IMG_QUESO, camX, camY, 28, 22)) {
+            const px = this.x - camX;
+            const py = this.y - camY + (this._offsetY || 0);
+            ctx.fillStyle = '#e8c040';
+            ctx.beginPath();
+            ctx.moveTo(px, py + this.h); ctx.lineTo(px + this.w, py + this.h);
+            ctx.lineTo(px + this.w/2, py); ctx.closePath(); ctx.fill();
+            ctx.strokeStyle = '#a07010'; ctx.lineWidth = 1; ctx.stroke();
+        }
     }
 }
 
@@ -101,42 +99,24 @@ export class Llave extends Objeto {
 
     dibujar(ctx, camX, camY) {
         if (!this.activo) return;
-
-        const px = this.x - camX;
-        const py = this.y - camY + (this._offsetY || 0);
-
         // Halo dorado brillante — destaca sobre cualquier bloque
+        const px = this.x - camX + this.w/2;
+        const py = this.y - camY + this.h/2 + (this._offsetY || 0);
         ctx.beginPath();
-        ctx.arc(px + this.w / 2, py + this.h / 2, this.w, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 215, 0, 0.20)';
-        ctx.fill();
-
-        // Círculo de la llave
-        ctx.beginPath();
-        ctx.arc(px + 8, py + 7, 6, 0, Math.PI * 2);
-        ctx.strokeStyle = '#e8c040';
-        ctx.lineWidth = 2.5;
-        ctx.stroke();
-
-        // Palo de la llave
-        ctx.beginPath();
-        ctx.moveTo(px + 13, py + 10);
-        ctx.lineTo(px + 20, py + 17);
-        ctx.strokeStyle = '#e8c040';
-        ctx.lineWidth = 2.5;
-        ctx.stroke();
-
-        // Dientes de la llave
-        ctx.beginPath();
-        ctx.moveTo(px + 17, py + 14);
-        ctx.lineTo(px + 19, py + 12);
-        ctx.moveTo(px + 15, py + 16);
-        ctx.lineTo(px + 17, py + 14);
-        ctx.strokeStyle = '#c8a030';
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        ctx.arc(px, py, this.w, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,215,0,0.20)'; ctx.fill();
+        // Sprite de llave
+        if (!this._drawSprite(ctx, IMG_LLAVE, camX, camY, 20, 20)) {
+            // Fallback geométrico si no carga
+            ctx.beginPath(); ctx.arc(px - 4, py - 4, 6, 0, Math.PI*2);
+            ctx.strokeStyle = '#e8c040'; ctx.lineWidth = 2.5; ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px+8, py+8);
+            ctx.strokeStyle = '#e8c040'; ctx.lineWidth = 2.5; ctx.stroke();
+        }
     }
 }
+
+// ── ESCUDO ────────────────────────────────────────────────────
 // Al recogerlo el jugador es invencible durante 300 frames (~5 segundos).
 // Visualmente aparece un aura azul alrededor del jugador mientras dura.
 export class Escudo extends Objeto {
@@ -148,38 +128,31 @@ export class Escudo extends Objeto {
 
     dibujar(ctx, camX, camY) {
         if (!this.activo) return;
-
         const px = this.x - camX;
         const py = this.y - camY + (this._offsetY || 0);
-
         // Halo azul exterior
         ctx.beginPath();
-        ctx.arc(px + this.w / 2, py + this.h / 2, this.w, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(40, 140, 255, 0.15)';
-        ctx.fill();
-
+        ctx.arc(px + this.w/2, py + this.h/2, this.w, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(40,140,255,0.15)'; ctx.fill();
         // Círculo azul principal
         ctx.beginPath();
-        ctx.arc(px + this.w / 2, py + this.h / 2, this.w / 2, 0, Math.PI * 2);
-        ctx.fillStyle = '#1060c0';
-        ctx.fill();
-        ctx.strokeStyle = '#40a0ff';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        // Símbolo de escudo en el centro
-        ctx.fillStyle = '#80c8ff';
-        ctx.font = '14px monospace';
+        ctx.arc(px + this.w/2, py + this.h/2, this.w/2, 0, Math.PI*2);
+        ctx.fillStyle = '#1060c0'; ctx.fill();
+        ctx.strokeStyle = '#40a0ff'; ctx.lineWidth = 2; ctx.stroke();
+        // Símbolo
+        ctx.fillStyle = '#80c8ff'; ctx.font = '14px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('🛡', px + this.w / 2, py + this.h / 2 + 5);
+        ctx.fillText('🛡', px + this.w/2, py + this.h/2 + 5);
         ctx.textAlign = 'left';
     }
 }
+
+// ── QUESO DORADO ──────────────────────────────────────────────
 // Da 50 puntos. Aparece unos segundos y desaparece si no lo coges.
 // Parpadea cuando le queda poco tiempo.
 export class QuesoDorado extends Objeto {
     constructor(x, y, duracion = 300) {
-        super(x, y, 24, 20);
+        super(x, y, 32, 26);
         this._fase       = Math.random() * Math.PI * 2;
         this.duracion    = duracion;
         this.frameActual = 0;
@@ -190,55 +163,41 @@ export class QuesoDorado extends Objeto {
         this._flotacion(5, 0.06);
         this.frameActual++;
         // Desaparece cuando se acaba el tiempo
-        if (this.frameActual >= this.duracion) {
-            this.activo = false;
-        }
+        if (this.frameActual >= this.duracion) this.activo = false;
     }
 
     dibujar(ctx, camX, camY) {
         if (!this.activo) return;
-
         // Parpadea en el último 30% del tiempo
         const tiempoRestante = this.duracion - this.frameActual;
-        const parpadeando = tiempoRestante < this.duracion * 0.3;
-        if (parpadeando && Math.floor(this.frameActual / 6) % 2 === 0) return;
+        if (tiempoRestante < this.duracion * 0.3 && Math.floor(this.frameActual / 6) % 2 === 0) return;
 
         const px = this.x - camX;
         const py = this.y - camY + (this._offsetY || 0);
 
         // Halo dorado brillante
         ctx.beginPath();
-        ctx.arc(px + this.w / 2, py + this.h / 2, this.w, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 200, 0, 0.15)';
-        ctx.fill();
+        ctx.arc(px + this.w/2, py + this.h/2, this.w, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,200,0,0.15)'; ctx.fill();
 
-        // Cuerpo — triángulo más grande y más brillante que el pequeño
-        ctx.fillStyle = '#ffd700';
-        ctx.beginPath();
-        ctx.moveTo(px,            py + this.h);
-        ctx.lineTo(px + this.w,   py + this.h);
-        ctx.lineTo(px + this.w / 2, py);
-        ctx.closePath();
-        ctx.fill();
+        // Sprite del queso escalado y con tinte dorado
+        if (IMG_QUESO.complete && IMG_QUESO.naturalWidth > 0) {
+            ctx.save();
+            ctx.filter = 'sepia(1) saturate(4) hue-rotate(10deg) brightness(1.3)';
+            ctx.drawImage(IMG_QUESO, px, py, this.w, this.h);
+            ctx.filter = 'none';
+            ctx.restore();
+        } else {
+            // Fallback geométrico dorado
+            ctx.fillStyle = '#ffd700';
+            ctx.beginPath();
+            ctx.moveTo(px, py + this.h); ctx.lineTo(px + this.w, py + this.h);
+            ctx.lineTo(px + this.w/2, py); ctx.closePath(); ctx.fill();
+            ctx.strokeStyle = '#c8a000'; ctx.lineWidth = 1.5; ctx.stroke();
+        }
 
-        // Borde dorado intenso
-        ctx.strokeStyle = '#c8a000';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-
-        // Agujeros
-        ctx.fillStyle = '#c8a000';
-        ctx.beginPath();
-        ctx.arc(px + 8,  py + this.h - 7, 2.5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(px + 16, py + this.h - 5, 2.5, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Destello en la punta — hace que se vea especial
+        // Destello en la punta
         ctx.fillStyle = 'rgba(255,255,255,0.6)';
-        ctx.beginPath();
-        ctx.arc(px + this.w / 2, py + 3, 2, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(px + this.w/2, py + 3, 2, 0, Math.PI*2); ctx.fill();
     }
 }

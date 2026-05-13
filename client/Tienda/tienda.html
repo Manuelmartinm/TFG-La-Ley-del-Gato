@@ -13,7 +13,6 @@
   <div class="scanlines"></div>
 
   <div class="main">
-
     <div class="page-header">
       <a href="../PaginaPrincipal/principal.html" class="back-btn">◀ VOLVER</a>
       <div class="logo-area">
@@ -22,7 +21,6 @@
       </div>
     </div>
 
-    <!-- Barra de monedas -->
     <div class="coins-bar">
       <div class="coins-bar-left">
         <span class="coins-icon">💰</span>
@@ -32,17 +30,15 @@
         </div>
       </div>
       <div class="coins-bar-right">
-        <button class="btn-premium" id="btnPremium">⭐ HACERSE PREMIUM</button>
+        <button class="btn-premium" id="btnPremium">⭐ SUMINISTROS / PREMIUM</button>
       </div>
     </div>
 
-    <!-- Tabs tienda normal / premium -->
     <div class="shop-tabs">
       <button class="shop-tab active" data-tab="normal">🏪 TIENDA NORMAL</button>
       <button class="shop-tab" data-tab="premium">⭐ TIENDA PREMIUM</button>
     </div>
 
-    <!-- Filtros -->
     <div class="cat-filters">
       <button class="cat-btn active" data-cat="todo">TODO</button>
       <button class="cat-btn" data-cat="SKIN">👗 SKINS</button>
@@ -51,13 +47,8 @@
     </div>
 
     <div class="shop-layout">
+      <div class="shop-grid" id="shopGrid"></div>
 
-      <!-- Grid de items de la tienda -->
-      <div class="shop-grid" id="shopGrid">
-        <!-- Se rellena por JS -->
-      </div>
-
-      <!-- Panel de compra -->
       <div class="buy-panel" id="buyPanel">
         <div class="buy-empty" id="buyEmpty">
           <div class="buy-empty-icon">🏪</div>
@@ -92,27 +83,34 @@
           <button class="btn-buy-real" id="btnBuyReal" style="display:none">💶 COMPRAR CON DINERO REAL</button>
         </div>
       </div>
-
     </div>
 
     <div class="foot">
       <span>LA LEY DEL GATO © 2025</span>
       <span id="shopCount">0 ARTÍCULOS</span>
     </div>
-
   </div>
 
-  <!-- Modal premium -->
   <div class="modal-overlay" id="premiumModal">
-    <div class="modal premium-modal">
-      <div class="premium-icon">⭐</div>
-      <div class="modal-title">ACCESO PREMIUM</div>
-      <div class="modal-desc">Desbloquea la tienda premium, recompensas exclusivas y ventajas únicas en el juego.</div>
-      <div class="premium-price">9,99€ — PAGO ÚNICO</div>
-      <div class="modal-btns">
-        <button class="btn-modal-cancel" id="premiumClose">CANCELAR</button>
-        <button class="btn-modal-confirm" id="premiumBuy">⭐ COMPRAR PREMIUM</button>
+    <div class="modal premium-modal" style="max-width: 500px;">
+      <div class="premium-icon">💰</div>
+      <div class="modal-title">SUMINISTROS DE RED</div>
+      <div class="modal-desc">Recarga créditos o adquiere el pase de élite.</div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0;">
+        <button class="cat-btn" onclick="comprarPack('pack_raton')" style="width:100%; font-size:10px;">🐭 200 Cr. - 1,99€</button>
+        <button class="cat-btn" onclick="comprarPack('pack_agente')" style="width:100%; font-size:10px;">🕵️ 550 Cr. - 4,99€</button>
+        <button class="cat-btn" onclick="comprarPack('pack_elite')" style="width:100%; font-size:10px;">🕶️ 1200 Cr. - 9,99€</button>
+        <button class="cat-btn" onclick="comprarPack('pack_leyenda')" style="width:100%; font-size:10px;">👑 2500 Cr. - 19,99€</button>
       </div>
+
+      <div class="buy-divider"></div>
+      <div style="margin: 15px 0; text-align: center;">
+          <div style="color: var(--gold); font-size: 12px; margin-bottom: 10px;">⭐ PASE PREMIUM</div>
+          <button class="btn-buy" id="premiumBuyBtn" style="width: 100%;">ADQUIRIR POR 9,99€</button>
+      </div>
+
+      <button class="btn-modal-cancel" id="premiumClose" style="width:100%">CERRAR</button>
     </div>
   </div>
 

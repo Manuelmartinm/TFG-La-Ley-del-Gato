@@ -288,3 +288,74 @@ body {
   .shop-layout { grid-template-columns: 1fr; }
   .buy-panel { position: static; }
 }
+/* =========================================================
+   ESTILOS NUEVOS PARA EL MODAL DE PAGOS (AÑADIR AL FINAL)
+   ========================================================= */
+
+/* Asegurar que el modal se vea encima de todo */
+.modal-overlay.open {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+}
+
+/* El grid de los packs */
+.packs-grid-sim {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dos columnas */
+    gap: 15px;
+    margin: 20px 0;
+}
+
+/* Estilo de cada botón de pack */
+.cat-btn-pack {
+    background: #1a150a;
+    border: 2px solid #c8a030;
+    color: #f0d060;
+    padding: 15px 10px;
+    font-family: 'VT323', monospace;
+    font-size: 20px; /* Precios grandes y legibles */
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.cat-btn-pack:hover {
+    background: #c8a030;
+    color: #000;
+    transform: scale(1.05);
+}
+
+.cat-btn-pack span {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 9px; /* El texto "Pack Ratón" más pequeño arriba */
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* El botón de comprar Premium dentro del modal */
+#premiumBuyBtn {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    padding: 15px;
+    width: 100%;
+    background: #f0d060;
+    color: #000;
+    border: none;
+    cursor: pointer;
+}
+
+#premiumBuyBtn:hover {
+    background: #fff;
+    box-shadow: 0 0 15px #f0d060;
+}
+
+/* Ajuste del divisor */
+.buy-divider {
+    height: 2px;
+    background: rgba(200, 160, 48, 0.3);
+    margin: 15px 0;
+}

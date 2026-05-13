@@ -1,32 +1,131 @@
 // ─────────────────────────────────────────────────────────────
-// Nivel3.js — datos del nivel 3
-// Para rellenar: copiar la estructura de Nivel1.js y cambiar
-// el mapa, posición inicial, enemigos y objetos.
+// Nivel3.js — LABERINTO
+//
+// ESTRUCTURA VISUAL:
+//  Mapa laberíntico con pasillos estrechos (2 celdas de ancho)
+//  El raton grande NO puede pasar por pasillos de 1 celda
+//  Jugador → esquina superior izquierda (col 1, fila 1)
+//  Puerta  → esquina inferior derecha   (col 38, fila 28)
+//
+//  PUNTUACIÓN MÍNIMA: 100 pts
+//  10 quesos pequeños × 10pts = 100pts exactos
+//  1 queso dorado × 50pts = bonus
+//
+//  Enemigos — uno de cada tipo:
+//    - PATRULLA: zona central del laberinto
+//    - CAZADOR:  zona derecha media
+//    - RAPIDO:   zona superior derecha (pasillos anchos)
+//    - CENTINELA: zona inferior izquierda (fijo, dispara)
+//    - MORTERO:   zona inferior derecha (fijo, dispara en arco)
+//
+//  Sprites: mismos que niveles anteriores
+//  Al pisar la puerta con llave + 100pts → redirige a mapa
 // ─────────────────────────────────────────────────────────────
 
 import { TIPO_ENEMIGO } from '../utilidades/constantes.js';
 
-// TODO: definir posición inicial del jugador
-export const INICIO_JUGADOR = { x: 80, y: 80 };
+// Jugador — esquina superior izquierda
+export const INICIO_JUGADOR = { x: 2 * 40, y: 1 * 40 };
 
-// TODO: definir posición de la puerta (fila, col)
-export const PUERTA = { fila: 0, col: 0 };
+// Puerta — esquina inferior derecha, máxima distancia
+export const PUERTA = { fila: 28, col: 38 };
 
-// TODO: definir posición de la llave (x, y en píxeles)
-export const LLAVE = { x: 0, y: 0 };
+// Llave — zona central del laberinto, requiere explorar
+export const LLAVE = { x: 20 * 40, y: 15 * 40 };
 
-// TODO: definir posiciones de quesos pequeños
-export const QUESOS_PEQUENOS = [];
+// ── 10 quesos pequeños × 10pts = 100pts ──────────────────────
+export const QUESOS_PEQUENOS = [
+    { x:  4 * 40, y:  3 * 40 },
+    { x:  8 * 40, y:  7 * 40 },
+    { x: 14 * 40, y:  2 * 40 },
+    { x: 18 * 40, y:  8 * 40 },
+    { x: 24 * 40, y:  3 * 40 },
+    { x: 30 * 40, y:  6 * 40 },
+    { x: 10 * 40, y: 14 * 40 },
+    { x: 26 * 40, y: 18 * 40 },
+    { x: 34 * 40, y: 22 * 40 },
+    { x: 16 * 40, y: 24 * 40 },
+];
 
-// TODO: definir posiciones de quesos dorados
-export const QUESOS_DORADOS = [];
+// Queso dorado — bonus en zona central
+export const QUESOS_DORADOS = [{ x: 22 * 40, y: 20 * 40, duracion: 8000 }];
 
-// TODO: definir posiciones de escudos
-export const ESCUDOS = [];
+// Escudos — estratégicamente cerca de enemigos peligrosos
+export const ESCUDOS = [
+    { x:  6 * 40, y: 12 * 40 },
+    { x: 32 * 40, y: 14 * 40 },
+];
 
-// TODO: diseñar el mapa — 40 columnas × 30 filas
-// 0=suelo 1=pared 2=puerta 3=botón 4=trampa 5=hielo 6=escondite 7=barro
-export const MAPA = [];
+// ── Leyenda ───────────────────────────────────────────────────
+// 0 suelo   1 pared   2 puerta
+// 4 trampa  5 hielo   6 escondite  7 barro
 
-// TODO: definir los enemigos del nivel
-export const ENEMIGOS_CONFIG = [];
+export const MAPA = [
+//   0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
+    [  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ], // 0
+    [  1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1 ], // 1
+    [  1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1 ], // 2
+    [  1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1 ], // 3
+    [  1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1 ], // 4
+    [  1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1 ], // 5
+    [  1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1 ], // 6
+    [  1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1 ], // 7
+    [  1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1 ], // 8
+    [  1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1 ], // 9
+    [  1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1 ], // 10
+    [  1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1 ], // 11
+    [  1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1 ], // 12
+    [  1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1 ], // 13
+    [  1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1 ], // 14
+    [  1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1 ], // 15
+    [  1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1 ], // 16
+    [  1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1 ], // 17
+    [  1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1 ], // 18
+    [  1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1 ], // 19
+    [  1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1 ], // 20
+    [  1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ], // 21
+    [  1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1 ], // 22
+    [  1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1 ], // 23
+    [  1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1 ], // 24
+    [  1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ], // 25
+    [  1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1 ], // 26
+    [  1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1 ], // 27
+    [  1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 1 ], // 28 puerta col 38
+    [  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ], // 29
+];
+
+export const ENEMIGOS_CONFIG = [
+    // PATRULLA — zona central del laberinto
+    {
+        x: 12 * 40, y: 11 * 40,
+        tipo: TIPO_ENEMIGO.PATRULLA,
+        patrol: [
+            { x:  8 * 40, y: 11 * 40 },
+            { x: 16 * 40, y: 11 * 40 },
+            { x: 16 * 40, y: 15 * 40 },
+            { x:  8 * 40, y: 15 * 40 },
+        ],
+    },
+    // CAZADOR — zona derecha media, persigue al jugador
+    {
+        x: 32 * 40, y: 14 * 40,
+        tipo: TIPO_ENEMIGO.CAZADOR,
+        origenX: 32 * 40, origenY: 14 * 40,
+    },
+    // RAPIDO — zona superior derecha, muy ágil
+    {
+        x: 28 * 40, y:  5 * 40,
+        tipo: TIPO_ENEMIGO.RAPIDO,
+        origenX: 28 * 40, origenY: 5 * 40,
+    },
+    // CENTINELA — zona inferior izquierda, fijo disparando
+    {
+        x:  5 * 40, y: 22 * 40,
+        tipo: TIPO_ENEMIGO.CENTINELA,
+    },
+    // MORTERO — zona inferior derecha, dispara en arco
+    {
+        x: 34 * 40, y: 25 * 40,
+        tipo: TIPO_ENEMIGO.MORTERO,
+    },
+];
