@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Ley del Gato — Selección de Misión</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="mapa.css">
+</head>
+<body>
+
+<div class="scene"></div>
+<div class="vignette"></div>
+<div class="scanlines"></div>
+
+<div class="layout">
+
+    <div class="page-header">
+        <a href="../PaginaPrincipal/principal.html" class="back-btn">◀ VOLVER</a>
+        <div class="page-title">SELECCIÓN DE MISIÓN</div>
+        <div class="agent-tag" id="agentName">AGENTE_01</div>
+    </div>
+
+    <div class="levels-container">
+
+        <!-- NIVEL 1 -->
+        <div class="level-card available" onclick="irAlNivel('../Juego/index.html')">
+            <div class="card-name">Tutorial</div>
+            <div class="card-play">JUGAR ▶</div>
+        </div>
+
+        <!-- NIVEL 2 -->
+        <div class="level-card locked">
+            <div class="card-name">NIVEL 2</div>
+            <div class="card-play locked-text">🔒</div>
+        </div>
+
+        <!-- MINIJUEGO 1 -->
+        <div class="level-card locked mini">
+            <div class="card-name">MINIJUEGO 1</div>
+            <div class="card-play locked-text">🔒</div>
+        </div>
+
+        <!-- NIVEL 3 -->
+        <div class="level-card locked">
+            <div class="card-name">NIVEL 3</div>
+            <div class="card-play locked-text">🔒</div>
+        </div>
+
+        <!-- MINIJUEGO 2 -->
+        <div class="level-card locked mini">
+            <div class="card-name">MINIJUEGO 2</div>
+            <div class="card-play locked-text">🔒</div>
+        </div>
+
+    </div>
+</div>
+
+<script src="mapa.js"></script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --gold:        #c8a030;
+    --gold-bright: #e8c040;
+    --gold-dim:    #8a6820;
+    --gold-dark:   #4a3510;
+}
+
+body {
+    min-height: 100vh;
+    background: #03080e;
+    font-family: 'VT323', monospace;
+    overflow: hidden;
+    position: relative;
+}
+
+.scene {
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse 120% 100% at 50% 0%, #050d1a 0%, #020810 40%, #03080e 100%);
+    z-index: 0;
+}
+.scene::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: radial-gradient(circle, rgba(30,60,100,0.15) 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+.vignette {
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse 90% 90% at 50% 50%, transparent 40%, rgba(0,0,0,0.9) 100%);
+    pointer-events: none; z-index: 4;
+}
+.scanlines {
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+            to bottom, transparent 0, transparent 3px,
+            rgba(0,0,0,0.07) 3px, rgba(0,0,0,0.07) 4px
+    );
+    pointer-events: none; z-index: 50;
+}
+
+.layout {
+    position: relative; z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 0 3rem;
+}
+
+/* Cabecera */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 0 1.2rem;
+    border-bottom: 1px solid #0e1a2a;
+    margin-bottom: 3rem;
+}
+.back-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 7px;
+    color: var(--gold-dim);
+    text-decoration: none;
+    letter-spacing: 2px;
+    padding: 8px 12px;
+    border: 1px solid #1a2e40;
+    transition: all 0.2s;
+}
+.back-btn:hover { color: var(--gold); border-color: var(--gold-dark); }
+
+.page-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 4px;
+    text-shadow: 0 0 20px rgba(200,160,48,0.4);
+}
+.agent-tag {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 7px;
+    color: var(--gold-dim);
+    letter-spacing: 1px;
+    border: 1px solid #1a2e40;
+    padding: 6px 10px;
+}
+
+/* Grid */
+.levels-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+
+/* Tarjeta */
+.level-card {
+    width: 240px;
+    height: 160px;
+    background: rgba(3,10,20,0.90);
+    border: 1px solid #0e1a2a;
+    border-top: 2px solid var(--gold-dark);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1.2rem 1.4rem;
+    animation: fadein 0.4s ease both;
+    transition: all 0.2s ease;
+}
+.level-card:nth-child(1) { animation-delay: 0.05s; }
+.level-card:nth-child(2) { animation-delay: 0.12s; }
+.level-card:nth-child(3) { animation-delay: 0.19s; }
+.level-card:nth-child(4) { animation-delay: 0.26s; }
+.level-card:nth-child(5) { animation-delay: 0.33s; }
+
+.level-card.available {
+    border-top-color: var(--gold);
+    cursor: pointer;
+}
+.level-card.available:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(200,160,48,0.15);
+    background: rgba(200,160,48,0.04);
+    border-color: var(--gold-dark);
+}
+
+.level-card.locked { opacity: 0.45; cursor: not-allowed; }
+
+.level-card.mini { border-top-color: #2060a0; }
+
+/* Nombre del nivel — grande, centrado */
+.card-name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    color: var(--gold-bright);
+    letter-spacing: 2px;
+    line-height: 1.6;
+}
+
+/* Botón jugar — abajo a la derecha */
+.card-play {
+    position: absolute;
+    bottom: 14px;
+    right: 16px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 7px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    transition: color 0.2s;
+}
+.level-card.available:hover .card-play { color: var(--gold-bright); }
+.locked-text { color: #1a2e40; }
+
+@keyframes fadein {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
