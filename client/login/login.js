@@ -19,8 +19,7 @@ const modalClose      = document.getElementById('modalClose');
 const recEmail        = document.getElementById('recEmail');
 const btnRec          = document.getElementById('btnRec');
 const mRec            = document.getElementById('mRec');
-// NUEVO: Referencia al botón de anónimo
-const btnAnonimo      = document.getElementById('btnAnonimo'); 
+const btnAnonimo      = document.getElementById('btnAnonimo');
 
 const API_URL = 'https://tfg-la-ley-del-gato.onrender.com';
 
@@ -33,17 +32,12 @@ const API_URL = 'https://tfg-la-ley-del-gato.onrender.com';
   for (let i = 0; i < N; i++) {
     const drop = document.createElement('div');
     drop.className = 'raindrop';
-    const left   = Math.random() * 100;
-    const height = 10 + Math.random() * 30;
-    const dur    = 0.8 + Math.random() * 1.4;
-    const delay  = Math.random() * 2;
-    const op     = 0.1 + Math.random() * 0.3;
     drop.style.cssText = `
-      left: ${left}%;
-      height: ${height}px;
-      opacity: ${op};
-      animation-duration: ${dur}s;
-      animation-delay: ${delay}s;
+      left: ${Math.random() * 100}%;
+      height: ${10 + Math.random() * 30}px;
+      opacity: ${0.1 + Math.random() * 0.3};
+      animation-duration: ${0.8 + Math.random() * 1.4}s;
+      animation-delay: ${Math.random() * 2}s;
     `;
     container.appendChild(drop);
   }
@@ -66,8 +60,7 @@ setInterval(actualizarReloj, 1000);
    TYPEWRITER EN EL PROMPT DE BIENVENIDA
 --------------------------------------------------------- */
 (function typewriter() {
-  // Recupera nombre guardado si existe
-  const nombre = localStorage.getItem('nombre_usuario');
+  const nombre = localStorage.getItem('login_usuario');
   const texto  = nombre
     ? `BIENVENIDO DE NUEVO, ${nombre.toUpperCase()}_`
     : 'INTRODUCE TUS CREDENCIALES_';
@@ -76,7 +69,6 @@ setInterval(actualizarReloj, 1000);
   const caret = document.getElementById('promptCaret');
   let idx     = 0;
 
-  // Espera a que la card sea visible antes de empezar
   setTimeout(() => {
     caret.style.display = 'none';
     const iv = setInterval(() => {
@@ -120,11 +112,10 @@ function validarCampos() {
   const u = inputUsuario.value.trim();
   const p = inputPass.value;
 
-  // Validar identificador: no vacío
   if (u.length > 0) {
-    const esEmail   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(u);
-    const esAlias   = u.length >= 3;
-    const valido    = esEmail || esAlias;
+    const esEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(u);
+    const esAlias = u.length >= 3;
+    const valido  = esEmail || esAlias;
     istatU.textContent = valido ? '■' : '✕';
     istatU.className   = 'istat ' + (valido ? 'ok' : 'err');
     irowU.className    = 'irow ' + (valido ? 'valid' : 'invalid');
@@ -159,7 +150,6 @@ btnLogin.addEventListener('click', async () => {
 
   msgError.style.display   = 'none';
   msgSuccess.style.display = 'none';
-
   btnLogin.disabled  = true;
   btnLogin.innerHTML = 'VERIFICANDO<span class="dots"></span>';
 
@@ -176,48 +166,51 @@ btnLogin.addEventListener('click', async () => {
     const datos = await respuesta.json();
 
     if (respuesta.ok) {
-      // Guardar datos de sesión
-      if (datos.nombre_usuario) localStorage.setItem('nombre_usuario', datos.nombre_usuario);
-      if (datos.avatar) localStorage.setItem('avatar', datos.avatar);
-      if (datos.token) localStorage.setItem('token', datos.token);
-      if (datos.email) localStorage.setItem('email', datos.email);
-      
-      localStorage.setItem('email_verificado', datos.email_verificado ? 'true' : 'false');
-      
-      if (datos.fecha_creacion) {
-        const fecha = new Date(datos.fecha_creacion);
-        localStorage.setItem('fecha_registro', `${fecha.getDate().toString().padStart(2,'0')}/${(fecha.getMonth()+1).toString().padStart(2,'0')}/${fecha.getFullYear()}`);
+      const u = datos.usuario;
+
+      // ── Guardar todos los datos de sesión de forma consistente ──
+      localStorage.setItem('login_usuario',    u.nombre_usuario);
+      localStorage.setItem('nombre_usuario',   u.nombre_usuario);
+      localStorage.setItem('avatar',           u.avatar ?? 0);
+      localStorage.setItem('email',            u.email || '');
+      localStorage.setItem('email_verificado', u.email_verificado ? 'true' : 'false');
+      localStorage.setItem('monedas',          u.monedas ?? 0);
+      localStorage.setItem('puntuacion_total', u.puntuacion_total ?? 0);
+      localStorage.setItem('rol',              u.rol || 'REGISTRADO');
+
+      if (u.fecha_creacion) {
+        const fecha = new Date(u.fecha_creacion);
+        localStorage.setItem('fecha_registro',
+          `${fecha.getDate().toString().padStart(2,'0')}/${(fecha.getMonth()+1).toString().padStart(2,'0')}/${fecha.getFullYear()}`
+        );
       }
 
-      // Recordar usuario si está marcado
       if (rememberCb.checked) {
-        localStorage.setItem('login_usuario', inputUsuario.value.trim());
+        localStorage.setItem('login_usuario', u.nombre_usuario);
       } else {
         localStorage.removeItem('login_usuario');
+        // pero mantenemos nombre_usuario para la sesión actual
+        localStorage.setItem('nombre_usuario', u.nombre_usuario);
       }
 
       msgSuccess.style.display = 'block';
       btnLogin.innerHTML = '▶ ACCESO CONCEDIDO';
 
-      // Redirigir después de un momento
       setTimeout(() => {
         window.location.href = '../PaginaPrincipal/principal.html';
       }, 1200);
 
     } else {
-      // Mostrar error con animación de shake
       const errTexto = (datos.error || 'CREDENCIALES INCORRECTAS').toUpperCase();
       msgError.textContent   = '> ' + errTexto;
       msgError.style.display = 'block';
 
-      // Shake en la card
       const card = document.getElementById('mainCard');
       card.classList.remove('shake');
-      void card.offsetWidth; // fuerza reflow para reiniciar animación
+      void card.offsetWidth;
       card.classList.add('shake');
       setTimeout(() => card.classList.remove('shake'), 400);
 
-      // Limpiar contraseña
       inputPass.value = '';
       validarCampos();
       inputPass.focus();
@@ -242,29 +235,29 @@ btnLogin.addEventListener('click', async () => {
 });
 
 /* ---------------------------------------------------------
-   MODO ANÓNIMO (NUEVO)
+   MODO ANÓNIMO
 --------------------------------------------------------- */
 if (btnAnonimo) {
   btnAnonimo.addEventListener('click', () => {
-    // Generar un sufijo aleatorio para el nombre
     const idTemp = Math.random().toString(36).substring(2, 6).toUpperCase();
-    
-    // Rellenamos el localStorage con datos falsos pero con la misma estructura que pide tu web
-    localStorage.setItem('nombre_usuario', `AGENTE_${idTemp}`);
-    localStorage.setItem('avatar', '0'); // Le ponemos el primer avatar (el ratón)
-    localStorage.setItem('token', 'token_temporal_anonimo');
-    localStorage.setItem('email', 'anonimo@ley-del-gato.com');
-    localStorage.setItem('email_verificado', 'true'); // Para que le deje entrar sin pedir validación
-    
-    // Generamos la fecha de hoy
-    const fecha = new Date();
-    localStorage.setItem('fecha_registro', `${fecha.getDate().toString().padStart(2,'0')}/${(fecha.getMonth()+1).toString().padStart(2,'0')}/${fecha.getFullYear()}`);
+    const nombre = `AGENTE_${idTemp}`;
 
-    // Feedback visual opcional antes de redirigir
-    btnLogin.innerHTML = '▶ ACCESO ANÓNIMO...';
-    
+    localStorage.setItem('login_usuario',    nombre);
+    localStorage.setItem('nombre_usuario',   nombre);
+    localStorage.setItem('avatar',           '0');
+    localStorage.setItem('email',            'anonimo@ley-del-gato.com');
+    localStorage.setItem('email_verificado', 'true');
+    localStorage.setItem('monedas',          '0');
+    localStorage.setItem('puntuacion_total', '0');
+    localStorage.setItem('rol',              'ANONIMO');
+
+    const fecha = new Date();
+    localStorage.setItem('fecha_registro',
+      `${fecha.getDate().toString().padStart(2,'0')}/${(fecha.getMonth()+1).toString().padStart(2,'0')}/${fecha.getFullYear()}`
+    );
+
     setTimeout(() => {
-        window.location.href = '../PaginaPrincipal/principal.html';
+      window.location.href = '../PaginaPrincipal/principal.html';
     }, 500);
   });
 }
@@ -292,7 +285,6 @@ function cerrarModal() {
   btnRec.disabled = true;
 }
 
-// Validar campo de recuperación
 recEmail.addEventListener('input', () => {
   const valido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recEmail.value.trim());
   btnRec.disabled = !valido;
@@ -302,7 +294,6 @@ recEmail.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !btnRec.disabled) btnRec.click();
 });
 
-// Enviar recuperación
 btnRec.addEventListener('click', async () => {
   btnRec.disabled  = true;
   btnRec.innerHTML = 'ENVIANDO<span class="dots"></span>';
@@ -319,7 +310,7 @@ btnRec.addEventListener('click', async () => {
 
     mRec.className   = 'msg ' + (respuesta.ok ? 'msg-ok' : 'msg-err');
     mRec.textContent = respuesta.ok
-      ? '▶ CÓDIGO ENVIADO. REVISA TU EMAIL.'
+      ? '▶ SI EL EMAIL ESTÁ REGISTRADO, RECIBIRÁS UN ENLACE. (FUNCIÓN EN DESARROLLO)'
       : '> ' + (datos.error || 'ERROR AL ENVIAR').toUpperCase();
     mRec.style.display = 'block';
 
@@ -330,6 +321,5 @@ btnRec.addEventListener('click', async () => {
   }
 
   btnRec.innerHTML = '▶ ENVIAR CÓDIGO';
-  // Volver a habilitar si el email sigue siendo válido
-  btnRec.disabled = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recEmail.value.trim());
+  btnRec.disabled  = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recEmail.value.trim());
 });

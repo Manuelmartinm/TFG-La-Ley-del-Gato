@@ -1,22 +1,43 @@
-    window.onload = function () {
-    // 1. Carga el nombre del agente
-    const nombre = localStorage.getItem('login_usuario') || 'AGENTE_01';
-    document.getElementById('agentName').textContent = nombre.toUpperCase();
+   /* =========================================================
+   LA LEY DEL GATO — principal.js
+   ========================================================= */
 
-    // 2. Nuestra "piedra Rosetta" para traducir el número a emoji
-    const emojisAvatares = ['🐭', '🐀', '🐹', '🐁', '🦔', '🐿️'];
-    
-    // 3. Recuperamos el índice del avatar (el "0")
-    let avatarIndex = localStorage.getItem('avatar');
+// NOTA: este script se carga con <script src="principal.js"> en el <head>
+// por eso usamos DOMContentLoaded en vez de window.onload
+document.addEventListener('DOMContentLoaded', function () {
 
-    // 4. Si hay algún error o está vacío, le ponemos el 0 por defecto
-    if (avatarIndex === null || isNaN(avatarIndex)) {
-        avatarIndex = 0;
+  const emojisAvatares = ['🐭', '🐀', '🐹', '🐁', '🦔', '🐿️'];
+
+  // Leer nombre — primero nombre_usuario, fallback a login_usuario
+  const nombre = localStorage.getItem('nombre_usuario')
+              || localStorage.getItem('login_usuario')
+              || 'AGENTE_01';
+
+  document.getElementById('agentName').textContent = nombre.toUpperCase();
+
+  // Avatar
+  let avatarIndex = parseInt(localStorage.getItem('avatar'));
+  if (isNaN(avatarIndex) || avatarIndex < 0 || avatarIndex >= emojisAvatares.length) {
+    avatarIndex = 0;
+  }
+  document.getElementById('agentAvatar').textContent = emojisAvatares[avatarIndex];
+
+  // Música — AudioCore se carga DESPUÉS de este script en el HTML,
+  // así que esperamos al primer evento de usuario para no romper nada
+  document.body.addEventListener('click', function iniciarMusica() {
+    if (typeof AudioCore !== 'undefined') {
+      AudioCore.playMusic('principal');
     }
+    document.body.removeEventListener('click', iniciarMusica);
+  }, { once: true });
 
-    // 5. ¡Magia! Buscamos el emoji en la lista usando el número y lo mostramos
-    document.getElementById('agentAvatar').textContent = emojisAvatares[parseInt(avatarIndex)];
-    AudioCore.playMusic('principal');
-}
+  // Intentar reproducir igualmente (puede fallar por política de autoplay, es normal)
+  setTimeout(() => {
+    if (typeof AudioCore !== 'undefined') {
+      AudioCore.playMusic('principal');
+    }
+  }, 100);
+
+});
 
     

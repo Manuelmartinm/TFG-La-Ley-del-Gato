@@ -39,28 +39,74 @@ const ajustes = cargarAjustes();
   });
 });
 
+/* =========================================================
+   LA LEY DEL GATO — ajustes.js
+   ========================================================= */
+
+const API_URL = 'https://tfg-la-ley-del-gato.onrender.com';
+
+// Leer nombre — mismo orden que el resto de páginas
+const usuarioLogueado = localStorage.getItem('nombre_usuario')
+                     || localStorage.getItem('login_usuario')
+                     || 'INVITADO';
+
+document.getElementById('sessionName').textContent = usuarioLogueado.toUpperCase();
+
+/* ---------------------------------------------------------
+   CARGAR AJUSTES GUARDADOS EN localStorage
+--------------------------------------------------------- */
+const ajustesDefault = {
+  musica: true,
+  efectos: true,
+  volMusica: 70,
+  volEfectos: 85
+};
+
+function cargarAjustes() {
+  const guardados = JSON.parse(localStorage.getItem('ajustes_gato') || '{}');
+  return { ...ajustesDefault, ...guardados };
+}
+
+const ajustes = cargarAjustes();
+
+// Aplica toggles
+['musica', 'efectos'].forEach(key => {
+  const el = document.querySelector(`[data-key="${key}"]`);
+  if (!el) return;
+  if (ajustes[key]) el.classList.add('active');
+  else el.classList.remove('active');
+
+  el.addEventListener('click', () => {
+    if (typeof AudioCore !== 'undefined') AudioCore.playSFX('click');
+    el.classList.toggle('active');
+    ajustes[key] = el.classList.contains('active');
+  });
+});
+
 // Aplica sliders
-const volMusica = document.getElementById('volMusica');
+const volMusica  = document.getElementById('volMusica');
 const volEfectos = document.getElementById('volEfectos');
-volMusica.value = ajustes.volMusica;
+volMusica.value  = ajustes.volMusica;
 volEfectos.value = ajustes.volEfectos;
-document.getElementById('volMusicaVal').textContent = ajustes.volMusica;
+document.getElementById('volMusicaVal').textContent  = ajustes.volMusica;
 document.getElementById('volEfectosVal').textContent = ajustes.volEfectos;
 
 volMusica.addEventListener('input', () => {
   ajustes.volMusica = volMusica.value;
   document.getElementById('volMusicaVal').textContent = volMusica.value;
+  if (typeof AudioCore !== 'undefined') AudioCore.actualizarVolumenes();
 });
 volEfectos.addEventListener('input', () => {
   ajustes.volEfectos = volEfectos.value;
   document.getElementById('volEfectosVal').textContent = volEfectos.value;
+  if (typeof AudioCore !== 'undefined') AudioCore.actualizarVolumenes();
 });
 
 /* ---------------------------------------------------------
    GUARDAR AJUSTES
 --------------------------------------------------------- */
 document.getElementById('btnGuardar').addEventListener('click', () => {
-  AudioCore.playSFX('click');
+  if (typeof AudioCore !== 'undefined') AudioCore.playSFX('click');
   localStorage.setItem('ajustes_gato', JSON.stringify(ajustes));
   const msg = document.getElementById('msgOk');
   msg.style.display = 'block';
@@ -101,11 +147,7 @@ document.getElementById('btnLogout').addEventListener('click', () => {
     '¿CERRAR SESIÓN?',
     'Tendrás que volver a identificarte la próxima vez.',
     () => {
-      localStorage.removeItem('token');
-      localStorage.removeItem('login_usuario');
-      localStorage.removeItem('avatar');
-      // Borramos también el inventario local para que no lo vea otro
-      localStorage.removeItem('inventario_local'); 
+      localStorage.clear();
       window.location.href = '../login/login.html';
     }
   );
@@ -119,23 +161,31 @@ document.getElementById('btnResetProgress').addEventListener('click', () => {
     '¿REINICIAR PROGRESO?',
     'Se borrará todo tu progreso, inventario y estadísticas. Esta acción es irreversible.',
     async () => {
-      if (usuarioLogueado === 'INVITADO') {
-         localStorage.removeItem('inventario_local');
-         alert('Progreso local borrado.');
-         return;
+      const rol = localStorage.getItem('rol');
+      if (rol === 'ANONIMO' || usuarioLogueado === 'INVITADO') {
+        localStorage.removeItem('inventario_local');
+        localStorage.setItem('monedas', '0');
+        localStorage.setItem('puntuacion_total', '0');
+        alert('Progreso local borrado.');
+        return;
       }
       try {
-        await fetch(`${API_URL}/usuarios/progreso`, {
+        const res = await fetch(`${API_URL}/usuarios/progreso`, {
           method: 'DELETE',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}` 
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ nombre_usuario: usuarioLogueado })
         });
-        alert('Progreso borrado en el servidor.');
+        if (res.ok) {
+          localStorage.setItem('monedas', '0');
+          localStorage.setItem('puntuacion_total', '0');
+          localStorage.removeItem('inventario_local');
+          alert('Progreso borrado correctamente.');
+        } else {
+          alert('Error al borrar el progreso en el servidor.');
+        }
       } catch (err) {
         console.error(err);
+        alert('Error de conexión con el servidor.');
       }
     }
   );
@@ -149,23 +199,26 @@ document.getElementById('btnDeleteAccount').addEventListener('click', () => {
     '⚠ ELIMINAR CUENTA',
     '¡ATENCIÓN! Todos tus datos serán eliminados permanentemente del servidor.',
     async () => {
-      if (usuarioLogueado === 'INVITADO') {
-         alert('No estás registrado.');
-         return;
+      const rol = localStorage.getItem('rol');
+      if (rol === 'ANONIMO' || usuarioLogueado === 'INVITADO') {
+        alert('No estás registrado con una cuenta real.');
+        return;
       }
       try {
-        await fetch(`${API_URL}/usuarios/cuenta`, {
+        const res = await fetch(`${API_URL}/usuarios/cuenta`, {
           method: 'DELETE',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}` 
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ nombre_usuario: usuarioLogueado })
         });
-        localStorage.clear();
-        window.location.href = '../login/login.html';
+        if (res.ok) {
+          localStorage.clear();
+          window.location.href = '../login/login.html';
+        } else {
+          alert('Error al eliminar la cuenta.');
+        }
       } catch (err) {
         console.error(err);
+        alert('Error de conexión con el servidor.');
       }
     }
   );

@@ -1,173 +1,325 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>La Ley del Gato — Acceso</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="login.css">
-</head>
-<body>
+/* =========================================================
+   LA LEY DEL GATO — login.js
+   ========================================================= */
 
-  <div class="scene"></div>
-  <div class="rain" id="rain"></div>
-  <div class="city-silhouette"></div>
-  <div class="fog"></div>
-  <div class="vignette"></div>
-  <div class="scanlines"></div>
+const inputUsuario    = document.getElementById('u');
+const inputPass       = document.getElementById('p');
+const btnLogin        = document.getElementById('btn');
+const togglePass      = document.getElementById('tp');
+const msgError        = document.getElementById('mErr');
+const msgSuccess      = document.getElementById('mOk');
+const irowU           = document.getElementById('irowU');
+const irowP           = document.getElementById('irowP');
+const istatU          = document.getElementById('istatU');
+const checkBox        = document.getElementById('checkBox');
+const rememberCb      = document.getElementById('remember');
+const forgotBtn       = document.getElementById('forgotBtn');
+const modalOverlay    = document.getElementById('modalOverlay');
+const modalClose      = document.getElementById('modalClose');
+const recEmail        = document.getElementById('recEmail');
+const btnRec          = document.getElementById('btnRec');
+const mRec            = document.getElementById('mRec');
+const btnAnonimo      = document.getElementById('btnAnonimo');
 
-  <div class="main">
+const API_URL = 'https://tfg-la-ley-del-gato.onrender.com';
 
-    <div class="boot-sequence" id="bootSeq">
-      <div class="boot-line" style="--d:0.0s">INICIANDO SISTEMA <span class="boot-ok">OK</span></div>
-      <div class="boot-line" style="--d:0.3s">CARGANDO PROTOCOLOS <span class="boot-ok">OK</span></div>
-      <div class="boot-line" style="--d:0.6s">VERIFICANDO CIFRADO <span class="boot-ok">OK</span></div>
-      <div class="boot-line" style="--d:0.9s">ACCESO AL SISTEMA <span class="boot-blink">LISTO</span></div>
-    </div>
+/* ---------------------------------------------------------
+   LLUVIA GENERATIVA
+--------------------------------------------------------- */
+(function crearLluvia() {
+  const container = document.getElementById('rain');
+  const N = 60;
+  for (let i = 0; i < N; i++) {
+    const drop = document.createElement('div');
+    drop.className = 'raindrop';
+    drop.style.cssText = `
+      left: ${Math.random() * 100}%;
+      height: ${10 + Math.random() * 30}px;
+      opacity: ${0.1 + Math.random() * 0.3};
+      animation-duration: ${0.8 + Math.random() * 1.4}s;
+      animation-delay: ${Math.random() * 2}s;
+    `;
+    container.appendChild(drop);
+  }
+})();
 
-    <div class="header" id="mainHeader">
-      <div class="cat-icon">
-        <svg class="cat-svg" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="18,48 30,18 44,48" fill="none" stroke="#c8a030" stroke-width="2" stroke-linejoin="round"/>
-          <polygon points="76,48 90,18 102,48" fill="none" stroke="#c8a030" stroke-width="2" stroke-linejoin="round"/>
-          <polygon points="24,46 30,26 38,46" fill="#c8a030" opacity="0.18"/>
-          <polygon points="82,46 90,26 98,46" fill="#c8a030" opacity="0.18"/>
-          <ellipse cx="60" cy="62" rx="38" ry="33" fill="none" stroke="#c8a030" stroke-width="2"/>
-          <ellipse cx="46" cy="58" rx="6" ry="7" fill="none" stroke="#e8c040" stroke-width="1.5"/>
-          <ellipse cx="74" cy="58" rx="6" ry="7" fill="none" stroke="#e8c040" stroke-width="1.5"/>
-          <ellipse cx="46" cy="58" rx="2" ry="5.5" fill="#e8c040" opacity="0.85"/>
-          <ellipse cx="74" cy="58" rx="2" ry="5.5" fill="#e8c040" opacity="0.85"/>
-          <circle cx="49" cy="55" r="1.2" fill="#fff" opacity="0.5"/>
-          <circle cx="77" cy="55" r="1.2" fill="#fff" opacity="0.5"/>
-          <polygon points="60,67 57,71 63,71" fill="#c8a030" opacity="0.9"/>
-          <path d="M57,71 Q54,76 50,74" fill="none" stroke="#c8a030" stroke-width="1.4" stroke-linecap="round"/>
-          <path d="M63,71 Q66,76 70,74" fill="none" stroke="#c8a030" stroke-width="1.4" stroke-linecap="round"/>
-          <line x1="22" y1="66" x2="50" y2="68" stroke="#c8a030" stroke-width="1" opacity="0.7"/>
-          <line x1="22" y1="71" x2="50" y2="70" stroke="#c8a030" stroke-width="1" opacity="0.5"/>
-          <line x1="24" y1="76" x2="50" y2="73" stroke="#c8a030" stroke-width="1" opacity="0.35"/>
-          <line x1="98" y1="66" x2="70" y2="68" stroke="#c8a030" stroke-width="1" opacity="0.7"/>
-          <line x1="98" y1="71" x2="70" y2="70" stroke="#c8a030" stroke-width="1" opacity="0.5"/>
-          <line x1="96" y1="76" x2="70" y2="73" stroke="#c8a030" stroke-width="1" opacity="0.35"/>
-          <polygon points="60,40 65,46 60,52 55,46" fill="none" stroke="#e8c040" stroke-width="1.5"/>
-          <polygon points="60,42 64,46 60,50 56,46" fill="#e8c040" opacity="0.25"/>
-        </svg>
-      </div>
-      <div class="logo-line">
-        <span class="logo-text">LA LEY DEL GATO</span>
-      </div>
-      <div class="tagline">TERMINAL DE ACCESO // v2.7.1</div>
-    </div>
+/* ---------------------------------------------------------
+   RELOJ EN PIE DE PÁGINA
+--------------------------------------------------------- */
+function actualizarReloj() {
+  const ahora = new Date();
+  const h = String(ahora.getHours()).padStart(2, '0');
+  const m = String(ahora.getMinutes()).padStart(2, '0');
+  const s = String(ahora.getSeconds()).padStart(2, '0');
+  document.getElementById('footClock').textContent = `${h}:${m}:${s}`;
+}
+actualizarReloj();
+setInterval(actualizarReloj, 1000);
 
-    <div class="card" id="mainCard">
+/* ---------------------------------------------------------
+   TYPEWRITER EN EL PROMPT DE BIENVENIDA
+--------------------------------------------------------- */
+(function typewriter() {
+  const nombre = localStorage.getItem('login_usuario');
+  const texto  = nombre
+    ? `BIENVENIDO DE NUEVO, ${nombre.toUpperCase()}_`
+    : 'INTRODUCE TUS CREDENCIALES_';
 
-      <div class="terminal-bar">
-        <div class="terminal-dots">
-          <span class="tdot tdot-r"></span>
-          <span class="tdot tdot-y"></span>
-          <span class="tdot tdot-g"></span>
-        </div>
-        <span class="terminal-title">auth_protocol :: identificacion_agente.exe</span>
-        <span class="terminal-badge">ENCRIPTADO</span>
-      </div>
+  const el    = document.getElementById('promptText');
+  const caret = document.getElementById('promptCaret');
+  let idx     = 0;
 
-      <div class="card-inner">
+  setTimeout(() => {
+    caret.style.display = 'none';
+    const iv = setInterval(() => {
+      el.textContent += texto[idx];
+      idx++;
+      if (idx >= texto.length) {
+        clearInterval(iv);
+        caret.style.display = 'inline';
+      }
+    }, 45);
+  }, 1500);
+})();
 
-        <div class="welcome-prompt">
-          <span class="prompt-cursor">$</span>
-          <span class="prompt-text" id="promptText"></span>
-          <span class="prompt-caret" id="promptCaret">_</span>
-        </div>
+/* ---------------------------------------------------------
+   RELLENA USUARIO RECORDADO
+--------------------------------------------------------- */
+(function cargarRecordado() {
+  const guardado = localStorage.getItem('login_usuario');
+  if (guardado) {
+    inputUsuario.value = guardado;
+    rememberCb.checked = true;
+    checkBox.textContent = '■';
+    checkBox.classList.add('checked');
+    validarCampos();
+  }
+})();
 
-        <div id="mErr" class="msg msg-err"></div>
-        <div id="mOk"  class="msg msg-ok">▶ IDENTIDAD VERIFICADA. ACCESO CONCEDIDO.</div>
+/* ---------------------------------------------------------
+   CHECKBOX PERSONALIZADO
+--------------------------------------------------------- */
+document.getElementById('rememberLabel').addEventListener('click', () => {
+  rememberCb.checked = !rememberCb.checked;
+  checkBox.textContent  = rememberCb.checked ? '■' : '□';
+  checkBox.classList.toggle('checked', rememberCb.checked);
+});
 
-        <div class="field">
-          <div class="flabel">
-            <span class="flabel-num">ID</span> IDENTIFICADOR DE AGENTE
-          </div>
-          <div class="irow" id="irowU">
-            <span class="ipre">▸</span>
-            <input
-              type="text"
-              id="u"
-              placeholder="alias o correo"
-              maxlength="100"
-              autocomplete="off"
-              spellcheck="false"
-            />
-            <span class="istat" id="istatU"></span>
-          </div>
-        </div>
+/* ---------------------------------------------------------
+   VALIDACIÓN EN TIEMPO REAL
+--------------------------------------------------------- */
+function validarCampos() {
+  const u = inputUsuario.value.trim();
+  const p = inputPass.value;
 
-        <div class="field">
-          <div class="flabel">
-            <span class="flabel-num">PW</span> CÓDIGO DE ACCESO
-          </div>
-          <div class="irow" id="irowP">
-            <span class="ipre">▸</span>
-            <input
-              type="password"
-              id="p"
-              placeholder="••••••••••••"
-              maxlength="30"
-              autocomplete="current-password"
-            />
-            <button class="tpw" id="tp" type="button" title="Mostrar contraseña">VER</button>
-          </div>
-        </div>
+  if (u.length > 0) {
+    const esEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(u);
+    const esAlias = u.length >= 3;
+    const valido  = esEmail || esAlias;
+    istatU.textContent = valido ? '■' : '✕';
+    istatU.className   = 'istat ' + (valido ? 'ok' : 'err');
+    irowU.className    = 'irow ' + (valido ? 'valid' : 'invalid');
+  } else {
+    istatU.textContent = '';
+    istatU.className   = 'istat';
+    irowU.className    = 'irow';
+  }
 
-        <div class="extras">
-          <label class="check-label" id="rememberLabel">
-            <input type="checkbox" id="remember" />
-            <span class="check-box" id="checkBox">□</span>
-            <span class="check-text">RECORDAR AGENTE</span>
-          </label>
-          <button class="link-btn" type="button" id="forgotBtn">¿OLVIDASTE EL CÓDIGO?</button>
-        </div>
+  const listoParaEnviar = u.length >= 3 && p.length >= 1;
+  btnLogin.disabled = !listoParaEnviar;
+  return listoParaEnviar;
+}
 
-        <button class="btn-main" id="btn" disabled>IDENTIFICARSE</button>
+inputUsuario.addEventListener('input', validarCampos);
+inputPass.addEventListener('input', validarCampos);
 
-        <div class="divider">
-          <span class="div-line"></span>
-          <span class="div-text">O BIEN</span>
-          <span class="div-line"></span>
-        </div>
+/* ---------------------------------------------------------
+   MOSTRAR / OCULTAR CONTRASEÑA
+--------------------------------------------------------- */
+togglePass.addEventListener('click', () => {
+  const mostrar = inputPass.type === 'password';
+  inputPass.type = mostrar ? 'text' : 'password';
+  togglePass.textContent = mostrar ? 'OOO' : 'VER';
+});
 
-        <button class="btn-sec" onclick="window.location.href='../Registro/registro.html'">
-          SIN CUENTA — UNIRSE A LA RESISTENCIA
-        </button> 
-    
-        <div style="margin: 15px 0; color: #5a4418; text-align: center;">──────── O ────────</div>
-        
-        <button type="button" id="btnAnonimo" style="background: #1a150a; color: #c8a030; border: 1px solid #5a4418; cursor: pointer; padding: 10px; width: 100%; font-weight: bold; letter-spacing: 2px;">
-            ENTRAR COMO ANÓNIMO
-        </button>
+/* ---------------------------------------------------------
+   ENVÍO DEL FORMULARIO (LOGIN NORMAL)
+--------------------------------------------------------- */
+btnLogin.addEventListener('click', async () => {
+  if (!validarCampos()) return;
 
-      </div> </div> <div class="foot" id="mainFoot">
-      <span>LA LEY DEL GATO © 2025</span>
-      <span id="footClock">--:--:--</span>
-      <span>CIFRADO AES-256</span>
-    </div>
+  msgError.style.display   = 'none';
+  msgSuccess.style.display = 'none';
+  btnLogin.disabled  = true;
+  btnLogin.innerHTML = 'VERIFICANDO<span class="dots"></span>';
 
-  </div> <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <div class="modal-bar">
-        <span class="modal-title">RECUPERACION_ACCESO.EXE</span>
-        <button class="modal-close" id="modalClose" type="button">✕</button>
-      </div>
-      <div class="modal-body">
-        <p class="modal-desc">INTRODUCE TU CORREO ELECTRÓNICO.<br>TE ENVIAREMOS UN CÓDIGO DE RECUPERACIÓN.</p>
-        <div class="irow">
-          <span class="ipre">▸</span>
-          <input type="email" id="recEmail" placeholder="agente@correo.com" maxlength="100" autocomplete="off" spellcheck="false" />
-        </div>
-        <div id="mRec" class="msg" style="margin-top:0.8rem;"></div>
-        <button class="btn-main" id="btnRec" style="margin-top:1rem;" disabled>ENVIAR CÓDIGO</button>
-      </div>
-    </div>
-  </div>
+  try {
+    const respuesta = await fetch(`${API_URL}/usuarios/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        identificador: inputUsuario.value.trim(),
+        contrasena:    inputPass.value
+      })
+    });
 
-  <script src="login.js"></script>
-  <script src="../audio.js"></script>
-</body>
-</html>
+    const datos = await respuesta.json();
+
+    if (respuesta.ok) {
+      const u = datos.usuario;
+
+      // ── Guardar todos los datos de sesión de forma consistente ──
+      localStorage.setItem('login_usuario',    u.nombre_usuario);
+      localStorage.setItem('nombre_usuario',   u.nombre_usuario);
+      localStorage.setItem('avatar',           u.avatar ?? 0);
+      localStorage.setItem('email',            u.email || '');
+      localStorage.setItem('email_verificado', u.email_verificado ? 'true' : 'false');
+      localStorage.setItem('monedas',          u.monedas ?? 0);
+      localStorage.setItem('puntuacion_total', u.puntuacion_total ?? 0);
+      localStorage.setItem('rol',              u.rol || 'REGISTRADO');
+
+      if (u.fecha_creacion) {
+        const fecha = new Date(u.fecha_creacion);
+        localStorage.setItem('fecha_registro',
+          `${fecha.getDate().toString().padStart(2,'0')}/${(fecha.getMonth()+1).toString().padStart(2,'0')}/${fecha.getFullYear()}`
+        );
+      }
+
+      if (rememberCb.checked) {
+        localStorage.setItem('login_usuario', u.nombre_usuario);
+      } else {
+        localStorage.removeItem('login_usuario');
+        // pero mantenemos nombre_usuario para la sesión actual
+        localStorage.setItem('nombre_usuario', u.nombre_usuario);
+      }
+
+      msgSuccess.style.display = 'block';
+      btnLogin.innerHTML = '▶ ACCESO CONCEDIDO';
+
+      setTimeout(() => {
+        window.location.href = '../PaginaPrincipal/principal.html';
+      }, 1200);
+
+    } else {
+      const errTexto = (datos.error || 'CREDENCIALES INCORRECTAS').toUpperCase();
+      msgError.textContent   = '> ' + errTexto;
+      msgError.style.display = 'block';
+
+      const card = document.getElementById('mainCard');
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+      setTimeout(() => card.classList.remove('shake'), 400);
+
+      inputPass.value = '';
+      validarCampos();
+      inputPass.focus();
+
+      btnLogin.innerHTML = '▶ IDENTIFICARSE';
+      if (!validarCampos()) btnLogin.disabled = true;
+    }
+
+  } catch (err) {
+    msgError.textContent   = '> ERROR: SERVIDOR NO DISPONIBLE';
+    msgError.style.display = 'block';
+    btnLogin.innerHTML = '▶ IDENTIFICARSE';
+    if (!validarCampos()) btnLogin.disabled = true;
+  }
+});
+
+// Enviar con Enter
+[inputUsuario, inputPass].forEach(inp => {
+  inp.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !btnLogin.disabled) btnLogin.click();
+  });
+});
+
+/* ---------------------------------------------------------
+   MODO ANÓNIMO
+--------------------------------------------------------- */
+if (btnAnonimo) {
+  btnAnonimo.addEventListener('click', () => {
+    const idTemp = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const nombre = `AGENTE_${idTemp}`;
+
+    localStorage.setItem('login_usuario',    nombre);
+    localStorage.setItem('nombre_usuario',   nombre);
+    localStorage.setItem('avatar',           '0');
+    localStorage.setItem('email',            'anonimo@ley-del-gato.com');
+    localStorage.setItem('email_verificado', 'true');
+    localStorage.setItem('monedas',          '0');
+    localStorage.setItem('puntuacion_total', '0');
+    localStorage.setItem('rol',              'ANONIMO');
+
+    const fecha = new Date();
+    localStorage.setItem('fecha_registro',
+      `${fecha.getDate().toString().padStart(2,'0')}/${(fecha.getMonth()+1).toString().padStart(2,'0')}/${fecha.getFullYear()}`
+    );
+
+    setTimeout(() => {
+      window.location.href = '../PaginaPrincipal/principal.html';
+    }, 500);
+  });
+}
+
+/* ---------------------------------------------------------
+   MODAL: OLVIDÉ CONTRASEÑA
+--------------------------------------------------------- */
+forgotBtn.addEventListener('click', () => {
+  modalOverlay.classList.add('open');
+  recEmail.focus();
+});
+
+modalClose.addEventListener('click', cerrarModal);
+modalOverlay.addEventListener('click', (e) => {
+  if (e.target === modalOverlay) cerrarModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') cerrarModal();
+});
+
+function cerrarModal() {
+  modalOverlay.classList.remove('open');
+  mRec.style.display = 'none';
+  recEmail.value = '';
+  btnRec.disabled = true;
+}
+
+recEmail.addEventListener('input', () => {
+  const valido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recEmail.value.trim());
+  btnRec.disabled = !valido;
+});
+
+recEmail.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !btnRec.disabled) btnRec.click();
+});
+
+btnRec.addEventListener('click', async () => {
+  btnRec.disabled  = true;
+  btnRec.innerHTML = 'ENVIANDO<span class="dots"></span>';
+  mRec.style.display = 'none';
+
+  try {
+    const respuesta = await fetch(`${API_URL}/usuarios/recuperar`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: recEmail.value.trim() })
+    });
+
+    const datos = await respuesta.json();
+
+    mRec.className   = 'msg ' + (respuesta.ok ? 'msg-ok' : 'msg-err');
+    mRec.textContent = respuesta.ok
+      ? '▶ SI EL EMAIL ESTÁ REGISTRADO, RECIBIRÁS UN ENLACE. (FUNCIÓN EN DESARROLLO)'
+      : '> ' + (datos.error || 'ERROR AL ENVIAR').toUpperCase();
+    mRec.style.display = 'block';
+
+  } catch {
+    mRec.className   = 'msg msg-err';
+    mRec.textContent = '> ERROR: SERVIDOR NO DISPONIBLE';
+    mRec.style.display = 'block';
+  }
+
+  btnRec.innerHTML = '▶ ENVIAR CÓDIGO';
+  btnRec.disabled  = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recEmail.value.trim());
+});
