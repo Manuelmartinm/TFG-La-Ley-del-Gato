@@ -1,124 +1,75 @@
-/* =========================================================
-   LA LEY DEL GATO — clasificacion.js
-   ========================================================= */
-
 const API_URL = 'https://tfg-la-ley-del-gato.onrender.com';
-const miNombre = localStorage.getItem('nombre_usuario') || '';
-const miAvatar = localStorage.getItem('avatar') || '🐭';
+const emojisAvatares = ['🐭', '🐀', '🐹', '🐁', '🦔', '🐿️'];
 
-// Mostrar mi posición
-document.getElementById('myName').textContent   = miNombre.toUpperCase() || '—';
-document.getElementById('myAvatar').textContent = miAvatar;
+const miNombre = localStorage.getItem('login_usuario') || 'AGENTE';
+const miAvatarIndex = localStorage.getItem('avatar') || 0;
 
-/* ---------------------------------------------------------
-   FILTROS
---------------------------------------------------------- */
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    cargarRanking(btn.dataset.filter);
-  });
-});
+// Carga inicial de mi tarjeta
+document.getElementById('myName').textContent = miNombre.toUpperCase();
+document.getElementById('myAvatar').textContent = emojisAvatares[parseInt(miAvatarIndex)];
 
-/* ---------------------------------------------------------
-   CARGAR RANKING DESDE EL BACKEND
---------------------------------------------------------- */
-async function cargarRanking(filtro = 'global') {
-  const loading = document.getElementById('rankLoading');
-  loading.style.display = 'inline';
+async function cargarRanking() {
+    const loading = document.getElementById('rankLoading');
+    loading.style.display = 'inline';
 
-  try {
-    const res = await fetch(`${API_URL}/ranking?filtro=${filtro}`, {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    try {
+        const res = await fetch(`${API_URL}/usuarios/ranking`);
+        const data = await res.json();
+        
+        if (res.ok) {
+            renderizarRanking(data.ranking);
+        }
+    } catch (err) {
+        console.error("Error al cargar el ranking real");
+        document.getElementById('rankTable').innerHTML = '<div class="rank-empty">ERROR DE CONEXIÓN</div>';
+    } finally {
+        loading.style.display = 'none';
+    }
+}
+
+function renderizarRanking(ranking) {
+    const tabla = document.getElementById('rankTable');
+    tabla.innerHTML = '';
+
+    // 1. Rellenar el Podio (Top 3)
+    [1, 2, 3].forEach(i => {
+        const jugador = ranking[i - 1];
+        const el = document.getElementById('pos' + i);
+        if (el) {
+            if (jugador) {
+                el.querySelector('.podio-avatar').textContent = emojisAvatares[jugador.avatar] || '🐭';
+                el.querySelector('.podio-name').textContent = jugador.nombre_usuario.toUpperCase();
+                el.querySelector('.podio-score').textContent = jugador.puntuacion_total.toLocaleString() + ' PTS';
+            } else {
+                el.style.opacity = "0.3"; // Si no hay suficientes jugadores
+            }
+        }
     });
 
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    renderizarRanking(data.ranking || []);
+    // 2. Mi posición real en la lista
+    const miPosIdx = ranking.findIndex(r => r.nombre_usuario === miNombre);
+    if (miPosIdx >= 0) {
+        document.getElementById('myPos').textContent = '#' + (miPosIdx + 1);
+        document.getElementById('myScore').textContent = ranking[miPosIdx].puntuacion_total.toLocaleString() + ' PTS';
+    }
 
-  } catch {
-    // Si falla el backend mostramos datos de demo
-    renderizarRanking(datosDemo());
-  } finally {
-    loading.style.display = 'none';
-  }
+    // 3. Tabla completa
+    ranking.forEach((jugador, idx) => {
+        const row = document.createElement('div');
+        const esYo = jugador.nombre_usuario === miNombre;
+        const pos = idx + 1;
+
+        row.className = `rank-row ${esYo ? 'me' : ''} ${pos <= 3 ? 'top' + pos : ''}`;
+        
+        row.innerHTML = `
+            <div class="rank-pos">${pos <= 3 ? ['👑','🥈','🥉'][pos-1] : pos}</div>
+            <div class="rank-avatar">${emojisAvatares[jugador.avatar] || '🐭'}</div>
+            <div class="rank-name">${jugador.nombre_usuario.toUpperCase()} ${esYo ? '<span class="rank-badge">TÚ</span>' : ''}</div>
+            <div class="rank-score">${jugador.puntuacion_total.toLocaleString()} PTS</div>
+        `;
+        tabla.appendChild(row);
+    });
 }
 
-/* ---------------------------------------------------------
-   DATOS DE DEMO mientras no hay backend
---------------------------------------------------------- */
-function datosDemo() {
-  return [
-    { nombre_usuario: 'EL_PADRINO',    avatar: '🐭', puntuacion_total: 98500 },
-    { nombre_usuario: 'SOMBRA_GRIS',   avatar: '🐀', puntuacion_total: 87200 },
-    { nombre_usuario: 'RATA_VELOZ',    avatar: '🐹', puntuacion_total: 74600 },
-    { nombre_usuario: 'TOPO_MAESTRO',  avatar: '🦔', puntuacion_total: 61300 },
-    { nombre_usuario: 'BIGOTES_PROS',  avatar: '🐁', puntuacion_total: 55800 },
-    { nombre_usuario: 'EL_ESCURRIDIZO',avatar: '🐿️', puntuacion_total: 48200 },
-    { nombre_usuario: 'QUESO_HUNTER',  avatar: '🐭', puntuacion_total: 41700 },
-    { nombre_usuario: 'NOCHE_FURTIVA', avatar: '🐀', puntuacion_total: 38900 },
-    { nombre_usuario: 'RATA_CALLEJERA',avatar: '🐹', puntuacion_total: 32100 },
-    { nombre_usuario: 'EL_NOVATO',     avatar: '🐁', puntuacion_total: 21500 },
-  ];
-}
-
-/* ---------------------------------------------------------
-   RENDERIZAR RANKING
---------------------------------------------------------- */
-function renderizarRanking(ranking) {
-  const tabla = document.getElementById('rankTable');
-  tabla.innerHTML = '';
-
-  if (!ranking.length) {
-    tabla.innerHTML = '<div class="rank-empty">SIN DATOS DISPONIBLES</div>';
-    return;
-  }
-
-  // Actualiza podio top 3
-  [1,2,3].forEach(i => {
-    const jugador = ranking[i-1];
-    const el = document.getElementById('pos'+i);
-    if (!el || !jugador) return;
-    el.querySelector('.podio-avatar').textContent = jugador.avatar || '🐭';
-    el.querySelector('.podio-name').textContent   = jugador.nombre_usuario?.toUpperCase() || '—';
-    el.querySelector('.podio-score').textContent  = formatearPuntos(jugador.puntuacion_total) + ' PTS';
-  });
-
-  // Mi posición
-  const miPos = ranking.findIndex(r => r.nombre_usuario === miNombre);
-  if (miPos >= 0) {
-    document.getElementById('myPos').textContent   = '#' + (miPos + 1);
-    document.getElementById('myScore').textContent = formatearPuntos(ranking[miPos].puntuacion_total) + ' PTS';
-  }
-
-  // Tabla completa
-  ranking.forEach((jugador, idx) => {
-    const pos    = idx + 1;
-    const esYo   = jugador.nombre_usuario === miNombre;
-    const row    = document.createElement('div');
-    row.className = 'rank-row' +
-      (esYo ? ' me' : '') +
-      (pos === 1 ? ' top1' : pos === 2 ? ' top2' : pos === 3 ? ' top3' : '');
-    row.style.animationDelay = (idx * 0.03) + 's';
-
-    const posClass = pos === 1 ? 'p1' : pos === 2 ? 'p2' : pos === 3 ? 'p3' : '';
-    const badge    = esYo ? '<span class="rank-badge">TÚ</span>' : '';
-    const medal    = pos === 1 ? '👑' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : pos;
-
-    row.innerHTML = `
-      <div class="rank-pos ${posClass}">${medal}</div>
-      <div class="rank-avatar">${jugador.avatar || '🐭'}</div>
-      <div class="rank-name ${esYo ? 'me-name' : ''}">${jugador.nombre_usuario?.toUpperCase() || '—'} ${badge}</div>
-      <div class="rank-score">${formatearPuntos(jugador.puntuacion_total)} PTS</div>
-    `;
-    tabla.appendChild(row);
-  });
-}
-
-function formatearPuntos(n) {
-  return Number(n || 0).toLocaleString('es-ES');
-}
-
-// Carga inicial
-cargarRanking('global');
+// Iniciar
+cargarRanking();

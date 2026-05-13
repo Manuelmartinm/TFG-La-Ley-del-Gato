@@ -33,6 +33,7 @@ const ajustes = cargarAjustes();
   else el.classList.remove('active');
   
   el.addEventListener('click', () => {
+    AudioCore.playSFX('click');
     el.classList.toggle('active');
     ajustes[key] = el.classList.contains('active');
   });
@@ -59,6 +60,7 @@ volEfectos.addEventListener('input', () => {
    GUARDAR AJUSTES
 --------------------------------------------------------- */
 document.getElementById('btnGuardar').addEventListener('click', () => {
+  AudioCore.playSFX('click');
   localStorage.setItem('ajustes_gato', JSON.stringify(ajustes));
   const msg = document.getElementById('msgOk');
   msg.style.display = 'block';

@@ -131,4 +131,21 @@ router.put('/inventario/guardar', async (req, res) => {
     res.status(500).json({ error: 'Error al guardar inventario' });
   }
 });
+// ... aquí estarían las rutas de registro, login, actualizar perfil e inventario ...
+
+// ─── RUTA: OBTENER TOP RANKING ──────────────────────────────────────────────
+router.get('/ranking', async (req, res) => {
+  try {
+    const topUsuarios = await Usuario.find()
+      .sort({ puntuacion_total: -1 })
+      .limit(10)
+      .select('nombre_usuario avatar puntuacion_total');
+
+    res.status(200).json({ ranking: topUsuarios });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener el ranking' });
+  }
+});
+
+
 module.exports = router;

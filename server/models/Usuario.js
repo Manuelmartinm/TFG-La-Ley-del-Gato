@@ -40,7 +40,9 @@ const usuarioEsquema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  inventario: { type: Array, default: null }
+  inventario: { type: Array, default: null },
+  puntuacion_total: { type: Number, default: 0 },
+  monedas: { type: Number, default: 0 }
 });
 
 module.exports = mongoose.model('Usuario', usuarioEsquema);

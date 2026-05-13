@@ -16,6 +16,7 @@
 
     // 5. ¡Magia! Buscamos el emoji en la lista usando el número y lo mostramos
     document.getElementById('agentAvatar').textContent = emojisAvatares[parseInt(avatarIndex)];
+    AudioCore.playMusic('principal');
 }
 
     
