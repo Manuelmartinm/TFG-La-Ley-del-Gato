@@ -9,13 +9,58 @@ import { TIPO_ENEMIGO } from '../utilidades/constantes.js';
 import { hayColision } from '../utilidades/colisiones.js';
 import { ProyectilRecto, ProyectilMortero } from './Proyectil.js';
 
+// ─────────────────────────────────────────────────────────────
+// VALORES BASE POR TIPO
+// Cada tipo tiene sus propiedades predefinidas.
+// En los niveles solo hace falta indicar tipo y posición.
+// Si un nivel necesita un enemigo diferente puede sobreescribir
+// algún valor pasándolo explícitamente en el config.
+// ─────────────────────────────────────────────────────────────
+const DEFAULTS = {
+    [TIPO_ENEMIGO.PATRULLA]: {
+        w: 26, h: 26,
+        speed: 1.2,
+        color: '#8c3030',
+    },
+    [TIPO_ENEMIGO.CAZADOR]: {
+        w: 26, h: 26,
+        speed: 1.1,
+        color: '#4a3510',
+        rango: 200,
+    },
+    [TIPO_ENEMIGO.RAPIDO]: {
+        w: 18, h: 18,
+        speed: 3.0,
+        color: '#e05010',
+        rango: 150,
+    },
+    [TIPO_ENEMIGO.CENTINELA]: {
+        w: 30, h: 30,
+        speed: 0,
+        color: '#206040',
+        timerDisparo: 120,
+        cadencia: 180,
+    },
+    [TIPO_ENEMIGO.MORTERO]: {
+        w: 30, h: 30,
+        speed: 0,
+        color: '#602080',
+        timerDisparo: 200,
+        cadencia: 280,
+        rango: 380,  // rango amplio — el mortero es un arma de largo alcance
+    },
+};
+
 export class Enemigo {
     // config es un objeto con todas las propiedades del enemigo
     // (x, y, w, h, speed, color, tipo, patrol, rango, etc.)
     constructor(config) {
-        Object.assign(this, config);
+        // Primero aplicamos los valores base del tipo
+        // Luego sobreescribimos con lo que venga del config del nivel
+        // Así en los niveles solo hace falta poner tipo, posición y patrol/origen
+        const defaults = DEFAULTS[config.tipo] || {};
+        Object.assign(this, defaults, config);
         this.pi = this.pi ?? 0;
-        // Stun — mientras timerStun > 0 el enemigo no se mueve ni dispara
         this.timerStun = 0;
     }
 
@@ -141,6 +186,12 @@ export class Enemigo {
         this.timerDisparo = this.cadencia;
 
         if (jugador.escondido) return;
+
+        // Solo dispara si el jugador está dentro del rango
+        const dx = (jugador.x + jugador.w / 2) - (this.x + this.w / 2);
+        const dy = (jugador.y + jugador.h / 2) - (this.y + this.h / 2);
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > this.rango) return;
 
         proyMortero.push(new ProyectilMortero(
             this.x + this.w / 2,
