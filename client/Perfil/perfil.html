@@ -6,7 +6,6 @@
   <title>La Ley del Gato — Ficha de Agente</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="perfil.css">
-  <script src="perfil.js"></script>
 </head>
 <body>
 
@@ -17,9 +16,8 @@
 
   <div class="main">
 
-    <!-- Header -->
     <div class="page-header">
-      <a href="menu.html" class="back-btn">◀ VOLVER</a>
+      <a href="../PaginaPrincipal/principal.html" class="back-btn">◀ VOLVER</a>
       <div class="logo-area">
         <div class="logo-text">LA LEY DEL GATO</div>
         <div class="logo-sub">FICHA DE AGENTE</div>
@@ -28,10 +26,8 @@
 
     <div class="grid">
 
-      <!-- ===== COLUMNA IZQUIERDA ===== -->
       <div class="col-left">
 
-        <!-- Avatar -->
         <div class="card">
           <div class="card-inner">
             <div class="card-title">
@@ -42,23 +38,25 @@
               <div class="avatar-big" id="avatarDisplay" title="Haz clic para cambiar">🐭</div>
               <div class="avatar-big-hint">▲ CLIC PARA CAMBIAR</div>
               <div class="avatar-carousel" id="avatarCarousel">
-                <button class="carousel-arrow" id="carouselPrev">◀</button>
+                <button class="carousel-arrow" id="carouselPrev" type="button">◀</button>
                 <div class="carousel-track" id="carouselTrack">
-                  <button type="button" class="avatar-option selected" data-avatar="🐭">🐭</button>
-                  <button type="button" class="avatar-option" data-avatar="🐀">🐀</button>
-                  <button type="button" class="avatar-option" data-avatar="🐹">🐹</button>
-                  <button type="button" class="avatar-option" data-avatar="🐁">🐁</button>
-                  <button type="button" class="avatar-option" data-avatar="🦔">🦔</button>
-                  <button type="button" class="avatar-option" data-avatar="🐿️">🐿️</button>
+                  <button type="button" class="avatar-option selected" data-index="0" data-avatar="🐭">🐭</button>
+                  <button type="button" class="avatar-option" data-index="1" data-avatar="🐀">🐀</button>
+                  <button type="button" class="avatar-option" data-index="2" data-avatar="🐹">🐹</button>
+                  <button type="button" class="avatar-option" data-index="3" data-avatar="🐁">🐁</button>
+                  <button type="button" class="avatar-option" data-index="4" data-avatar="🦔">🦔</button>
+                  <button type="button" class="avatar-option" data-index="5" data-avatar="🐿️">🐿️</button>
                 </div>
-                <button class="carousel-arrow" id="carouselNext">▶</button>
+                <button class="carousel-arrow" id="carouselNext" type="button">▶</button>
               </div>
             </div>
+
+            <div class="agent-name-display" id="agentNameDisplay">AGENTE</div>
+            <div class="agent-role-display" id="agentRoleDisplay">NOVATO</div>
 
           </div>
         </div>
 
-        <!-- Stats solo lectura -->
         <div class="card">
           <div class="card-inner">
             <div class="card-title">
@@ -80,17 +78,11 @@
               <span class="stat-label">MONEDAS</span>
               <span class="stat-value" id="statMonedas">💰 0</span>
             </div>
-            <div class="stat-row">
-              <span class="stat-label">REGISTRO</span>
-              <span class="stat-value" id="statFecha">--/--/----</span>
-            </div>
-
           </div>
         </div>
 
       </div>
 
-      <!-- ===== COLUMNA DERECHA ===== -->
       <div class="col-right">
 
         <div class="card">
@@ -102,54 +94,30 @@
             <div id="msgErr" class="msg msg-err"></div>
             <div id="msgOk"  class="msg msg-ok">▶ PERFIL ACTUALIZADO CORRECTAMENTE.</div>
 
-            <!-- Nombre de agente -->
             <div class="field">
               <div class="flabel"><span class="flabel-num">01</span> NOMBRE DE AGENTE</div>
               <div class="irow">
                 <span class="ipre">&gt;</span>
-                <input type="text" id="inputNombre" placeholder="alias_secreto" maxlength="20" autocomplete="off" spellcheck="false"/>
+                <input type="text" id="inputNombre" disabled style="opacity: 0.7; cursor: not-allowed;" />
               </div>
               <div class="hints">
-                <div class="hint" id="u1"><span class="hico">□</span>3-20 CARACTERES</div>
-                <div class="hint" id="u2"><span class="hico">□</span>SIN ESPACIOS</div>
-              </div>
-            </div>
-
-            <!-- Correo -->
-            <div class="field">
-              <div class="flabel"><span class="flabel-num">02</span> CORREO ELECTRÓNICO</div>
-              <div class="irow">
-                <span class="ipre">&gt;</span>
-                <input type="email" id="inputCorreo" placeholder="agente@resistencia.net" autocomplete="off"/>
-              </div>
-              <div class="hints">
-                <div class="hint" id="e1"><span class="hico">□</span>FORMATO VÁLIDO</div>
+                <div class="hint" style="grid-column: 1/-1; color: #8c6020;"><span class="hico">■</span>EL ALIAS NO SE PUEDE CAMBIAR</div>
               </div>
             </div>
 
           </div>
         </div>
 
-        <!-- Sección contraseña (colapsable) -->
         <div class="section-toggle" id="passToggle">
           <div class="section-toggle-title">
-            <span class="card-title-num">03</span> CAMBIAR CONTRASEÑA
+            <span class="card-title-num">02</span> CAMBIAR CONTRASEÑA
           </div>
-          <span class="section-toggle-arrow">▶</span>
+          <span class="section-toggle-arrow" id="passArrow">▶</span>
         </div>
         <div class="section-body" id="passBody">
 
           <div class="field">
-            <div class="flabel"><span class="flabel-num">03A</span> CONTRASEÑA ACTUAL</div>
-            <div class="irow">
-              <span class="ipre">&gt;</span>
-              <input type="password" id="inputPassActual" placeholder="contraseña actual" maxlength="30"/>
-              <button class="tpw" id="tpActual" type="button">VER</button>
-            </div>
-          </div>
-
-          <div class="field">
-            <div class="flabel"><span class="flabel-num">03B</span> NUEVA CONTRASEÑA</div>
+            <div class="flabel"><span class="flabel-num">02A</span> NUEVA CONTRASEÑA</div>
             <div class="irow">
               <span class="ipre">&gt;</span>
               <input type="password" id="inputPassNueva" placeholder="nueva contraseña" maxlength="30"/>
@@ -171,19 +139,20 @@
           </div>
 
           <div class="field">
-            <div class="flabel"><span class="flabel-num">03C</span> CONFIRMAR NUEVA</div>
+            <div class="flabel"><span class="flabel-num">02B</span> CONFIRMAR NUEVA</div>
             <div class="irow">
               <span class="ipre">&gt;</span>
               <input type="password" id="inputPassConfirm" placeholder="repite la nueva" maxlength="30"/>
             </div>
             <div class="hints">
-              <div class="hint" id="c1" style="grid-column:1/-1"><span class="hico">□</span>LAS CONTRASEÑAS DEBEN COINCIDIR</div>
+              <div class="hint" id="c1" style="grid-column:1/-1">
+                <span class="hico">□</span>LAS CONTRASEÑAS DEBEN COINCIDIR
+              </div>
             </div>
           </div>
 
         </div>
 
-        <!-- Botón guardar -->
         <button class="btn-main" id="btnGuardar">GUARDAR CAMBIOS</button>
 
       </div>
@@ -196,8 +165,6 @@
 
   </div>
 
-
-
-
+  <script src="perfil.js"></script>
 </body>
 </html>

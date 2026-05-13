@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Ley del Gato — Restablecer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="login.css">
+  <style>
+    /* Pequeño ajuste para centrar la tarjeta en esta pantalla */
+    .card { margin: 10% auto; max-width: 500px; }
+  </style>
+</head>
+<body>
+
+  <div class="scene"></div>
+  <div class="rain" id="rain"></div>
+  <div class="city-silhouette"></div>
+  <div class="fog"></div>
+  <div class="vignette"></div>
+  <div class="scanlines"></div>
+
+  <div class="main">
+    <div class="header">
+      <div class="logo-line">
+        <span class="logo-text">LA LEY DEL GATO</span>
+      </div>
+      <div class="tagline">RECUPERACIÓN DE SISTEMA // v2.7.1</div>
+    </div>
+
+    <div class="card" id="mainCard">
+      <div class="terminal-bar">
+        <div class="terminal-dots">
+          <span class="tdot tdot-r"></span>
+          <span class="tdot tdot-y"></span>
+          <span class="tdot tdot-g"></span>
+        </div>
+        <span class="terminal-title">auth_protocol :: restablecer_acceso.exe</span>
+      </div>
+
+      <div class="card-inner">
+        <div id="mErr" class="msg msg-err"></div>
+        <div id="mOk"  class="msg msg-ok">▶ CONTRASEÑA ACTUALIZADA. REDIRIGIENDO...</div>
+
+        <div class="field">
+          <div class="flabel">NUEVO CÓDIGO DE ACCESO</div>
+          <div class="irow">
+            <span class="ipre">▸</span>
+            <input type="password" id="p1" placeholder="••••••••••••" maxlength="30" />
+            <button class="tpw" id="tp" type="button" title="Mostrar contraseña">VER</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="flabel">CONFIRMAR CÓDIGO</div>
+          <div class="irow">
+            <span class="ipre">▸</span>
+            <input type="password" id="p2" placeholder="••••••••••••" maxlength="30" />
+          </div>
+        </div>
+
+        <button class="btn-main" id="btn" style="margin-top: 2rem;" disabled>ACTUALIZAR CREDENCIALES</button>
+        
+        <button class="btn-sec" onclick="window.location.href='login.html'">
+          CANCELAR — VOLVER AL INICIO
+        </button>
+
+      </div>
+    </div>
+
+    <div class="foot">
+      <span>LA LEY DEL GATO © 2026</span>
+      <span>CIFRADO AES-256</span>
+    </div>
+  </div>
+
+  <script src="reset.js"></script>
+</body>
+</html>

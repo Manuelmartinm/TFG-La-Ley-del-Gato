@@ -6,23 +6,22 @@
   <title>La Ley del Gato — Base de Operaciones</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="principal.css">
-  <script src="principal.js"></script>
 </head>
 
 <body>
- 
+
   <div class="scene"></div>
   <div class="bg-city"></div>
   <div class="city-silhouette"></div>
   <div class="fog"></div>
   <div class="vignette"></div>
   <div class="scanlines"></div>
- 
+
   <div class="layout">
- 
+
     <!-- ===== PANEL IZQUIERDO ===== -->
     <div class="panel-left">
- 
+
       <div>
         <!-- Logo -->
         <div class="logo-area">
@@ -31,7 +30,7 @@
           </div>
           <div class="logo-sub">BASE DE OPERACIONES</div>
         </div>
- 
+
         <!-- Card agente -->
         <div class="agent-card">
           <div class="agent-header">
@@ -41,7 +40,7 @@
               <div class="agent-rank">RANGO: NOVATO</div>
             </div>
           </div>
- 
+
           <div class="agent-stats">
             <div>
               <div class="stat-row">
@@ -65,7 +64,7 @@
             </div>
           </div>
         </div>
- 
+
         <!-- Estado del servidor -->
         <div class="status-area">
           <div class="status-item">
@@ -82,26 +81,26 @@
           </div>
         </div>
       </div>
- 
+
       <div>
         <div class="foot-left">
           <span>v0.1.0</span>
           <span>CIFRADO AES-256</span>
         </div>
       </div>
- 
+
     </div>
- 
+
     <!-- ===== PANEL DERECHO — MENÚ ===== -->
     <div class="panel-right">
- 
+
       <div class="menu-header">
         <div class="menu-title">SELECCIONA OPERACIÓN</div>
         <div class="menu-sub">¿CUÁL ES TU MOVIMIENTO?</div>
       </div>
- 
+
       <nav class="menu-nav">
- 
+
         <!-- JUGAR -->
         <a href="../Juego/Juego.html" class="menu-btn primary">
           <span class="btn-badge">NUEVO</span>
@@ -113,11 +112,11 @@
           <span class="btn-arrow">◀</span>
           <span class="btn-num">01</span>
         </a>
- 
+
         <div class="menu-divider"></div>
- 
+
         <!-- TIENDA -->
-        <a href="tienda.html" class="menu-btn">
+        <a href="../Tienda/tienda.html" class="menu-btn">
           <div class="btn-text">
             <span class="btn-title">TIENDA</span>
             <span class="btn-sub">EQUIPAMIENTO</span>
@@ -126,9 +125,9 @@
           <span class="btn-arrow">◀</span>
           <span class="btn-num">02</span>
         </a>
- 
+
         <!-- INVENTARIO -->
-        <a href="inventario.html" class="menu-btn">
+        <a href="../Inventario/inventario.html" class="menu-btn">
           <div class="btn-text">
             <span class="btn-title">INVENTARIO</span>
             <span class="btn-sub">TUS OBJETOS</span>
@@ -137,11 +136,11 @@
           <span class="btn-arrow">◀</span>
           <span class="btn-num">03</span>
         </a>
- 
+
         <div class="menu-divider"></div>
- 
+
         <!-- CLASIFICACIÓN -->
-        <a href="clasificacion.html" class="menu-btn">
+        <a href="../Clasificacion/clasificacion.html" class="menu-btn">
           <div class="btn-text">
             <span class="btn-title">CLASIFICACIÓN</span>
             <span class="btn-sub">TOP AGENTES</span>
@@ -150,9 +149,9 @@
           <span class="btn-arrow">◀</span>
           <span class="btn-num">04</span>
         </a>
- 
+
         <!-- PERFIL -->
-        <a href="perfil.html" class="menu-btn">
+        <a href="../Perfil/perfil.html" class="menu-btn">
           <div class="btn-text">
             <span class="btn-title">PERFIL</span>
             <span class="btn-sub">FICHA DE AGENTE</span>
@@ -161,9 +160,9 @@
           <span class="btn-arrow">◀</span>
           <span class="btn-num">05</span>
         </a>
- 
+
         <!-- AJUSTES -->
-        <a href="ajustes.html" class="menu-btn">
+        <a href="../Ajustes/ajustes.html" class="menu-btn">
           <div class="btn-text">
             <span class="btn-title">AJUSTES</span>
             <span class="btn-sub">CONFIGURACIÓN</span>
@@ -172,11 +171,15 @@
           <span class="btn-arrow">◀</span>
           <span class="btn-num">06</span>
         </a>
- 
+
       </nav>
- 
+
     </div>
- 
+
   </div>
+
+  <!-- IMPORTANTE: audio.js ANTES que principal.js -->
+  <script src="../audio.js"></script>
+  <script src="principal.js"></script>
 </body>
 </html>

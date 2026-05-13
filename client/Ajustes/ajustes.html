@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Ley del Gato — Ajustes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="ajustes.css">
+</head>
+<body>
+  <div class="scene"></div>
+  <div class="vignette"></div>
+  <div class="scanlines"></div>
+
+  <div class="main">
+
+    <div class="page-header">
+      <a href="../PaginaPrincipal/principal.html" class="back-btn">◀ VOLVER</a>
+      <div class="logo-area">
+        <div class="logo-text">LA LEY DEL GATO</div>
+        <div class="logo-sub">CONFIGURACIÓN</div>
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <div class="col-left">
+        <div class="card">
+          <div class="card-inner">
+            <div class="card-title"><span class="card-title-num">01</span> AUDIO</div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">MÚSICA</div>
+                <div class="setting-desc">Música de fondo del juego</div>
+              </div>
+              <div class="toggle-wrap">
+                <div class="toggle active" id="togMusica" data-key="musica">
+                  <div class="toggle-knob"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">EFECTOS DE SONIDO</div>
+                <div class="setting-desc">Sonidos de acciones y eventos</div>
+              </div>
+              <div class="toggle-wrap">
+                <div class="toggle active" id="togEfectos" data-key="efectos">
+                  <div class="toggle-knob"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-row col">
+              <div class="setting-info">
+                <div class="setting-label">VOLUMEN MÚSICA</div>
+              </div>
+              <div class="slider-wrap">
+                <input type="range" min="0" max="100" value="70" id="volMusica" class="slider"/>
+                <span class="slider-val" id="volMusicaVal">70</span>
+              </div>
+            </div>
+
+            <div class="setting-row col">
+              <div class="setting-info">
+                <div class="setting-label">VOLUMEN EFECTOS</div>
+              </div>
+              <div class="slider-wrap">
+                <input type="range" min="0" max="100" value="85" id="volEfectos" class="slider"/>
+                <span class="slider-val" id="volEfectosVal">85</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="col-right">
+        <div class="card">
+          <div class="card-inner">
+            <div class="card-title"><span class="card-title-num">02</span> CUENTA</div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">SESIÓN ACTIVA</div>
+                <div class="setting-desc" id="sessionName">—</div>
+              </div>
+              <button class="btn-danger" id="btnLogout">CERRAR SESIÓN</button>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">BORRAR PROGRESO</div>
+                <div class="setting-desc">Reinicia tu progreso en el juego</div>
+              </div>
+              <button class="btn-danger" id="btnResetProgress">REINICIAR</button>
+            </div>
+
+            <div class="divider-section"></div>
+
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label danger-label">ELIMINAR CUENTA</div>
+                <div class="setting-desc">Esta acción es irreversible</div>
+              </div>
+              <button class="btn-danger red" id="btnDeleteAccount">ELIMINAR</button>
+            </div>
+
+          </div>
+        </div>
+
+        <div id="msgOk" class="msg msg-ok" style="display:none">▶ AJUSTES GUARDADOS CORRECTAMENTE.</div>
+
+        <button class="btn-main" id="btnGuardar">GUARDAR AJUSTES</button>
+
+      </div>
+    </div>
+
+    <div class="foot">
+      <span>LA LEY DEL GATO © 2025</span>
+      <span>v1.0.3 — CIFRADO AES-256</span>
+    </div>
+
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-title" id="modalTitle">¿ESTÁS SEGURO?</div>
+      <div class="modal-desc" id="modalDesc">Esta acción no se puede deshacer.</div>
+      <div class="modal-btns">
+        <button class="btn-modal-cancel" id="modalCancel">CANCELAR</button>
+        <button class="btn-modal-confirm red" id="modalConfirm">CONFIRMAR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMPORTANTE: audio.js ANTES que ajustes.js -->
+  <script src="../audio.js"></script>
+  <script src="ajustes.js"></script>
+</body>
+</html>

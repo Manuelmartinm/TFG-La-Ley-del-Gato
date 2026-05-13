@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Ley del Gato — Inventario</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="inventario.css">
+</head>
+<body>
+  <div class="scene"></div>
+  <div class="vignette"></div>
+  <div class="scanlines"></div>
+
+  <div class="main">
+
+    <div class="page-header">
+      <a href="../PaginaPrincipal/principal.html" class="back-btn">◀ VOLVER</a>
+      <div class="logo-area">
+        <div class="logo-text">LA LEY DEL GATO</div>
+        <div class="logo-sub">INVENTARIO DE AGENTE</div>
+      </div>
+    </div>
+
+    <!-- Barra de info del agente -->
+    <div class="agent-bar">
+      <div class="agent-bar-left">
+        <div class="agent-bar-avatar" id="barAvatar">🐭</div>
+        <div>
+          <div class="agent-bar-name" id="barName">AGENTE</div>
+          <div class="agent-bar-sub">CAPACIDAD: <span id="capacidad">0/50</span></div>
+        </div>
+      </div>
+      <div class="agent-bar-coins">
+        <span class="coin-icon">💰</span>
+        <span id="monedas">0</span>
+      </div>
+    </div>
+
+    <!-- Filtros de categoría -->
+    <div class="cat-filters">
+      <button class="cat-btn active" data-cat="todo">TODO</button>
+      <button class="cat-btn" data-cat="SKIN">👗 SKINS</button>
+      <button class="cat-btn" data-cat="UTIL">🔧 ÚTILES</button>
+      <button class="cat-btn" data-cat="COSMETICO">✨ COSMÉTICOS</button>
+    </div>
+
+    <div class="inv-layout">
+
+      <!-- Grid de items -->
+      <div class="items-grid" id="itemsGrid">
+        <!-- Se rellena por JS -->
+      </div>
+
+      <!-- Panel de detalle -->
+      <div class="detail-panel" id="detailPanel">
+        <div class="detail-empty" id="detailEmpty">
+          <div class="detail-empty-icon">🎒</div>
+          <div class="detail-empty-text">SELECCIONA UN OBJETO<br>PARA VER SUS DETALLES</div>
+        </div>
+        <div class="detail-content" id="detailContent" style="display:none">
+          <div class="detail-item-icon" id="detailIcon"></div>
+          <div class="detail-item-name" id="detailName"></div>
+          <div class="detail-item-cat" id="detailCat"></div>
+          <div class="detail-item-rar" id="detailRar"></div>
+          <div class="detail-divider"></div>
+          <div class="detail-item-desc" id="detailDesc"></div>
+          <div class="detail-item-effect" id="detailEffect" style="display:none">
+            <div class="detail-effect-title">⚡ EFECTO ESPECIAL</div>
+            <div id="detailEffectDesc"></div>
+          </div>
+          <div class="detail-item-qty">CANTIDAD: <span id="detailQty">1</span></div>
+          <div class="detail-btns">
+            <button class="btn-equip" id="btnEquip">▶ EQUIPAR</button>
+            <button class="btn-drop" id="btnDrop">✕ DESECHAR</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="foot">
+      <span>LA LEY DEL GATO © 2025</span>
+      <span id="itemCount">0 OBJETOS</span>
+    </div>
+
+  </div>
+
+  <script src="inventario.js"></script>
+</body>
+</html>
