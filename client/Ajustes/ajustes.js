@@ -1,37 +1,37 @@
 /* =========================================================
-   LA LEY DEL GATO — ajustes.js
+   LA LEY DEL GATO — ajustes.js (Versión TFG Limpia)
    ========================================================= */
 
 const API_URL = 'https://tfg-la-ley-del-gato.onrender.com';
 
-// --- Cargar nombre de sesión ---
-const nombre = localStorage.getItem('nombre_usuario') || '—';
-document.getElementById('sessionName').textContent = nombre.toUpperCase();
+// --- Cargar nombre de sesión usando la llave correcta ---
+const usuarioLogueado = localStorage.getItem('login_usuario') || 'INVITADO';
+document.getElementById('sessionName').textContent = usuarioLogueado.toUpperCase();
 
 /* ---------------------------------------------------------
    CARGAR AJUSTES GUARDADOS EN localStorage
 --------------------------------------------------------- */
 const ajustesDefault = {
-  musica: true, efectos: true, scanlines: true,
-  particulas: true, notificaciones: true,
-  daltonico: false, fps: false,
-  volMusica: 70, volEfectos: 85,
-  calidad: 'media', idioma: 'es'
+  musica: true, 
+  efectos: true, 
+  volMusica: 70, 
+  volEfectos: 85
 };
 
 function cargarAjustes() {
-  const guardados = JSON.parse(localStorage.getItem('ajustes') || '{}');
+  const guardados = JSON.parse(localStorage.getItem('ajustes_gato') || '{}');
   return { ...ajustesDefault, ...guardados };
 }
 
 const ajustes = cargarAjustes();
 
 // Aplica toggles
-['musica','efectos','scanlines','particulas','notificaciones','daltonico','fps'].forEach(key => {
+['musica','efectos'].forEach(key => {
   const el = document.querySelector(`[data-key="${key}"]`);
   if (!el) return;
   if (ajustes[key]) el.classList.add('active');
   else el.classList.remove('active');
+  
   el.addEventListener('click', () => {
     el.classList.toggle('active');
     ajustes[key] = el.classList.contains('active');
@@ -55,17 +55,11 @@ volEfectos.addEventListener('input', () => {
   document.getElementById('volEfectosVal').textContent = volEfectos.value;
 });
 
-// Aplica selects
-document.getElementById('calidad').value = ajustes.calidad;
-document.getElementById('idioma').value  = ajustes.idioma;
-document.getElementById('calidad').addEventListener('change', e => { ajustes.calidad = e.target.value; });
-document.getElementById('idioma').addEventListener('change',  e => { ajustes.idioma  = e.target.value; });
-
 /* ---------------------------------------------------------
    GUARDAR AJUSTES
 --------------------------------------------------------- */
 document.getElementById('btnGuardar').addEventListener('click', () => {
-  localStorage.setItem('ajustes', JSON.stringify(ajustes));
+  localStorage.setItem('ajustes_gato', JSON.stringify(ajustes));
   const msg = document.getElementById('msgOk');
   msg.style.display = 'block';
   setTimeout(() => { msg.style.display = 'none'; }, 3000);
@@ -106,10 +100,10 @@ document.getElementById('btnLogout').addEventListener('click', () => {
     'Tendrás que volver a identificarte la próxima vez.',
     () => {
       localStorage.removeItem('token');
-      localStorage.removeItem('nombre_usuario');
+      localStorage.removeItem('login_usuario');
       localStorage.removeItem('avatar');
-      localStorage.removeItem('email');
-      localStorage.removeItem('email_verificado');
+      // Borramos también el inventario local para que no lo vea otro
+      localStorage.removeItem('inventario_local'); 
       window.location.href = '../login/login.html';
     }
   );
@@ -121,14 +115,26 @@ document.getElementById('btnLogout').addEventListener('click', () => {
 document.getElementById('btnResetProgress').addEventListener('click', () => {
   abrirModal(
     '¿REINICIAR PROGRESO?',
-    'Se borrará todo tu progreso, misiones y estadísticas. Esta acción es irreversible.',
+    'Se borrará todo tu progreso, inventario y estadísticas. Esta acción es irreversible.',
     async () => {
+      if (usuarioLogueado === 'INVITADO') {
+         localStorage.removeItem('inventario_local');
+         alert('Progreso local borrado.');
+         return;
+      }
       try {
         await fetch(`${API_URL}/usuarios/progreso`, {
           method: 'DELETE',
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}` 
+          },
+          body: JSON.stringify({ nombre_usuario: usuarioLogueado })
         });
-      } catch {}
+        alert('Progreso borrado en el servidor.');
+      } catch (err) {
+        console.error(err);
+      }
     }
   );
 });
@@ -139,16 +145,26 @@ document.getElementById('btnResetProgress').addEventListener('click', () => {
 document.getElementById('btnDeleteAccount').addEventListener('click', () => {
   abrirModal(
     '⚠ ELIMINAR CUENTA',
-    '¡ATENCIÓN! Todos tus datos, progreso e inventario serán eliminados permanentemente.',
+    '¡ATENCIÓN! Todos tus datos serán eliminados permanentemente del servidor.',
     async () => {
+      if (usuarioLogueado === 'INVITADO') {
+         alert('No estás registrado.');
+         return;
+      }
       try {
         await fetch(`${API_URL}/usuarios/cuenta`, {
           method: 'DELETE',
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}` 
+          },
+          body: JSON.stringify({ nombre_usuario: usuarioLogueado })
         });
         localStorage.clear();
         window.location.href = '../login/login.html';
-      } catch {}
+      } catch (err) {
+        console.error(err);
+      }
     }
   );
 });
