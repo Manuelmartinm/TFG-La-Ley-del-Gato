@@ -37,7 +37,7 @@ export const ESCUDOS = [
 ];
 
 // ── Leyenda ───────────────────────────────────────────────────
-// 0 suelo   1 pared   2 puerta   3 botón
+// 0 suelo   1 pared   2 puerta   3 llave
 // 4 trampa  5 hielo   6 escondite  7 barro
 
 // Mapa 40 columnas × 30 filas
