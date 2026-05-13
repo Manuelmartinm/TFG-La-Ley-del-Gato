@@ -1,6 +1,6 @@
     window.onload = function () {
     // 1. Carga el nombre del agente
-    const nombre = localStorage.getItem('nombre_usuario') || 'AGENTE_01';
+    const nombre = localStorage.getItem('login_usuario') || 'AGENTE_01';
     document.getElementById('agentName').textContent = nombre.toUpperCase();
 
     // 2. Nuestra "piedra Rosetta" para traducir el número a emoji

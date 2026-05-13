@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const crypto = require('crypto');
 const Usuario = require('../models/Usuario');
 
 // ─── RUTA: REGISTRO DE USUARIO ────────────────────────────────────────────────
@@ -9,7 +8,6 @@ router.post('/registro', async (req, res) => {
   try {
     const { nombre_usuario, email, contrasena, avatar } = req.body;
 
-    // 1. Verificar si el usuario o email ya existen
     const usuarioExiste = await Usuario.findOne({ 
       $or: [{ email }, { nombre_usuario }] 
     });
@@ -18,22 +16,19 @@ router.post('/registro', async (req, res) => {
       return res.status(400).json({ error: 'El nombre de usuario o el email ya están registrados' });
     }
 
-    // 2. Encriptar contraseña
     const salt = await bcrypt.genSalt(10);
     const hash_contrasena = await bcrypt.hash(contrasena, salt);
 
-    // 3. Crear nuevo usuario (email_verificado: true por defecto)
     const nuevoUsuario = new Usuario({
       nombre_usuario,
       email,
       hash_contrasena,
       avatar: avatar || 0,
-      email_verificado: true // Aseguramos que sea true
+      email_verificado: true 
     });
 
     await nuevoUsuario.save();
 
-    // 4. RESPUESTA: Ya no intentamos enviar email. Éxito directo.
     res.status(201).json({ mensaje: 'Usuario creado con éxito. Ya puedes iniciar sesión.' });
 
   } catch (error) {
@@ -55,15 +50,11 @@ router.post('/login', async (req, res) => {
       return res.status(404).json({ error: 'Credenciales no válidas' });
     }
 
-    // ELIMINADO: Ya no comprobamos email_verificado. Todos pueden entrar.
-
-    // Comprobamos contraseña
     const esValida = await bcrypt.compare(contrasena, usuario.hash_contrasena);
     if (!esValida) {
       return res.status(401).json({ error: 'Credenciales no válidas' });
     }
 
-    // Login exitoso
     res.status(200).json({
       mensaje: 'Acceso concedido',
       usuario: {
@@ -76,6 +67,40 @@ router.post('/login', async (req, res) => {
   } catch (error) {
     console.error('Error en login:', error);
     res.status(500).json({ error: 'Error al iniciar sesión' });
+  }
+});
+
+// ─── RUTA: ACTUALIZAR PERFIL ──────────────────────────────────────────────────
+router.put('/actualizar', async (req, res) => {
+  try {
+    // Recibimos el nombre del usuario y los datos a cambiar
+    const { nombre_usuario, avatar, nueva_contrasena } = req.body;
+
+    // Buscamos al usuario
+    const usuario = await Usuario.findOne({ nombre_usuario });
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Si nos envían un nuevo avatar, lo actualizamos
+    if (avatar !== undefined) {
+      usuario.avatar = avatar;
+    }
+
+    // Si nos envían una nueva contraseña, la encriptamos y la guardamos
+    if (nueva_contrasena) {
+      const salt = await bcrypt.genSalt(10);
+      usuario.hash_contrasena = await bcrypt.hash(nueva_contrasena, salt);
+    }
+
+    // Guardamos los cambios en MongoDB
+    await usuario.save();
+
+    res.status(200).json({ mensaje: 'Perfil actualizado con éxito' });
+
+  } catch (error) {
+    console.error('Error al actualizar perfil:', error);
+    res.status(500).json({ error: 'Error en el servidor al actualizar' });
   }
 });
 
