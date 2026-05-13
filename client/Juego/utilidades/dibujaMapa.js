@@ -1,9 +1,15 @@
-
 import { CELDA, FILAS_MUNDO, COLUMNAS_MUNDO, ANCHO, ALTO, BLOQUE } from './constantes.js';
+
+// ── Sprites de puerta ─────────────────────────────────────────
+// Se cargan una vez — el resto del mapa sigue usando colores puros
+const _IMG_PUERTA_CERRADA = new Image(); _IMG_PUERTA_CERRADA.src = 'assets/tiles/puertaCerrada_t.png';
+const _IMG_PUERTA_ABIERTA = new Image(); _IMG_PUERTA_ABIERTA.src = 'assets/tiles/puertaAbierta.png';
+
+
 
 // camX, camY = esquina superior izquierda del mundo que se ve ahora mismo
 // Solo dibujamos las celdas visibles en pantalla para no desperdiciar recursos
-export function dibujaMapa(ctx, mapa, camX, camY) {
+export function dibujaMapa(ctx, mapa, camX, camY, condicionPuerta = false) {
     // Calculamos qué celdas son visibles — una celda extra en cada lado para evitar bordes
     const colInicio = Math.max(0, Math.floor(camX / CELDA));
     const colFin    = Math.min(COLUMNAS_MUNDO, Math.ceil((camX + ANCHO) / CELDA) + 1);
@@ -25,16 +31,24 @@ export function dibujaMapa(ctx, mapa, camX, camY) {
                 ctx.strokeRect(x, y, CELDA, CELDA);
 
             } else if (tipo === BLOQUE.PUERTA) {
-                ctx.fillStyle = '#4a3510';
+                // Base de suelo debajo de la puerta
+                ctx.fillStyle = (fila + col) % 2 === 0 ? '#0a0800' : '#080601';
                 ctx.fillRect(x, y, CELDA, CELDA);
-                ctx.strokeStyle = '#c8a030';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(x + 2, y + 2, CELDA - 4, CELDA - 4);
-                ctx.fillStyle = '#c8a030';
-                ctx.font = '16px monospace';
-                ctx.textAlign = 'center';
-                ctx.fillText('►', x + CELDA / 2, y + CELDA / 2 + 6);
-                ctx.textAlign = 'left';
+                // Sprite según condición: cerrada hasta tener llave + 100pts
+                const _imgPuerta = condicionPuerta ? _IMG_PUERTA_ABIERTA : _IMG_PUERTA_CERRADA;
+                if (_imgPuerta.complete && _imgPuerta.naturalWidth > 0) {
+                    ctx.drawImage(_imgPuerta, x + 2, y, CELDA - 4, CELDA);
+                } else {
+                    // Fallback mientras carga
+                    ctx.fillStyle = condicionPuerta ? '#40c040' : '#4a3510';
+                    ctx.fillRect(x, y, CELDA, CELDA);
+                    ctx.strokeStyle = '#c8a030'; ctx.lineWidth = 2;
+                    ctx.strokeRect(x + 2, y + 2, CELDA - 4, CELDA - 4);
+                    ctx.fillStyle = '#c8a030'; ctx.font = '16px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(condicionPuerta ? '▶' : '►', x + CELDA/2, y + CELDA/2 + 6);
+                    ctx.textAlign = 'left';
+                }
 
             } else if (tipo === BLOQUE.BOTON) {
                 ctx.fillStyle = '#3d0f0f';

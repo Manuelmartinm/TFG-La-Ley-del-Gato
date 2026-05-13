@@ -322,7 +322,7 @@ function frame(deltaTime) {
 
     // La puerta solo se puede cruzar si se cumplen ambas condiciones
     if (condicionPuerta && seToca(jugador.x, jugador.y, jugador.w, jugador.h, puertaX, puertaY, CELDA, CELDA)) {
-        estadoJuego = 'nivelCompletado';
+        window.location.href = '../Mapa/mapa.html'; return;
     }
 
     // ── Cámara — centrada en el jugador, limitada a los bordes del mundo ─────
@@ -336,7 +336,7 @@ function frame(deltaTime) {
 
     // ── Dibujo ────────────────────────────────────────────────────────────────
     ctx.clearRect(0, 0, ANCHO, ALTO);
-    dibujaMapa(ctx, mapa, camX, camY);
+    dibujaMapa(ctx, mapa, camX, camY, condicionPuerta);
     objetos.forEach(obj => obj.dibujar(ctx, camX, camY));
     enemigos.forEach(en => en.dibujar(ctx, jugador, camX, camY));
     jugador.dibujar(ctx, camX, camY);
