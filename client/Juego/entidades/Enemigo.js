@@ -1,21 +1,9 @@
-// ─────────────────────────────────────────────────────────────
-// Enemigo.js — clase que encapsula todos los tipos de enemigo
-// Cada tipo tiene su propio comportamiento en actualizar().
-// Para añadir un tipo nuevo: añadir un else if en actualizar()
-// y crear el objeto con las propiedades necesarias en el nivel.
-// ─────────────────────────────────────────────────────────────
 
 import { TIPO_ENEMIGO } from '../utilidades/constantes.js';
 import { hayColision } from '../utilidades/colisiones.js';
 import { ProyectilRecto, ProyectilMortero } from './Proyectil.js';
 
-// ─────────────────────────────────────────────────────────────
-// VALORES BASE POR TIPO
-// Cada tipo tiene sus propiedades predefinidas.
-// En los niveles solo hace falta indicar tipo y posición.
-// Si un nivel necesita un enemigo diferente puede sobreescribir
-// algún valor pasándolo explícitamente en el config.
-// ─────────────────────────────────────────────────────────────
+//Valores por defecto de los enemigos
 const DEFAULTS = {
     [TIPO_ENEMIGO.PATRULLA]: {
         w: 26, h: 26,
@@ -47,7 +35,7 @@ const DEFAULTS = {
         color: '#602080',
         timerDisparo: 200,
         cadencia: 280,
-        rango: 380,  // rango amplio — el mortero es un arma de largo alcance
+        rango: 380,
     },
 };
 
@@ -55,23 +43,21 @@ export class Enemigo {
     // config es un objeto con todas las propiedades del enemigo
     // (x, y, w, h, speed, color, tipo, patrol, rango, etc.)
     constructor(config) {
-        // Primero aplicamos los valores base del tipo
         // Luego sobreescribimos con lo que venga del config del nivel
-        // Así en los niveles solo hace falta poner tipo, posición y patrol/origen
         const defaults = DEFAULTS[config.tipo] || {};
         Object.assign(this, defaults, config);
         this.pi = this.pi ?? 0;
         this.timerStun = 0;
     }
 
-    // Aplica stun al enemigo durante `frames` frames
+    // Aplica stun al enemigo
     stunear(frames = 120) {
         this.timerStun = frames;
     }
 
-    // Actualiza la posición del enemigo según su tipo
+    // Actualiza la posición del enemigo
     actualizar(jugador, mapa, proyectiles, proyMortero) {
-        // Si está stuneado contamos el timer y no hacemos nada más
+
         if (this.timerStun > 0) {
             this.timerStun--;
             return;
