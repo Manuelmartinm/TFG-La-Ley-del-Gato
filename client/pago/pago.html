@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Ley del Gato — Pago Exitoso</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --gold: #c8a030; --gold-bright: #e8c040;
+      --gold-dim: #8a6820; --bg: #080601; --text: #f0d060;
+    }
+    body {
+      min-height: 100vh; background: var(--bg);
+      font-family: 'VT323', monospace;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .scene {
+      position: fixed; inset: 0;
+      background: radial-gradient(ellipse 120% 80% at 50% 110%, rgba(160,110,20,0.15) 0%, transparent 55%), #080601;
+      z-index: 0;
+    }
+    .scanlines {
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(to bottom, transparent 0, transparent 3px, rgba(0,0,0,0.07) 3px, rgba(0,0,0,0.07) 4px);
+      pointer-events: none; z-index: 50;
+    }
+    .main {
+      position: relative; z-index: 10;
+      width: 100%; max-width: 480px;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 2rem 1rem;
+      animation: fadein 0.6s ease both;
+    }
+    @keyframes fadein { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+ 
+    .card {
+      width: 100%;
+      background: rgba(10,8,3,0.93);
+      border: 1px solid #2e2006;
+      border-top: 2px solid var(--gold);
+      position: relative;
+      text-align: center;
+    }
+    .card::before, .card::after { content: '◆'; position: absolute; color: var(--gold); font-size: 9px; }
+    .card::before { top: -6px; left: 8px; }
+    .card::after  { top: -6px; right: 8px; }
+    .card-inner { padding: 2.5rem 2rem; border: 1px solid #1a1403; margin: 7px; }
+ 
+    .success-icon { font-size: 64px; margin-bottom: 1.5rem; animation: bounce 1s ease infinite alternate; }
+    @keyframes bounce { from { transform: scale(1); } to { transform: scale(1.1); } }
+ 
+    .title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px; color: var(--gold);
+      letter-spacing: 2px; line-height: 2;
+      margin-bottom: 1rem;
+    }
+    .msg {
+      font-size: 18px; color: var(--text);
+      letter-spacing: 2px; line-height: 1.8;
+      margin-bottom: 0.5rem;
+    }
+    .submsg {
+      font-size: 14px; color: var(--gold-dim);
+      letter-spacing: 2px; margin-bottom: 2rem;
+    }
+    .monedas-ganadas {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 14px; color: var(--gold-bright);
+      background: rgba(200,160,48,0.1);
+      border: 1px solid var(--gold);
+      padding: 1rem; margin-bottom: 2rem;
+      letter-spacing: 1px;
+    }
+    .btn {
+      width: 100%; background: var(--gold); border: none;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px; color: #060401;
+      padding: 1rem; letter-spacing: 2px; cursor: pointer;
+      transition: background 0.2s;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    }
+    .btn:hover { background: #ddb838; }
+    .loading { font-size: 16px; color: var(--gold-dim); letter-spacing: 3px; animation: blink 1s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  </style>
+</head>
+<body>
+  <div class="scene"></div>
+  <div class="scanlines"></div>
+ 
+  <div class="main">
+    <div class="card">
+      <div class="card-inner">
+        <div class="success-icon" id="icon">⏳</div>
+        <div class="title" id="title">PROCESANDO PAGO...</div>
+        <div class="msg loading" id="msg">VERIFICANDO CON EL SERVIDOR</div>
+        <div class="submsg" id="submsg"></div>
+        <div class="monedas-ganadas" id="monedasBox" style="display:none"></div>
+        <button class="btn" id="btnVolver" style="display:none">▶ VOLVER A LA BASE</button>
+      </div>
+    </div>
+  </div>
+ 
+  <script>
+    const API_URL = 'https://tfg-la-ley-del-gato.onrender.com';
+
+    async function verificarPago() {
+      const params = new URLSearchParams(window.location.search);
+      const session_id = params.get('session_id');
+      const tipo = params.get('tipo');
+      const pack_id = params.get('pack');
+      const nombre_usuario = params.get('user');
+
+      if (!session_id) {
+        mostrarError('No se encontró la sesión de pago.');
+        return;
+      }
+
+      // Pequeña pausa estética para que el usuario vea el "Procesando..."
+      await new Promise(r => setTimeout(r, 1500));
+
+      try {
+        const res = await fetch(`${API_URL}/pagos/verificar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            session_id, 
+            tipo, 
+            pack_id, 
+            nombre_usuario 
+          })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          if (data.tipo === 'monedas') {
+            localStorage.setItem('monedas', data.monedas_totales);
+
+            document.getElementById('icon').textContent = '💰';
+            document.getElementById('title').textContent = '¡PAGO EXITOSO!';
+            document.getElementById('msg').textContent = data.mensaje;
+            document.getElementById('msg').className = 'msg';
+            document.getElementById('monedasBox').textContent = `+${data.monedas_añadidas} MONEDAS AÑADIDAS`;
+            document.getElementById('monedasBox').style.display = 'block';
+            document.getElementById('submsg').textContent = `SALDO ACTUAL: ${data.monedas_totales} MONEDAS`;
+
+          } else if (data.tipo === 'premium') {
+            localStorage.setItem('rol', 'PREMIUM');
+
+            document.getElementById('icon').textContent = '⭐';
+            document.getElementById('title').textContent = '¡BIENVENIDO AL CLUB!';
+            document.getElementById('msg').textContent = data.mensaje;
+            document.getElementById('msg').className = 'msg';
+            document.getElementById('submsg').textContent = 'YA TIENES ACCESO A LA TIENDA PREMIUM';
+          }
+
+          document.getElementById('btnVolver').style.display = 'block';
+
+        } else {
+          mostrarError(data.error || 'Error al verificar el pago');
+        }
+
+      } catch (err) {
+        mostrarError('Error de conexión con el servidor');
+      }
+    }
+
+    function mostrarError(texto) {
+      document.getElementById('icon').textContent = '❌';
+      document.getElementById('title').textContent = 'ERROR EN EL PAGO';
+      document.getElementById('msg').textContent = texto.toUpperCase();
+      document.getElementById('msg').className = 'msg';
+      document.getElementById('btnVolver').style.display = 'block';
+    }
+
+    document.getElementById('btnVolver').addEventListener('click', () => {
+      window.location.href = '../PaginaPrincipal/principal.html';
+    });
+
+    verificarPago();
+  </script>
+</body>
+</html>
