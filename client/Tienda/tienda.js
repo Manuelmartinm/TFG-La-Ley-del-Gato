@@ -1,3 +1,7 @@
+/* =========================================================
+   LA LEY DEL GATO — tienda.js (CORREGIDO)
+   ========================================================= */
+
 const API_URL = 'https://tfg-la-ley-del-gato.onrender.com';
 
 const usuarioLogueado = localStorage.getItem('nombre_usuario')
@@ -14,7 +18,7 @@ let monedas = parseInt(localStorage.getItem('monedas') || '0');
 document.getElementById('coinsAmount').textContent = monedas.toLocaleString('es-ES');
 
 const catalogo = [
-  { id:'1', nombre:'GABARDINA GRIS', categoria:'SKIN', rareza:'rare', emoji:'🧥', precio_monedas:800, precio_real:0, es_catalogo_premium:false, activo:true, tiene_efecto:false, descripcion:'Una gabardina desgastada.' },
+  { id:'1', nombre:'GABARDINA GRIS', categoria:'SKIN', rareza:'rare', emoji:'🧥', precio_monedas:800, precio_real:0, es_catalogo_premium:false, activo:true, tiene_efecto:false, descripcion:'Una gabardina desgastada perfecta para la noche.' },
   { id:'2', nombre:'SOMBRERO FEDORA', categoria:'COSMETICO', rareza:'epic', emoji:'🎩', precio_monedas:1500, precio_real:0, es_catalogo_premium:false, activo:true, tiene_efecto:false, descripcion:'El clásico de todo buen agente.' },
   { id:'3', nombre:'EXPLOSIVO C4', categoria:'UTIL', rareza:'rare', emoji:'💣', precio_monedas:600, precio_real:0, es_catalogo_premium:false, activo:true, tiene_efecto:true, descripcion:'Sabotaje puro.', descripcion_efecto:'Destruye obstáculos' },
   { id:'4', nombre:'GAFAS NOCTURNAS', categoria:'UTIL', rareza:'common', emoji:'🥽', precio_monedas:300, precio_real:0, es_catalogo_premium:false, activo:true, tiene_efecto:true, descripcion:'Visión nocturna.', descripcion_efecto:'Ilumina zonas oscuras' },
@@ -85,41 +89,37 @@ function seleccionarItem(item) {
   }
 }
 
-// Lógica de compra Monedas (Local)
+// CORRECCIÓN DE RUTA AQUÍ
+function irAPagar(tipo, packId = '') {
+    if (!usuarioLogueado) return alert("Identifícate primero, agente.");
+    // Subimos un nivel para salir de /Tienda y entramos en /pago
+    const url = `../pago/pago.html?tipo=${tipo}&pack=${packId}&user=${usuarioLogueado}`;
+    window.location.href = url;
+}
+
+window.comprarPack = function(packId) {
+    irAPagar('monedas', packId);
+};
+
+document.getElementById('btnBuyReal').onclick = () => {
+    irAPagar('item_directo', itemSeleccionado.id);
+};
+
+document.getElementById('premiumBuyBtn').onclick = () => {
+    irAPagar('premium');
+};
+
 document.getElementById('btnBuy').onclick = async () => {
     if (monedas < itemSeleccionado.precio_monedas) return;
+    // Compra con monedas (lógica local)
     monedas -= itemSeleccionado.precio_monedas;
     localStorage.setItem('monedas', monedas);
     document.getElementById('coinsAmount').textContent = monedas;
     inventarioUsuario.push(itemSeleccionado);
     renderizarTienda();
-    alert("¡Objeto comprado!");
+    alert("¡Objeto adquirido!");
 };
 
-// Redirección a simulación para DINERO REAL
-async function iniciarPagoSimulado(params) {
-    const res = await fetch(`${API_URL}/pagos/crear-sesion`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...params, nombre_usuario: usuarioLogueado })
-    });
-    const data = await res.json();
-    if (data.url) window.location.href = data.url;
-}
-
-document.getElementById('btnBuyReal').onclick = () => {
-    iniciarPagoSimulado({ tipo: 'item_directo', item_id: itemSeleccionado.id });
-};
-
-async function comprarPack(packId) {
-    iniciarPagoSimulado({ tipo: 'monedas', pack_id: packId });
-}
-
-document.getElementById('premiumBuyBtn').onclick = () => {
-    iniciarPagoSimulado({ tipo: 'premium' });
-};
-
-// Eventos de UI
 document.querySelectorAll('.shop-tab').forEach(t => t.onclick = (e) => {
     document.querySelectorAll('.shop-tab').forEach(btn => btn.classList.remove('active'));
     e.target.classList.add('active');
