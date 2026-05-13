@@ -26,7 +26,7 @@ app.use('/usuarios', usuariosRutas);
 
 // Ruta raíz — redirige al login
 app.get('/', (req, res) => {
-  res.redirect('/login/login.html');
+  res.sendFile(path.join(__dirname, '../client/login/login.html'));
 });
 
 // Arranca el servidor
