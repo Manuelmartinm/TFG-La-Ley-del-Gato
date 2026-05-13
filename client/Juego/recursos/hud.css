@@ -1,0 +1,26 @@
+/* ─────────────────────────────────────────────────────────────
+   hud.css — estilos del HUD superior
+   Todo lo relacionado con la barra de información del jugador.
+   Si cambias el diseño del HUD, solo tocas este archivo.
+───────────────────────────────────────────────────────────── */
+
+/* Barra principal del HUD */
+#hud {
+    width: 960px;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: rgba(10, 8, 3, 0.95);
+    border: 1px solid var(--gold-dark);
+    border-top: 2px solid var(--gold);
+    border-bottom: none;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 7px;
+    color: var(--gold-dim);
+    letter-spacing: 1px;
+}
+
+/* Valores destacados — vidas, puntos, nivel */
+#hud strong {
+    color: var(--gold-bright);
+}

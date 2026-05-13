@@ -1,0 +1,24 @@
+/* ─────────────────────────────────────────────────────────────
+   base.css — reset, variables de color y fuentes
+   Es la base que todos los demás archivos CSS usan.
+   Si cambias un color del juego, solo lo tocas aquí.
+───────────────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+/* Reset universal — elimina márgenes y padding por defecto del navegador */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Variables de color — paleta dorada retro del juego */
+:root {
+    --gold:        #c8a030;  /* dorado base */
+    --gold-bright: #e8c040;  /* dorado brillante — textos importantes */
+    --gold-dim:    #8a6820;  /* dorado apagado — textos secundarios */
+    --gold-dark:   #4a3510;  /* dorado oscuro — bordes y detalles */
+    --bg:          #080601;  /* fondo casi negro con tinte cálido */
+    --text:        #f0d060;  /* texto general */
+}

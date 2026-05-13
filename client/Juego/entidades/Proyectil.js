@@ -9,26 +9,39 @@ import { hayColision, seToca } from '../utilidades/colisiones.js';
 
 // ── PROYECTIL RECTO (centinela) ───────────────────────────────────────────────
 export class ProyectilRecto {
-    constructor(x, y, dx, dy, speed = 5) {
+    constructor(x, y, dx, dy, speed = 5, esDelJugador = false) {
         this.x = x; this.y = y;
         this.dx = dx; this.dy = dy;
         this.speed = speed;
-        this.w = 6; this.h = 6;
-        this.activo = true; // false → el gestor lo elimina del array
+        this.w = esDelJugador ? 8 : 6;
+        this.h = esDelJugador ? 8 : 6;
+        this.activo       = true;
+        this.esDelJugador = esDelJugador;
     }
 
     actualizar(mapa) {
         this.x += this.dx * this.speed;
         this.y += this.dy * this.speed;
-        // Muere al chocar con una pared
         if (hayColision(mapa, this.x - this.w/2, this.y - this.h/2, this.w, this.h)) {
             this.activo = false;
         }
     }
 
-    // Comprueba si toca al jugador. Devuelve true y se desactiva si hay impacto.
+    // Comprueba si toca al jugador — solo para proyectiles de enemigos
     tocaJugador(jugador) {
+        if (this.esDelJugador) return false;
         if (seToca(jugador.x, jugador.y, jugador.w, jugador.h,
+            this.x - this.w/2, this.y - this.h/2, this.w, this.h)) {
+            this.activo = false;
+            return true;
+        }
+        return false;
+    }
+
+    // Comprueba si toca a un enemigo — solo para proyectiles del jugador
+    tocaEnemigo(enemigo) {
+        if (!this.esDelJugador) return false;
+        if (seToca(enemigo.x, enemigo.y, enemigo.w, enemigo.h,
             this.x - this.w/2, this.y - this.h/2, this.w, this.h)) {
             this.activo = false;
             return true;
@@ -39,9 +52,10 @@ export class ProyectilRecto {
     dibujar(ctx, camX, camY) {
         const px = this.x - camX;
         const py = this.y - camY;
-        ctx.fillStyle   = '#40ff80';
+        // Proyectil del jugador: naranja brillante. Del enemigo: verde.
+        ctx.fillStyle   = this.esDelJugador ? '#ff8800' : '#40ff80';
         ctx.fillRect(px - this.w/2, py - this.h/2, this.w, this.h);
-        ctx.strokeStyle = '#206040';
+        ctx.strokeStyle = this.esDelJugador ? '#cc5500' : '#206040';
         ctx.lineWidth   = 1;
         ctx.strokeRect(px - this.w/2 - 1, py - this.h/2 - 1, this.w + 2, this.h + 2);
     }

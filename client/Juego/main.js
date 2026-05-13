@@ -25,12 +25,12 @@ import {
     ENEMIGOS_CONFIG as ENEMIGOS_N1,
     INICIO_JUGADOR as INICIO_N1,
     PUERTA as PUERTA_N1,
-    BOTON as BOTON_N1,
+    LLAVE as LLAVE_N1,
     QUESOS_PEQUENOS as QUESOS_P_N1,
     QUESOS_DORADOS as QUESOS_D_N1,
     ESCUDOS as ESCUDOS_N1,
 } from './niveles/Nivel1.js';
-import { QuesoPequeno, QuesoDorado, Escudo } from './entidades/Objeto.js';
+import { QuesoPequeno, QuesoDorado, Escudo, Llave } from './entidades/Objeto.js';
 // ── Motor ─────────────────────────────────────────────────────
 // BucleJuego gestiona el requestAnimationFrame.
 // Entrada gestiona el teclado — exporta `teclas` y `onTeclaPulsada`.
@@ -71,12 +71,12 @@ let jugador;
 let enemigos;
 let proyectiles;
 let proyMortero;
-let objetos;       // QuesoPequeno[], QuesoDorado[], etc.
+let objetos;
 let puertaDesbloqueada;
 let puerta;
-let boton;
+let llaveCogida;     // true cuando el jugador ha recogido la llave
 
-function cargarNivel(mapaData, enemigosConfig, inicioJugador, puertaData, botonData, quesosPData, quesosDData, escudosData) {
+function cargarNivel(mapaData, enemigosConfig, inicioJugador, puertaData, llaveData, quesosPData, quesosDData, escudosData) {
     mapa     = mapaData.map(fila => [...fila]);
     jugador  = new Jugador(inicioJugador.x, inicioJugador.y);
     enemigos = enemigosConfig.map(cfg => new Enemigo({ ...cfg, pi: 0 }));
@@ -84,11 +84,12 @@ function cargarNivel(mapaData, enemigosConfig, inicioJugador, puertaData, botonD
     proyectiles = [];
     proyMortero = [];
     puertaDesbloqueada = false;
-    puerta = puertaData;
-    boton  = botonData;
+    puerta     = puertaData;
+    llaveCogida = false;
     monedaUsada = false;
 
     objetos = [
+        new Llave(llaveData.x, llaveData.y),
         ...quesosPData.map(q => new QuesoPequeno(q.x, q.y)),
         ...quesosDData.map(q => new QuesoDorado(q.x, q.y, q.duracion)),
         ...escudosData.map(e => new Escudo(e.x, e.y)),
@@ -96,7 +97,7 @@ function cargarNivel(mapaData, enemigosConfig, inicioJugador, puertaData, botonD
 }
 
 // Arrancamos con el nivel 1
-cargarNivel(MAPA_N1, ENEMIGOS_N1, INICIO_N1, PUERTA_N1, BOTON_N1, QUESOS_P_N1, QUESOS_D_N1, ESCUDOS_N1);
+cargarNivel(MAPA_N1, ENEMIGOS_N1, INICIO_N1, PUERTA_N1, LLAVE_N1, QUESOS_P_N1, QUESOS_D_N1, ESCUDOS_N1);
 
 // ─────────────────────────────────────────────────────────────
 // ENTRADA DE TECLADO
@@ -110,7 +111,7 @@ onTeclaPulsada(function(e) {
         vidas  = 3;
         puntos = 0;
         nivelActual = 1;
-        cargarNivel(MAPA_N1, ENEMIGOS_N1, INICIO_N1, PUERTA_N1, BOTON_N1, QUESOS_P_N1, QUESOS_D_N1, ESCUDOS_N1);
+        cargarNivel(MAPA_N1, ENEMIGOS_N1, INICIO_N1, PUERTA_N1, LLAVE_N1, QUESOS_P_N1, QUESOS_D_N1, ESCUDOS_N1);
         estadoJuego = 'jugando';
         actualizarHUD(jugador.nombre, vidas, puntos, nivelActual);
     }
@@ -153,7 +154,7 @@ onTeclaPulsada(function(e) {
     if (e.key === 'Enter' && estadoJuego === 'nivelCompletado') {
         nivelActual++;
         // Para añadir Nivel 2: if (nivelActual === 2) cargarNivel(MAPA_N2, ...)
-        cargarNivel(MAPA_N1, ENEMIGOS_N1, INICIO_N1, PUERTA_N1, BOTON_N1, QUESOS_P_N1, QUESOS_D_N1, ESCUDOS_N1);
+        cargarNivel(MAPA_N1, ENEMIGOS_N1, INICIO_N1, PUERTA_N1, LLAVE_N1, QUESOS_P_N1, QUESOS_D_N1, ESCUDOS_N1);
         estadoJuego = 'jugando';
         actualizarHUD(jugador.nombre, vidas, puntos, nivelActual);
     }
@@ -163,6 +164,27 @@ onTeclaPulsada(function(e) {
         e.preventDefault();
         jugador.cambiarPersonaje();
         actualizarHUD(jugador.nombre, vidas, puntos, nivelActual);
+    }
+
+    // Usar habilidad con Espacio
+    if (e.key === ' ' && estadoJuego === 'jugando') {
+        // Ratón A — melee
+        const rectMelee = jugador.usarMelee();
+        if (rectMelee) {
+            // La colisión del golpe se comprueba en el frame, no aquí
+            // usarMelee() ya activó meleeActivo — main.js lo detectará
+        }
+
+        // Ratón B — disparo
+        const datosDisparo = jugador.usarDisparo();
+        if (datosDisparo) {
+            proyectiles.push(new ProyectilRecto(
+                datosDisparo.x, datosDisparo.y,
+                datosDisparo.dx, datosDisparo.dy,
+                datosDisparo.speed, true // esDelJugador = true
+            ));
+        }
+        // Ratón C — el escudo bloqueador se gestiona en actualizar() con teclas[' ']
     }
 });
 
@@ -231,8 +253,8 @@ function frame(deltaTime) {
         obj.actualizar();
         if (obj.comprobarRecogida(jugador)) {
             puntos += obj.puntosAlRecoger || 0;
-            // Si es un escudo activamos la protección del jugador
             if (obj instanceof Escudo) jugador.activarEscudo(300);
+            if (obj instanceof Llave)  llaveCogida = true;
             actualizarHUD(jugador.nombre, vidas, puntos, nivelActual);
         }
     });
@@ -252,23 +274,54 @@ function frame(deltaTime) {
             }
         }
         for (const p of proyectiles) {
-            if (p.tocaJugador(jugador)) { aplicarDanio(); break; }
+            if (!p.esDelJugador) {
+                // El escudo bloqueador del Ratón C destruye proyectiles enemigos
+                if (jugador.escudoBloqueadorActivo) {
+                    const escudoX = jugador.x + jugador.w / 2 + jugador.dirX * jugador.w * 0.8;
+                    const escudoY = jugador.y + jugador.h / 2 + jugador.dirY * jugador.h * 0.8;
+                    const dist = Math.sqrt((p.x - escudoX) ** 2 + (p.y - escudoY) ** 2);
+                    if (dist < jugador.w * 0.7 + p.w) { p.activo = false; continue; }
+                }
+                if (p.tocaJugador(jugador)) { aplicarDanio(); break; }
+            }
         }
         for (const p of proyMortero) {
             if (p.tocaJugador(jugador)) { aplicarDanio(); break; }
         }
     }
 
-    // ── Botón y puerta ────────────────────────────────────────────────────────
-    const botonX = boton.col  * CELDA;
-    const botonY = boton.fila * CELDA;
-    if (!puertaDesbloqueada && seToca(jugador.x, jugador.y, jugador.w, jugador.h, botonX, botonY, CELDA, CELDA)) {
-        puertaDesbloqueada = true;
-        mapa[boton.fila][boton.col] = BLOQUE.SUELO;
+    // ── Habilidades del jugador contra enemigos ───────────────────────────────
+    // Melee (Ratón A) — comprobamos si el rectángulo del golpe toca algún enemigo
+    if (jugador.meleeActivo) {
+        const r = jugador.getRectMelee();
+        if (r) {
+            for (const en of enemigos) {
+                if (seToca(r.x, r.y, r.w, r.h, en.x, en.y, en.w, en.h)) {
+                    en.stunear(120); // 2 segundos de stun
+                }
+            }
+        }
     }
+
+    // Disparo del jugador — comprobamos si algún proyectil del jugador toca enemigos
+    for (const p of proyectiles) {
+        if (p.esDelJugador) {
+            for (const en of enemigos) {
+                if (p.tocaEnemigo(en)) {
+                    en.stunear(120);
+                    break;
+                }
+            }
+        }
+    }
+
+    // ── Puerta — se abre solo con llave Y 100 puntos ─────────────────────────
     const puertaX = puerta.col  * CELDA;
     const puertaY = puerta.fila * CELDA;
-    if (puertaDesbloqueada && seToca(jugador.x, jugador.y, jugador.w, jugador.h, puertaX, puertaY, CELDA, CELDA)) {
+    const condicionPuerta = llaveCogida && puntos >= 100;
+
+    // La puerta solo se puede cruzar si se cumplen ambas condiciones
+    if (condicionPuerta && seToca(jugador.x, jugador.y, jugador.w, jugador.h, puertaX, puertaY, CELDA, CELDA)) {
         estadoJuego = 'nivelCompletado';
     }
 
@@ -289,6 +342,17 @@ function frame(deltaTime) {
     jugador.dibujar(ctx, camX, camY);
     proyectiles.forEach(p => p.dibujar(ctx, camX, camY));
     proyMortero.forEach(p => p.dibujar(ctx, camX, camY));
+    // ── Indicador de condiciones en pantalla ──────────────────────────────────
+    // Muestra en la esquina inferior izquierda el progreso hacia abrir la puerta
+    const iconoLlave  = llaveCogida ? '🗝️ ✓' : '🗝️ ✗';
+    const iconoPuntos = puntos >= 100 ? '★ ✓' : `★ ${puntos}/100`;
+    ctx.font = '14px "Press Start 2P"';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = llaveCogida ? '#40c040' : '#c04040';
+    ctx.fillText(iconoLlave, 12, ALTO - 30);
+    ctx.fillStyle = puntos >= 100 ? '#40c040' : '#e8c040';
+    ctx.fillText(iconoPuntos, 12, ALTO - 10);
+
     jugador.flash = dibujarFlash(ctx, ANCHO, ALTO, jugador.flash);
 
     if (estadoJuego === 'nivelCompletado') dibujarNivelCompletado(ctx, ANCHO, ALTO);

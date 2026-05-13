@@ -1,16 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+/* ─────────────────────────────────────────────────────────────
+   juego.css — layout general, canvas, scanlines y controles
+   Se ocupa de cómo se ve la página que contiene el juego.
+───────────────────────────────────────────────────────────── */
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-:root {
-  --gold: #c8a030;
-  --gold-bright: #e8c040;
-  --gold-dim: #8a6820;
-  --gold-dark: #4a3510;
-  --bg: #080601;
-  --text: #f0d060;
-}
-
+/* Layout principal — centra el juego en la página */
 body {
   min-height: 100vh;
   background: var(--bg);
@@ -23,47 +16,30 @@ body {
   position: relative;
 }
 
-/* Scanlines igual que en principal */
+/* Efecto scanlines — simula una pantalla CRT antigua */
 body::after {
   content: '';
   position: fixed;
   inset: 0;
   background: repeating-linear-gradient(
-    to bottom, transparent 0, transparent 3px,
-    rgba(0,0,0,0.07) 3px, rgba(0,0,0,0.07) 4px
+          to bottom,
+          transparent 0,
+          transparent 3px,
+          rgba(0, 0, 0, 0.07) 3px,
+          rgba(0, 0, 0, 0.07) 4px
   );
   pointer-events: none;
   z-index: 50;
 }
 
-/* HUD estilo dorado */
-#hud {
-  width: 640px;
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 16px;
-  background: rgba(10,8,3,0.95);
-  border: 1px solid var(--gold-dark);
-  border-top: 2px solid var(--gold);
-  border-bottom: none;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 7px;
-  color: var(--gold-dim);
-  letter-spacing: 1px;
-}
-
-#hud strong {
-  color: var(--gold-bright);
-}
-
-/* Canvas con borde dorado */
+/* Canvas — borde dorado que conecta visualmente con el HUD */
 #canvasJuego {
   display: block;
   border: 1px solid var(--gold-dark);
   border-top: none;
 }
 
-/* Controles debajo */
+/* Texto de controles debajo del canvas */
 #controles {
   margin-top: 12px;
   font-size: 16px;

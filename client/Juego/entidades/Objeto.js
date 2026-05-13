@@ -89,7 +89,54 @@ export class QuesoPequeno extends Objeto {
     }
 }
 
-// ── ESCUDO TEMPORAL ───────────────────────────────────────────
+// ── LLAVE ─────────────────────────────────────────────────────
+// Al recogerla habilita la condición de llave para abrir la puerta.
+// No da puntos — su efecto lo gestiona main.js comprobando llaveCogida.
+export class Llave extends Objeto {
+    constructor(x, y) {
+        super(x, y, 20, 20);
+        this._fase = Math.random() * Math.PI * 2;
+        this.puntosAlRecoger = 0;
+    }
+
+    dibujar(ctx, camX, camY) {
+        if (!this.activo) return;
+
+        const px = this.x - camX;
+        const py = this.y - camY + (this._offsetY || 0);
+
+        // Halo dorado brillante — destaca sobre cualquier bloque
+        ctx.beginPath();
+        ctx.arc(px + this.w / 2, py + this.h / 2, this.w, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 215, 0, 0.20)';
+        ctx.fill();
+
+        // Círculo de la llave
+        ctx.beginPath();
+        ctx.arc(px + 8, py + 7, 6, 0, Math.PI * 2);
+        ctx.strokeStyle = '#e8c040';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        // Palo de la llave
+        ctx.beginPath();
+        ctx.moveTo(px + 13, py + 10);
+        ctx.lineTo(px + 20, py + 17);
+        ctx.strokeStyle = '#e8c040';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        // Dientes de la llave
+        ctx.beginPath();
+        ctx.moveTo(px + 17, py + 14);
+        ctx.lineTo(px + 19, py + 12);
+        ctx.moveTo(px + 15, py + 16);
+        ctx.lineTo(px + 17, py + 14);
+        ctx.strokeStyle = '#c8a030';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    }
+}
 // Al recogerlo el jugador es invencible durante 300 frames (~5 segundos).
 // Visualmente aparece un aura azul alrededor del jugador mientras dura.
 export class Escudo extends Objeto {
